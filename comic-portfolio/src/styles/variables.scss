@@ -1,0 +1,40 @@
+$comic-red: #ff4d4d;
+$comic-blue: #4d8bff;
+$comic-yellow: #ffeb3b;
+$comic-green: #4dff7f;
+$comic-bg: #f8f8f8;
+$comic-border: #000000;
+
+$themes: (
+  marvel: (
+    primary: #ED1D24,
+    secondary: #FFFFFF,
+    accent: #F78F20
+  ),
+  dc: (
+    primary: #0078F0,
+    secondary: #FFFFFF,
+    accent: #FFDE00
+  ),
+  manga: (
+    primary: #000000,
+    secondary: #FFFFFF,
+    accent: #E70B0B
+  )
+);
+
+// Function to get theme colors
+@function theme($key) {
+  @return map-get(map-get($themes, 'marvel'), $key);
+}
+
+// Apply theme colors
+:root {
+  @each $theme, $colors in $themes {
+    &[data-theme="#{$theme}"] {
+      @each $name, $color in $colors {
+        --#{$name}-color: #{$color};
+      }
+    }
+  }
+}

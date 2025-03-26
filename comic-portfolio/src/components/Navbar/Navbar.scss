@@ -1,0 +1,315 @@
+@import "../../styles/variables";
+
+.comic-navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 1rem;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 0 0 4px currentColor,
+    0 0 0 6px var(--accent-color), 0 0 0 8px currentColor;
+  transform-style: preserve-3d;
+  --accent-color: #{map-get(map-get($themes, "marvel"), "accent")};
+  .progress-bar {
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    transform-origin: left;
+    z-index: 1001;
+  }
+
+  .nav-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+
+    .comic-logo {
+      position: relative;
+      font-weight: bold;
+      font-size: 1.5rem;
+      text-shadow: 3px 3px 0 currentColor, 5px 5px 0 rgba(0, 0, 0, 0.2);
+      padding: 0.5rem 1rem;
+      border: 3px solid currentColor;
+      border-radius: 8px;
+      box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.2);
+      transform: rotate(-2deg);
+      transition: all 0.3s ease;
+      z-index: 10;
+
+      &:hover {
+        transform: rotate(0deg) scale(1.05);
+        filter: brightness(1.1);
+      }
+
+      .logo-highlight {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        width: 30%;
+        height: 30%;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.8) 0%,
+          transparent 70%
+        );
+        border-radius: 4px;
+      }
+
+      .logo-reflection {
+        position: absolute;
+        bottom: 2px;
+        left: 2px;
+        width: 60%;
+        height: 20%;
+        background: linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0.3) 0%,
+          transparent 100%
+        );
+        border-radius: 2px;
+      }
+    }
+
+    .desktop-nav {
+      display: flex;
+      gap: 1.5rem;
+
+      @media (max-width: 768px) {
+        display: none;
+      }
+    }
+
+    .theme-toggle {
+      padding: 0.5rem 1rem;
+      font-weight: bold;
+      border: 2px solid currentColor;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-left: 1rem;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      @media (max-width: 768px) {
+        display: none;
+      }
+    }
+  }
+
+  .speech-bubble {
+    position: absolute;
+    top: 80px;
+    right: 20px;
+    padding: 0.8rem 1.2rem;
+    border-radius: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    box-shadow: 3px 3px 0 currentColor;
+    border: 2px solid currentColor;
+    z-index: 1002;
+
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: -10px;
+      right: 30px;
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 10px solid currentColor;
+    }
+
+    .bubble-tail {
+      position: absolute;
+      bottom: -8px;
+      right: 32px;
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid currentColor;
+      z-index: 1;
+    }
+  }
+
+  .comic-nav-item {
+    position: relative;
+    padding: 0.5rem 0;
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+
+    .nav-icon {
+      margin-right: 0.5rem;
+      font-size: 1.2rem;
+    }
+
+    .nav-underline {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 3px;
+      background-color: var(--item-color);
+      transition: width 0.3s ease;
+    }
+
+    &:hover {
+      .nav-underline {
+        width: 100%;
+      }
+    }
+  }
+
+  .mobile-menu-button {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+
+    @media (max-width: 768px) {
+      display: block;
+    }
+
+    .menu-icon {
+      position: relative;
+      width: 30px;
+      height: 20px;
+
+      span {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background-color: white;
+        border-radius: 3px;
+        transition: all 0.3s ease;
+
+        &:nth-child(1) {
+          top: 0;
+        }
+
+        &:nth-child(2) {
+          top: 50%;
+          transform: translateY(-50%);
+        }
+
+        &:nth-child(3) {
+          bottom: 0;
+        }
+      }
+
+      &.open {
+        span:nth-child(1) {
+          top: 50%;
+          transform: translateY(-50%) rotate(45deg);
+        }
+
+        span:nth-child(2) {
+          opacity: 0;
+        }
+
+        span:nth-child(3) {
+          bottom: 50%;
+          transform: translateY(50%) rotate(-45deg);
+        }
+      }
+    }
+  }
+
+  .mobile-menu {
+    position: fixed;
+    top: 80px;
+    left: 0;
+    width: 100%;
+    background-color: $comic-red;
+    z-index: 999;
+    padding: 1rem;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    border-bottom: 4px solid $comic-border;
+
+    .mobile-nav-item {
+      display: block;
+      padding: 1rem;
+      color: white;
+      font-weight: bold;
+      text-decoration: none;
+      text-transform: uppercase;
+      position: relative;
+
+      .nav-icon {
+        margin-right: 1rem;
+      }
+
+      .nav-underline {
+        position: absolute;
+        bottom: 0.5rem;
+        left: 1rem;
+        width: 0;
+        height: 2px;
+        background-color: var(--item-color);
+        transition: width 0.3s ease;
+      }
+
+      &:hover {
+        color: var(--item-color);
+
+        .nav-underline {
+          width: calc(100% - 2rem);
+        }
+      }
+    }
+  }
+
+  // Add comic book "POW" effect on active link
+  @keyframes pow {
+    0% {
+      transform: scale(1);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.5);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 0;
+    }
+  }
+
+  .active-nav-item {
+    position: relative;
+
+    &::after {
+      content: "POW!";
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: $comic-yellow;
+      text-shadow: 2px 2px 0 $comic-border;
+      animation: pow 0.5s ease-out;
+      opacity: 0;
+    }
+  }
+}
