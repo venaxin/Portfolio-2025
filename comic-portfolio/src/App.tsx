@@ -28,7 +28,7 @@ function App() {
             <Skills />
             <Contact /> */}
           </Scroll>
-          <Scroll>
+          <Scroll html>
           <NavbarWithScroll />
         </Scroll>
         </ScrollControls>
@@ -36,6 +36,7 @@ function App() {
   );
 }
 
+// filepath: comic-portfolio/src/App.tsx
 function NavbarWithScroll() {
   const scroll = useScroll();
   const scrollYProgress = scroll?.offset || 0; // Fallback to 0 if offset is null

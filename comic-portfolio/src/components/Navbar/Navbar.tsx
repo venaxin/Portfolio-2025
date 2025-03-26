@@ -73,8 +73,7 @@ export default function Navbar({
   ];
 
   return (
-    // <Html position={[0, 0, 0]} transform>
-    <>
+    <Html position={[0, 0, 0]}>
       {/* HTML-based Navbar */}
       <motion.nav
         className="comic-navbar"
@@ -268,7 +267,6 @@ export default function Navbar({
           </motion.div>
         )}
       </AnimatePresence>
-    {/* </Html> */}
-    </>
+    </Html>
   );
 }

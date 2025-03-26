@@ -20,17 +20,14 @@ export default function ComicPanel() {
     }
   }, []);
 
+    // filepath: comic-portfolio/src/components/ComicPanel/ComicPanel.tsx
   useFrame(() => {
-    if (
-      groupRef.current &&
-      typeof groupRef.current.updateWorldMatrix === "function"
-    ) {
+    if (groupRef.current) {
       groupRef.current.updateWorldMatrix(true, true); // Ensure this is only called on a valid THREE.Group
       groupRef.current.rotation.y += 0.01; // Rotate the group
     }
   });
   return (
-    <>
     <group ref={groupRef} position={[0, 0, -5]}>
       {/* Comic panel frame */}
       <mesh position={[0, 0, 0]}>
@@ -51,11 +48,10 @@ export default function ComicPanel() {
         color="#000000"
         anchorX="center"
         anchorY="middle"
-        font="/assets/comic-font.woff"
+
       >
         MY STORY
       </Text>
     </group>
-    </>
   );
 }
