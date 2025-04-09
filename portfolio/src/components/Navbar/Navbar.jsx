@@ -21,13 +21,15 @@ export const Navbar = () => {
         >
           PORTFOLIO
         </motion.span>
-        <div className="navbar-links md">
+        <div className="navbar-links">
           {links.map((link) => (
             <Link
               key={link.to}
               to={link.to}
               smooth={true}
               duration={500}
+              spy={true} // Enables scrollspy
+              activeClass="active-link" // Class applied to the active link
               className="navbar-link"
             >
               {link.name}
