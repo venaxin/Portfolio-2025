@@ -7,30 +7,31 @@ const Starfield = ({ starColor }) => {
   const direction = new THREE.Vector3(1, -1, 0).normalize();
   const trailPositions = useRef(new Map());
 
-  const { positions, originalPositions, phaseOffsets, twinkleFactors, colors } = useMemo(() => {
-    const positionsArray = [];
-    const colorsArray = [];
-    const phaseOffsets = [];
-    const twinkleFactors = [];
-    
-    for (let i = 0; i < 1000; i++) {
-      const x = (Math.random() - 0.5) * 800;
-      const y = (Math.random() - 0.5) * 800;
-      const z = (Math.random() - 0.5) * 800;
-      positionsArray.push(x, y, z);
-      colorsArray.push(1, 1, 1);
-      phaseOffsets.push(Math.random() * Math.PI * 2);
-      twinkleFactors.push(0.5 + Math.random() * 1.5);
-    }
+  const { positions, originalPositions, phaseOffsets, twinkleFactors, colors } =
+    useMemo(() => {
+      const positionsArray = [];
+      const colorsArray = [];
+      const phaseOffsets = [];
+      const twinkleFactors = [];
 
-    return {
-      positions: new THREE.Float32BufferAttribute(positionsArray, 3),
-      originalPositions: new Float32Array(positionsArray),
-      colors: new THREE.Float32BufferAttribute(colorsArray, 3),
-      phaseOffsets,
-      twinkleFactors,
-    };
-  }, []);
+      for (let i = 0; i < 1000; i++) {
+        const x = (Math.random() - 0.5) * 800;
+        const y = (Math.random() - 0.5) * 800;
+        const z = (Math.random() - 0.5) * 800;
+        positionsArray.push(x, y, z);
+        colorsArray.push(1, 1, 1);
+        phaseOffsets.push(Math.random() * Math.PI * 2);
+        twinkleFactors.push(0.5 + Math.random() * 1.5);
+      }
+
+      return {
+        positions: new THREE.Float32BufferAttribute(positionsArray, 3),
+        originalPositions: new Float32Array(positionsArray),
+        colors: new THREE.Float32BufferAttribute(colorsArray, 3),
+        phaseOffsets,
+        twinkleFactors,
+      };
+    }, []);
 
   const originalPositionsRef = useRef(originalPositions);
   const shootStartTimesRef = useRef(new Float32Array(1000));
@@ -41,7 +42,8 @@ const Starfield = ({ starColor }) => {
       const time = state.clock.getElapsedTime();
       const delta = state.clock.getDelta();
       const opacityArray = starsRef.current.geometry.attributes.opacity.array;
-      const positionsArray = starsRef.current.geometry.attributes.position.array;
+      const positionsArray =
+        starsRef.current.geometry.attributes.position.array;
       const colorsArray = starsRef.current.geometry.attributes.color.array;
       const originalPositions = originalPositionsRef.current;
       const shootStartTimes = shootStartTimesRef.current;
@@ -52,10 +54,13 @@ const Starfield = ({ starColor }) => {
         for (let i = 0; i < 1000; i++) {
           if (shootStartTimes[i] === 0) availableIndices.push(i);
         }
-        
+
         const starCount = Math.min(20, availableIndices.length);
         for (let i = 0; i < starCount; i++) {
-          const idx = availableIndices[Math.floor(Math.random() * availableIndices.length)];
+          const idx =
+            availableIndices[
+              Math.floor(Math.random() * availableIndices.length)
+            ];
           shootStartTimes[idx] = time;
           trailPositions.current.set(idx, []);
         }
@@ -76,7 +81,7 @@ const Starfield = ({ starColor }) => {
             positionsArray[i3 + 2] = originalPositions[i3 + 2];
             shootStartTimes[i] = 0;
             trailPositions.current.delete(i);
-            
+
             // Reset appearance
             colorsArray[i3] = 1;
             colorsArray[i3 + 1] = 1;
@@ -85,23 +90,29 @@ const Starfield = ({ starColor }) => {
           } else {
             // Store previous positions for trails
             const trails = trailPositions.current.get(i) || [];
-            trails.push(new THREE.Vector3(
-              positionsArray[i3],
-              positionsArray[i3 + 1],
-              positionsArray[i3 + 2]
-            ));
+            trails.push(
+              new THREE.Vector3(
+                positionsArray[i3],
+                positionsArray[i3 + 1],
+                positionsArray[i3 + 2]
+              )
+            );
             if (trails.length > 10) trails.shift();
             trailPositions.current.set(i, trails);
 
             // Calculate movement
-            const velocity = 600 * (1 + Math.sin((elapsed / duration) * Math.PI));
-            const movement = direction.clone()
+            const velocity =
+              600 * (1 + Math.sin((elapsed / duration) * Math.PI));
+            const movement = direction
+              .clone()
               .multiplyScalar(velocity * delta)
-              .add(new THREE.Vector3(
-                Math.random() * 20 - 10, // Add slight randomness
-                Math.random() * 20 - 10,
-                0
-              ));
+              .add(
+                new THREE.Vector3(
+                  Math.random() * 1, // Add slight randomness
+                  0,
+                  Math.random() * 1
+                )
+              );
 
             // Update position
             positionsArray[i3] += movement.x;
@@ -115,11 +126,12 @@ const Starfield = ({ starColor }) => {
             colorsArray[i3 + 2] = intensity * 0.5;
 
             // Opacity fade
-            opacityArray[i] = Math.min(1.5 - (elapsed / duration), 1);
+            opacityArray[i] = Math.min(1.5 - elapsed / duration, 1);
           }
         } else {
           // Normal twinkle effect
-          opacityArray[i] = 0.4 + Math.sin(time * twinkleFactors[i] + phaseOffsets[i]) * 0.4;
+          opacityArray[i] =
+            0.4 + Math.sin(time * twinkleFactors[i] + phaseOffsets[i]) * 0.4;
         }
       }
 
@@ -159,21 +171,23 @@ export const ParticleBackground = ({ isInverted }) => {
   const starColor = isInverted ? "#000" : "#fff";
 
   return (
-    <div style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100%",
-      zIndex: 0,
-      background: backgroundColor,
-    }}>
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        zIndex: 0,
+        background: backgroundColor,
+      }}
+    >
       <Canvas
         camera={{
           position: [0, 0, 500],
           fov: 75,
           near: 0.1,
-          far: 2000
+          far: 2000,
         }}
       >
         <Starfield starColor={starColor} />
