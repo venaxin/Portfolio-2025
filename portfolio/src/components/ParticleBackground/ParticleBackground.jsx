@@ -17,7 +17,7 @@ const Starfield = ({ starColor }) => {
       const y = (Math.random() - 0.5) * 800;
       const z = (Math.random() - 0.5) * 800;
       positionsArray.push(x, y, z);
-      colorsArray.push(1, 1, 1); // Initial white color (will be multiplied by starColor)
+      colorsArray.push(1, 1, 1); // Initial white color
       phaseOffsets.push(Math.random() * Math.PI * 2);
       twinkleFactors.push(0.5 + Math.random() * 1.5);
     }
@@ -45,7 +45,16 @@ const Starfield = ({ starColor }) => {
       const originalPositions = originalPositionsRef.current;
       const shootStartTimes = shootStartTimesRef.current;
 
-      // Trigger new wave every 3.5 seconds with flowing pattern
+      // Initialize opacity array if empty
+      if (opacityArray.length === 0) {
+        const initialOpacity = new Float32Array(1000).fill(0.8);
+        starsRef.current.geometry.setAttribute(
+          'opacity',
+          new THREE.BufferAttribute(initialOpacity, 1)
+        );
+      }
+
+      // Trigger new wave every 3.5 seconds
       if (time - lastWaveTimeRef.current > 3.5) {
         const baseAngle = (time * 0.2) % (Math.PI * 2);
         const waveCenter = new THREE.Vector2(
@@ -64,7 +73,6 @@ const Starfield = ({ starColor }) => {
             shootStartTimes[targetIndex] = time;
             hueOffsets.current[targetIndex] = Math.random() * Math.PI * 2;
             
-            // Set initial wave pattern positions
             const i3 = targetIndex * 3;
             positionsArray[i3] = waveCenter.x + Math.cos(angle) * radius;
             positionsArray[i3 + 1] = waveCenter.y + Math.sin(angle) * radius;
@@ -86,27 +94,28 @@ const Starfield = ({ starColor }) => {
             positionsArray[i3 + 2] = originalPositions[i3 + 2];
             shootStartTimes[i] = 0;
             
-            // Reset color
+            // Reset color and opacity
             colorsArray[i3] = 1;
             colorsArray[i3 + 1] = 1;
             colorsArray[i3 + 2] = 1;
+            opacityArray[i] = 0.8;
           } else {
             // Rainbow color animation
             const hue = ((elapsed * 2) + hueOffsets.current[i]) % 1;
             const rgb = new THREE.Color().setHSL(hue, 1, 0.8);
             
-            colorsArray[i3] = rgb.r * 2; // Boost brightness
+            colorsArray[i3] = rgb.r * 2;
             colorsArray[i3 + 1] = rgb.g * 2;
             colorsArray[i3 + 2] = rgb.b * 2;
 
-            // Dynamic motion with easing
+            // Animated motion
             const progress = Math.sin((elapsed / 1.5) * Math.PI / 2);
             const velocity = 600 * progress;
             
             positionsArray[i3] += waveDirectionRef.current.x * velocity * state.clock.deltaTime;
             positionsArray[i3 + 1] += waveDirectionRef.current.y * velocity * state.clock.deltaTime;
             
-            // Size boost and fade tail
+            // Fade tail effect
             opacityArray[i] = 1 - (elapsed / 1.5);
           }
         } else {
@@ -115,7 +124,7 @@ const Starfield = ({ starColor }) => {
         }
       }
 
-      // Update attributes
+      // Force attributes update
       starsRef.current.geometry.attributes.opacity.needsUpdate = true;
       starsRef.current.geometry.attributes.position.needsUpdate = true;
       starsRef.current.geometry.attributes.color.needsUpdate = true;
@@ -134,7 +143,7 @@ const Starfield = ({ starColor }) => {
         <bufferAttribute attach="attributes-color" {...colors} />
       </bufferGeometry>
       <pointsMaterial
-        size={1.5}
+        size={2.5}  // Increased base size
         color={starColor}
         transparent
         vertexColors={true}
@@ -146,4 +155,30 @@ const Starfield = ({ starColor }) => {
   );
 };
 
-// ParticleBackground component remains the same
+export const ParticleBackground = ({ isInverted }) => {
+  const backgroundColor = isInverted ? "#ccc" : "#111";
+  const starColor = isInverted ? "#000" : "#fff";
+
+  return (
+    <div style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      zIndex: 0,
+      background: backgroundColor,
+    }}>
+      <Canvas
+        camera={{
+          position: [0, 0, 500],
+          fov: 50,
+          near: 1,
+          far: 2000
+        }}
+      >
+        <Starfield starColor={starColor} />
+      </Canvas>
+    </div>
+  );
+};
