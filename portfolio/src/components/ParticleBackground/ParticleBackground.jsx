@@ -4,7 +4,8 @@ import * as THREE from "three";
 
 const Starfield = ({ starColor }) => {
   const starsRef = useRef();
-  const hueOffsets = useRef(new Float32Array(1000));
+  const direction = new THREE.Vector3(1, -1, 0).normalize();
+  const trailPositions = useRef(new Map());
 
   const { positions, originalPositions, phaseOffsets, twinkleFactors, colors } = useMemo(() => {
     const positionsArray = [];
@@ -17,7 +18,7 @@ const Starfield = ({ starColor }) => {
       const y = (Math.random() - 0.5) * 800;
       const z = (Math.random() - 0.5) * 800;
       positionsArray.push(x, y, z);
-      colorsArray.push(1, 1, 1); // Initial white color
+      colorsArray.push(1, 1, 1);
       phaseOffsets.push(Math.random() * Math.PI * 2);
       twinkleFactors.push(0.5 + Math.random() * 1.5);
     }
@@ -34,97 +35,95 @@ const Starfield = ({ starColor }) => {
   const originalPositionsRef = useRef(originalPositions);
   const shootStartTimesRef = useRef(new Float32Array(1000));
   const lastWaveTimeRef = useRef(0);
-  const waveDirectionRef = useRef(new THREE.Vector2(1, -1).normalize());
 
   useFrame((state) => {
     if (starsRef.current) {
       const time = state.clock.getElapsedTime();
+      const delta = state.clock.getDelta();
       const opacityArray = starsRef.current.geometry.attributes.opacity.array;
       const positionsArray = starsRef.current.geometry.attributes.position.array;
       const colorsArray = starsRef.current.geometry.attributes.color.array;
       const originalPositions = originalPositionsRef.current;
       const shootStartTimes = shootStartTimesRef.current;
 
-      // Initialize opacity array if empty
-      if (opacityArray.length === 0) {
-        const initialOpacity = new Float32Array(1000).fill(0.8);
-        starsRef.current.geometry.setAttribute(
-          'opacity',
-          new THREE.BufferAttribute(initialOpacity, 1)
-        );
-      }
-
-      // Trigger new wave every 3.5 seconds
-      if (time - lastWaveTimeRef.current > 3.5) {
-        const baseAngle = (time * 0.2) % (Math.PI * 2);
-        const waveCenter = new THREE.Vector2(
-          Math.cos(baseAngle) * 300,
-          Math.sin(baseAngle) * 300
-        );
-
-        for (let i = 0; i < 40; i++) {
-          const angle = baseAngle + (i / 40) * Math.PI * 0.5;
-          const radius = 150 + (i % 10) * 30;
-          const targetIndex = Math.floor(
-            ((angle % (Math.PI * 2)) / (Math.PI * 2)) * 1000
-          );
-
-          if (targetIndex < 1000) {
-            shootStartTimes[targetIndex] = time;
-            hueOffsets.current[targetIndex] = Math.random() * Math.PI * 2;
-            
-            const i3 = targetIndex * 3;
-            positionsArray[i3] = waveCenter.x + Math.cos(angle) * radius;
-            positionsArray[i3 + 1] = waveCenter.y + Math.sin(angle) * radius;
-          }
+      // Trigger new wave every 3 seconds
+      if (time - lastWaveTimeRef.current > 3) {
+        const availableIndices = [];
+        for (let i = 0; i < 1000; i++) {
+          if (shootStartTimes[i] === 0) availableIndices.push(i);
+        }
+        
+        const starCount = Math.min(20, availableIndices.length);
+        for (let i = 0; i < starCount; i++) {
+          const idx = availableIndices[Math.floor(Math.random() * availableIndices.length)];
+          shootStartTimes[idx] = time;
+          trailPositions.current.set(idx, []);
         }
         lastWaveTimeRef.current = time;
       }
 
       // Update shooting stars
       for (let i = 0; i < 1000; i++) {
+        const i3 = i * 3;
         if (shootStartTimes[i] > 0) {
           const elapsed = time - shootStartTimes[i];
-          const i3 = i * 3;
-          
-          if (elapsed >= 1.5) {
+          const duration = 2.5;
+
+          if (elapsed >= duration) {
             // Reset to original position
             positionsArray[i3] = originalPositions[i3];
             positionsArray[i3 + 1] = originalPositions[i3 + 1];
             positionsArray[i3 + 2] = originalPositions[i3 + 2];
             shootStartTimes[i] = 0;
+            trailPositions.current.delete(i);
             
-            // Reset color and opacity
+            // Reset appearance
             colorsArray[i3] = 1;
             colorsArray[i3 + 1] = 1;
             colorsArray[i3 + 2] = 1;
-            opacityArray[i] = 0.8;
+            opacityArray[i] = 0.6;
           } else {
-            // Rainbow color animation
-            const hue = ((elapsed * 2) + hueOffsets.current[i]) % 1;
-            const rgb = new THREE.Color().setHSL(hue, 1, 0.8);
-            
-            colorsArray[i3] = rgb.r * 2;
-            colorsArray[i3 + 1] = rgb.g * 2;
-            colorsArray[i3 + 2] = rgb.b * 2;
+            // Store previous positions for trails
+            const trails = trailPositions.current.get(i) || [];
+            trails.push(new THREE.Vector3(
+              positionsArray[i3],
+              positionsArray[i3 + 1],
+              positionsArray[i3 + 2]
+            ));
+            if (trails.length > 10) trails.shift();
+            trailPositions.current.set(i, trails);
 
-            // Animated motion
-            const progress = Math.sin((elapsed / 1.5) * Math.PI / 2);
-            const velocity = 600 * progress;
-            
-            positionsArray[i3] += waveDirectionRef.current.x * velocity * state.clock.deltaTime;
-            positionsArray[i3 + 1] += waveDirectionRef.current.y * velocity * state.clock.deltaTime;
-            
-            // Fade tail effect
-            opacityArray[i] = 1 - (elapsed / 1.5);
+            // Calculate movement
+            const velocity = 600 * (1 + Math.sin((elapsed / duration) * Math.PI));
+            const movement = direction.clone()
+              .multiplyScalar(velocity * delta)
+              .add(new THREE.Vector3(
+                Math.random() * 20 - 10, // Add slight randomness
+                Math.random() * 20 - 10,
+                0
+              ));
+
+            // Update position
+            positionsArray[i3] += movement.x;
+            positionsArray[i3 + 1] += movement.y;
+            positionsArray[i3 + 2] += movement.z;
+
+            // Color intensity
+            const intensity = 1 + Math.sin((elapsed / duration) * Math.PI) * 3;
+            colorsArray[i3] = intensity;
+            colorsArray[i3 + 1] = intensity * 0.8;
+            colorsArray[i3 + 2] = intensity * 0.5;
+
+            // Opacity fade
+            opacityArray[i] = Math.min(1.5 - (elapsed / duration), 1);
           }
         } else {
           // Normal twinkle effect
-          opacityArray[i] = 0.3 + Math.sin(time * twinkleFactors[i] + phaseOffsets[i]) * 0.3;
+          opacityArray[i] = 0.4 + Math.sin(time * twinkleFactors[i] + phaseOffsets[i]) * 0.4;
         }
       }
 
-      // Force attributes update
+      // Update attributes
       starsRef.current.geometry.attributes.opacity.needsUpdate = true;
       starsRef.current.geometry.attributes.position.needsUpdate = true;
       starsRef.current.geometry.attributes.color.needsUpdate = true;
@@ -137,13 +136,13 @@ const Starfield = ({ starColor }) => {
         <bufferAttribute attach="attributes-position" {...positions} />
         <bufferAttribute
           attach="attributes-opacity"
-          array={new Float32Array(1000).fill(0.8)}
+          array={new Float32Array(1000).fill(0.6)}
           itemSize={1}
         />
         <bufferAttribute attach="attributes-color" {...colors} />
       </bufferGeometry>
       <pointsMaterial
-        size={2.5}  // Increased base size
+        size={2.5}
         color={starColor}
         transparent
         vertexColors={true}
@@ -172,8 +171,8 @@ export const ParticleBackground = ({ isInverted }) => {
       <Canvas
         camera={{
           position: [0, 0, 500],
-          fov: 50,
-          near: 1,
+          fov: 75,
+          near: 0.1,
           far: 2000
         }}
       >
