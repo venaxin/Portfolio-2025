@@ -15,9 +15,9 @@ const Starfield = ({ starColor }) => {
       const twinkleFactors = [];
 
       for (let i = 0; i < 1000; i++) {
-        const x = (Math.random() - 0.5) * 800;
-        const y = (Math.random() - 0.5) * 800;
-        const z = (Math.random() - 0.5) * 800;
+        const x = (Math.random() - 0.5) * 1000;
+        const y = (Math.random() - 0.5) * 1000;
+        const z = (Math.random() - 0.5) * 1000;
         positionsArray.push(x, y, z);
         colorsArray.push(1, 1, 1);
         phaseOffsets.push(Math.random() * Math.PI * 2);
@@ -108,9 +108,9 @@ const Starfield = ({ starColor }) => {
               .multiplyScalar(velocity * delta)
               .add(
                 new THREE.Vector3(
-                  Math.random() * 1, // Add slight randomness
+                  Math.random() * 20, // Add slight randomness
                   0,
-                  Math.random() * 1
+                  Math.random() * 5
                 )
               );
 
