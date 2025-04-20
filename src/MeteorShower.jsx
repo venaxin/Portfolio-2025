@@ -8,36 +8,39 @@ function MeteorShower() {
     const ctx = canvas.getContext("2d");
     let animationFrameId;
 
-    // Set canvas size
-    const resizeCanvas = () => {
+    // Debounce function for resize
+    const debounce = (func, wait) => {
+      let timeout;
+      return (...args) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    };
+
+    // Set canvas size and reposition stars
+    const resizeCanvas = debounce(() => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+      stars.forEach((star) => {
+        star.x = Math.random() * canvas.width;
+        star.y = Math.random() * canvas.height;
+      });
       console.log("Canvas resized to:", canvas.width, canvas.height);
-    };
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
+    }, 100);
 
     // Star class
     class Star {
       constructor() {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
-        this.radius = Math.random() * 2 + 1; // Larger stars: 1 to 3
-        this.baseAlpha = 0.5; // Fixed base alpha for testing
-        this.pulsePhase = Math.random() * Math.PI * 2; // Random starting phase
-        this.pulseSpeed = Math.random() * 0.006 + 0.002; // Very slow pulse: 0.002 to 0.008
+        this.radius = Math.random() * 2 + 1.5; // Stars: 1.5 to 3.5
+        this.baseAlpha = 0.5;
+        this.pulsePhase = Math.random() * Math.PI * 2;
+        this.pulseSpeed = Math.random() * 0.006 + 0.002; // Pulse: 0.002 to 0.008
       }
       update() {
         this.pulsePhase += this.pulseSpeed;
-        this.alpha = 0.5 + Math.sin(this.pulsePhase) * 0.5; // Huge pulse: 0 to 1
-        // Log alpha for stars in top-left quadrant (remove after testing)
-        if (this.x < canvas.width / 4 && this.y < canvas.height / 4) {
-          console.log(
-            `Star at (${this.x.toFixed(0)}, ${this.y.toFixed(
-              0
-            )}): alpha = ${this.alpha.toFixed(2)}`
-          );
-        }
+        this.alpha = 0.5 + Math.sin(this.pulsePhase) * 0.3; // Alpha: 0.2 to 0.8
       }
       draw() {
         ctx.beginPath();
@@ -88,16 +91,25 @@ function MeteorShower() {
     }
 
     // Create stars and meteors
-    const stars = Array.from({ length: 100 }, () => new Star());
+    resizeCanvas(); // Set canvas size before creating stars
+    const stars = Array.from({ length: 60 }, () => new Star());
     const meteors = [];
+    const maxMeteors = 5;
     const addMeteor = () => {
-      meteors.push(new Meteor());
-      console.log("Meteor added, count:", meteors.length);
+      if (meteors.length < maxMeteors) {
+        meteors.push(new Meteor());
+        console.log("Meteor added, count:", meteors.length);
+      }
     };
+
+    // Log a few star positions for debugging (remove after testing)
+    stars.slice(0, 3).forEach((star, i) => {
+      console.log(`Star ${i}: x=${star.x.toFixed(0)}, y=${star.y.toFixed(0)}`);
+    });
 
     // Animation loop
     const animate = () => {
-      ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+      ctx.fillStyle = "rgb(0, 0, 0)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       stars.forEach((star) => {
         star.update();
@@ -111,12 +123,12 @@ function MeteorShower() {
           meteors.splice(index, 1);
         }
       });
-      if (Math.random() < 0.02) addMeteor();
+      if (Math.random() < 0.015) addMeteor();
       animationFrameId = requestAnimationFrame(animate);
     };
     animate();
 
-    console.log("Step 6: Pulsing stars with huge intensity for testing");
+    console.log("Step 8: Fixed star distribution with optimization");
 
     return () => {
       cancelAnimationFrame(animationFrameId);
