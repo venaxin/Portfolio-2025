@@ -13,32 +13,38 @@ function App() {
   const [activeSection, setActiveSection] = useState("home");
 
   useEffect(() => {
-    const observers = sections.map((section) => {
-      const observer = new IntersectionObserver(
-        ([entry]) => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            setActiveSection(section.id);
+            setActiveSection(entry.target.id);
+            console.log("Active section:", entry.target.id);
           }
-        },
-        { threshold: 0.5 }
-      );
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    sections.forEach((section) => {
       const element = document.getElementById(section.id);
       if (element) observer.observe(element);
-      return observer;
     });
 
-    return () => observers.forEach((observer) => observer.disconnect());
-  }, []);
+    return () => observer.disconnect();
+  }, [sections]);
 
   const scrollToSection = (id) => {
+    console.log("Button clicked, scrolling to:", id); // Debug
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      console.error("Element not found:", id);
     }
   };
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen bg-black">
       <MeteorShower />
       <div className="relative z-10">
         {sections.map((section) => (
@@ -48,8 +54,10 @@ function App() {
             className="min-h-screen flex items-center justify-center p-[10%]"
           >
             <div className="text-center">
-              <h2 className="text-4xl font-bold mb-4">{section.label}</h2>
-              <p className="text-lg">
+              <h2 className="text-4xl font-bold text-white mb-4">
+                {section.label}
+              </h2>
+              <p className="text-lg text-white">
                 {section.id === "home" &&
                   "Welcome to my portfolio! Scroll to explore."}
                 {section.id === "about" &&
@@ -65,7 +73,7 @@ function App() {
           </section>
         ))}
       </div>
-      <nav className="fixed right-4 top-1/2 transform -translate-y-1/2 flex flex-col space-y-4">
+      <nav className="fixed right-4 top-1/2 transform -translate-y-1/2 flex flex-col space-y-4 z-20">
         {sections.map((section) => (
           <button
             key={section.id}
@@ -74,7 +82,7 @@ function App() {
               activeSection === section.id
                 ? "text-yellow-400"
                 : "text-white hover:text-gray-300"
-            }`}
+            } focus:outline-none focus:ring-2 focus:ring-yellow-400`}
           >
             {section.label}
           </button>
