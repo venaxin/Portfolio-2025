@@ -63,7 +63,7 @@ function App() {
   // Project data (replace with your real projects)
   const projects = [
     {
-      title: "Portfolio Website",
+      title: "HealthAI Connect",
       description:
         "A dynamic portfolio with a meteor shower animation built using React and Tailwind CSS.",
       tech: ["React", "Tailwind", "Canvas"],
@@ -72,7 +72,7 @@ function App() {
       repoLink: "#",
     },
     {
-      title: "Task Manager App",
+      title: "Campus Clubhouse",
       description:
         "A productivity app for managing tasks with real-time updates and user authentication.",
       tech: ["React", "Firebase", "Node.js"],
@@ -95,7 +95,7 @@ function App() {
   return (
     <div className="relative min-h-screen">
       <div className="fixed inset-0 gradient-sky z-[-2]"></div>{" "}
-      {/*  <MeteorShower /> */}
+      <MeteorShower /> 
       <div className="relative z-10">
         {sections.map((section) => (
           <Section key={section.id} id={section.id} variants={sectionVariants}>
