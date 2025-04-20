@@ -1,24 +1,43 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect } from "react";
 
 function MeteorShower() {
   const canvasRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     let animationFrameId;
 
     // Set canvas size
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      console.log("Canvas resized to:", canvas.width, canvas.height);
+    };
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
 
     // Star class
     class Star {
       constructor() {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
-        this.radius = Math.random() * 1.5;
-        this.alpha = Math.random() * 0.5 + 0.5;
+        this.radius = Math.random() * 2 + 1; // Larger stars: 1 to 3
+        this.baseAlpha = 0.5; // Fixed base alpha for testing
+        this.pulsePhase = Math.random() * Math.PI * 2; // Random starting phase
+        this.pulseSpeed = Math.random() * 0.006 + 0.002; // Very slow pulse: 0.002 to 0.008
+      }
+      update() {
+        this.pulsePhase += this.pulseSpeed;
+        this.alpha = 0.5 + Math.sin(this.pulsePhase) * 0.5; // Huge pulse: 0 to 1
+        // Log alpha for stars in top-left quadrant (remove after testing)
+        if (this.x < canvas.width / 4 && this.y < canvas.height / 4) {
+          console.log(
+            `Star at (${this.x.toFixed(0)}, ${this.y.toFixed(
+              0
+            )}): alpha = ${this.alpha.toFixed(2)}`
+          );
+        }
       }
       draw() {
         ctx.beginPath();
@@ -46,7 +65,12 @@ function MeteorShower() {
         this.x += Math.cos(this.angle) * this.speed;
         this.y += Math.sin(this.angle) * this.speed;
         this.alpha -= 0.02;
-        if (this.alpha <= 0 || this.y > canvas.height || this.x < 0 || this.x > canvas.width) {
+        if (
+          this.alpha <= 0 ||
+          this.y > canvas.height ||
+          this.x < 0 ||
+          this.x > canvas.width
+        ) {
           this.active = false;
         }
       }
@@ -68,13 +92,17 @@ function MeteorShower() {
     const meteors = [];
     const addMeteor = () => {
       meteors.push(new Meteor());
+      console.log("Meteor added, count:", meteors.length);
     };
 
     // Animation loop
     const animate = () => {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+      ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      stars.forEach((star) => star.draw());
+      stars.forEach((star) => {
+        star.update();
+        star.draw();
+      });
       meteors.forEach((meteor, index) => {
         if (meteor.active) {
           meteor.update();
@@ -88,10 +116,11 @@ function MeteorShower() {
     };
     animate();
 
-    console.log('Step 5: Multiple random meteors with random start positions');
+    console.log("Step 6: Pulsing stars with huge intensity for testing");
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      window.removeEventListener("resize", resizeCanvas);
     };
   }, []);
 

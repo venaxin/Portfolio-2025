@@ -1,16 +1,16 @@
-import { useState, useEffect } from 'react';
-import MeteorShower from './MeteorShower.jsx';
+import { useState, useEffect } from "react";
+import MeteorShower from "./MeteorShower.jsx";
 
 function App() {
   const sections = [
-    { id: 'home', label: 'Home' },
-    { id: 'about', label: 'About' },
-    { id: 'experience', label: 'Experience' },
-    { id: 'projects', label: 'Projects' },
-    { id: 'contact', label: 'Contact' },
+    { id: "home", label: "Home" },
+    { id: "about", label: "About" },
+    { id: "experience", label: "Experience" },
+    { id: "projects", label: "Projects" },
+    { id: "contact", label: "Contact" },
   ];
 
-  const [activeSection, setActiveSection] = useState('home');
+  const [activeSection, setActiveSection] = useState("home");
 
   useEffect(() => {
     const observers = sections.map((section) => {
@@ -33,7 +33,7 @@ function App() {
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -50,11 +50,16 @@ function App() {
             <div className="text-center">
               <h2 className="text-4xl font-bold mb-4">{section.label}</h2>
               <p className="text-lg">
-                {section.id === 'home' && 'Welcome to my portfolio! Scroll to explore.'}
-                {section.id === 'about' && 'I am a passionate developer with a love for creating impactful solutions.'}
-                {section.id === 'experience' && 'I have worked on various projects, from web apps to AI solutions.'}
-                {section.id === 'projects' && 'Check out my projects showcasing my skills and creativity.'}
-                {section.id === 'contact' && 'Reach out to me via email or social media!'}
+                {section.id === "home" &&
+                  "Welcome to my portfolio! Scroll to explore."}
+                {section.id === "about" &&
+                  "I am a passionate developer with a love for creating impactful solutions."}
+                {section.id === "experience" &&
+                  "I have worked on various projects, from web apps to AI solutions."}
+                {section.id === "projects" &&
+                  "Check out my projects showcasing my skills and creativity."}
+                {section.id === "contact" &&
+                  "Reach out to me via email or social media!"}
               </p>
             </div>
           </section>
@@ -66,7 +71,9 @@ function App() {
             key={section.id}
             onClick={() => scrollToSection(section.id)}
             className={`text-sm font-medium transition-colors ${
-              activeSection === section.id ? 'text-yellow-400' : 'text-white hover:text-gray-300'
+              activeSection === section.id
+                ? "text-yellow-400"
+                : "text-white hover:text-gray-300"
             }`}
           >
             {section.label}

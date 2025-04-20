@@ -1,14 +1,10 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 /* Custom styles for smooth scrolling */
 html {
   scroll-behavior: smooth;
 }
-body {
-  background: red !important;
-}
+
 /* Ensure canvas is behind content */
 canvas {
   pointer-events: none;
