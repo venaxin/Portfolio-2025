@@ -38,7 +38,7 @@ function MeteorShower() {
         this.y = canvas.height * 0.2 + Math.random() * (canvas.height * 0.6);
         this.length = Math.random() * 50 + 50;
         this.speed = Math.random() * 5 + 5;
-        this.angle = Math.random() > 0.5 ? Math.PI / 4 : (3 * Math.PI) / 4; // Random diagonal
+        this.angle = Math.random() > 0.5 ? Math.PI / 4 : (3 * Math.PI) / 4;
         this.alpha = 1;
         this.active = true;
       }

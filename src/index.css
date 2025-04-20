@@ -6,7 +6,9 @@
 html {
   scroll-behavior: smooth;
 }
-
+body {
+  background: red !important;
+}
 /* Ensure canvas is behind content */
 canvas {
   pointer-events: none;
