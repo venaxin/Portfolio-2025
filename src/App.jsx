@@ -4,6 +4,16 @@ import { motion, useInView } from "framer-motion";
 import { TypeAnimation } from "react-type-animation";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import MeteorShower from "./MeteorShower.jsx";
+<<<<<<< Updated upstream
+=======
+import ProjectCard from "./components/ProjectCard.jsx";
+import ProjectFilters from "./components/ProjectFilters.jsx";
+import ResumeSection from "./components/ResumeSection.jsx";
+import CaseStudy from "./components/CaseStudy.jsx";
+import ExperienceSection from "./components/ExperienceSection.jsx";
+import projects from "./data/projects.js";
+import resumePdfUrl from "./data/Resume.pdf";
+>>>>>>> Stashed changes
 
 function App() {
   const sections = [
@@ -15,6 +25,12 @@ function App() {
   ];
 
   const [activeSection, setActiveSection] = useState("home");
+<<<<<<< Updated upstream
+=======
+  const [activeTech, setActiveTech] = useState(null);
+  const [sortBy, setSortBy] = useState("newest");
+  const [openCaseStudy, setOpenCaseStudy] = useState(null);
+>>>>>>> Stashed changes
 
   // Scroll tracking for parallax
   useEffect(() => {
@@ -129,13 +145,9 @@ function App() {
                   solutions.
                 </p>
               )}
-              {section.id === "experience" && (
-                <p className="text-lg text-white">
-                  I have worked on various projects, from web apps to AI
-                  solutions.
-                </p>
-              )}
+              {section.id === "experience" && <ExperienceSection />}
               {section.id === "projects" && (
+<<<<<<< Updated upstream
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
                   {projects.map((project, index) => (
                     <motion.div
@@ -186,6 +198,51 @@ function App() {
                       </div>
                     </motion.div>
                   ))}
+=======
+                <div>
+                  <div className="max-w-6xl mx-auto">
+                    <ProjectFilters
+                      projects={projects}
+                      activeTech={activeTech}
+                      setActiveTech={setActiveTech}
+                      sortBy={sortBy}
+                      setSortBy={setSortBy}
+                    />
+                  </div>
+                  <motion.div
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto"
+                    variants={gridVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: false, amount: 0.2 }}
+                  >
+                    {projects
+                      .filter((p) =>
+                        activeTech ? (p.tech || []).includes(activeTech) : true
+                      )
+                      .sort((a, b) => {
+                        if (sortBy === "newest")
+                          return (b.year || 0) - (a.year || 0);
+                        if (sortBy === "impact")
+                          return (
+                            (b.metrics?.a11y ?? 0) - (a.metrics?.a11y ?? 0)
+                          );
+                        if (sortBy === "perf")
+                          return (
+                            (b.metrics?.perf ?? 0) - (a.metrics?.perf ?? 0)
+                          );
+                        return 0;
+                      })
+                      .map((p, i) => (
+                        <ProjectCard
+                          key={p.title}
+                          project={p}
+                          index={i}
+                          onOpenCaseStudy={() => setOpenCaseStudy(p)}
+                        />
+                      ))}
+                  </motion.div>
+>>>>>>> Stashed changes
                 </div>
               )}
               {section.id === "contact" && (
@@ -232,6 +289,11 @@ function App() {
           </button>
         ))}
       </nav>
+      {/* Case Study Modal */}
+      <CaseStudy
+        project={openCaseStudy}
+        onClose={() => setOpenCaseStudy(null)}
+      />
     </div>
   );
 }
