@@ -1,20 +1,31 @@
 /* eslint-disable no-unused-vars */
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, useInView } from "framer-motion";
 import { TypeAnimation } from "react-type-animation";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import MeteorShower from "./MeteorShower.jsx";
+import ProjectCard from "./components/ProjectCard.jsx";
+import ProjectFilters from "./components/ProjectFilters.jsx";
+import ResumeSection from "./components/ResumeSection.jsx";
+import projects from "./data/projects.js";
+import resumePdfUrl from "./data/Resume.pdf";
 
 function App() {
-  const sections = [
-    { id: "home", label: "Home" },
-    { id: "about", label: "About" },
-    { id: "experience", label: "Experience" },
-    { id: "projects", label: "Projects" },
-    { id: "contact", label: "Contact" },
-  ];
+  const sections = useMemo(
+    () => [
+      { id: "home", label: "Home" },
+      { id: "about", label: "About" },
+      { id: "experience", label: "Experience" },
+      { id: "resume", label: "Resume" },
+      { id: "projects", label: "Projects" },
+      { id: "contact", label: "Contact" },
+    ],
+    []
+  );
 
   const [activeSection, setActiveSection] = useState("home");
+  const [activeTech, setActiveTech] = useState(null);
+  const [sortBy, setSortBy] = useState("newest");
 
   // Scroll tracking for parallax
   useEffect(() => {
@@ -60,28 +71,6 @@ function App() {
     }
   };
 
-  // Project data (replace with your real projects)
-  const projects = [
-    {
-      title: "HealthAI Connect",
-      description:
-        "A dynamic portfolio with a meteor shower animation built using React and Tailwind CSS.",
-      tech: ["React", "Tailwind", "Canvas"],
-      image: "https://via.placeholder.com/300x200",
-      demoLink: "#",
-      repoLink: "#",
-    },
-    {
-      title: "Campus Clubhouse",
-      description:
-        "A productivity app for managing tasks with real-time updates and user authentication.",
-      tech: ["React", "Firebase", "Node.js"],
-      image: "https://via.placeholder.com/300x200",
-      demoLink: "#",
-      repoLink: "#",
-    },
-  ];
-
   // Animation variants for sections
   const sectionVariants = {
     hidden: { opacity: 0, y: 50 },
@@ -92,10 +81,17 @@ function App() {
     },
   };
 
+  // Projects container variants for staggered reveal
+  const gridVariants = {
+    hidden: {},
+    visible: {
+      transition: { staggerChildren: 0.08, delayChildren: 0.1 },
+    },
+  };
+
   return (
     <div className="relative min-h-screen">
-      <div className="fixed inset-0 gradient-sky z-[-2]"></div>{" "}
-      <MeteorShower /> 
+      <div className="fixed inset-0 gradient-sky z-[-2]"></div> <MeteorShower />
       <div className="relative z-10">
         {sections.map((section) => (
           <Section key={section.id} id={section.id} variants={sectionVariants}>
@@ -135,57 +131,48 @@ function App() {
                   solutions.
                 </p>
               )}
+              {section.id === "resume" && (
+                <ResumeSection pdfUrl={resumePdfUrl} />
+              )}
               {section.id === "projects" && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                  {projects.map((project, index) => (
-                    <motion.div
-                      key={index}
-                      className="bg-gray-800 rounded-lg overflow-hidden shadow-lg"
-                      whileHover={{
-                        scale: 1.05,
-                        boxShadow: "0 10px 20px rgba(255, 255, 255, 0.2)",
-                      }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <img
-                        src={project.image}
-                        alt={project.title}
-                        className="w-full h-48 object-cover"
-                      />
-                      <div className="p-6">
-                        <h3 className="text-xl font-semibold text-white mb-2">
-                          {project.title}
-                        </h3>
-                        <p className="text-gray-300 mb-4">
-                          {project.description}
-                        </p>
-                        <div className="flex flex-wrap gap-2 mb-4">
-                          {project.tech.map((tech) => (
-                            <span
-                              key={tech}
-                              className="bg-yellow-400 text-black text-sm font-medium px-2 py-1 rounded"
-                            >
-                              {tech}
-                            </span>
-                          ))}
-                        </div>
-                        <div className="flex gap-4">
-                          <a
-                            href={project.demoLink}
-                            className="text-white hover:text-yellow-400 transition-colors"
-                          >
-                            Demo
-                          </a>
-                          <a
-                            href={project.repoLink}
-                            className="text-white hover:text-yellow-400 transition-colors"
-                          >
-                            Repo
-                          </a>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
+                <div>
+                  <div className="max-w-6xl mx-auto">
+                    <ProjectFilters
+                      projects={projects}
+                      activeTech={activeTech}
+                      setActiveTech={setActiveTech}
+                      sortBy={sortBy}
+                      setSortBy={setSortBy}
+                    />
+                  </div>
+                  <motion.div
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto"
+                    variants={gridVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: false, amount: 0.2 }}
+                  >
+                    {projects
+                      .filter((p) =>
+                        activeTech ? (p.tech || []).includes(activeTech) : true
+                      )
+                      .sort((a, b) => {
+                        if (sortBy === "newest")
+                          return (b.year || 0) - (a.year || 0);
+                        if (sortBy === "impact")
+                          return (
+                            (b.metrics?.a11y ?? 0) - (a.metrics?.a11y ?? 0)
+                          );
+                        if (sortBy === "perf")
+                          return (
+                            (b.metrics?.perf ?? 0) - (a.metrics?.perf ?? 0)
+                          );
+                        return 0;
+                      })
+                      .map((p, i) => (
+                        <ProjectCard key={p.title} project={p} index={i} />
+                      ))}
+                  </motion.div>
                 </div>
               )}
               {section.id === "contact" && (
@@ -195,7 +182,7 @@ function App() {
                   </p>
                   <div className="flex justify-center gap-6">
                     <a
-                      href="https://github.com/yourusername"
+                      href="https://github.com/venaxin"
                       className="text-white hover:text-yellow-400 transition-colors"
                       target="_blank"
                       rel="noopener noreferrer"
@@ -203,7 +190,7 @@ function App() {
                       <FaGithub size={32} />
                     </a>
                     <a
-                      href="https://linkedin.com/in/yourusername"
+                      href="https://linkedin.com/in/abdul-rahman-hussain"
                       className="text-white hover:text-yellow-400 transition-colors"
                       target="_blank"
                       rel="noopener noreferrer"
