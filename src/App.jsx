@@ -4,6 +4,8 @@ import { motion, useInView } from "framer-motion";
 import { TypeAnimation } from "react-type-animation";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import MeteorShower from "./MeteorShower.jsx";
+import ProjectCard from "./components/ProjectCard.jsx"; // + add
+import projects from "./data/projects.js"; // + add
 
 function App() {
   const sections = [
@@ -60,27 +62,6 @@ function App() {
     }
   };
 
-  // Project data (replace with your real projects)
-  const projects = [
-    {
-      title: "HealthAI Connect",
-      description:
-        "A dynamic portfolio with a meteor shower animation built using React and Tailwind CSS.",
-      tech: ["React", "Tailwind", "Canvas"],
-      image: "https://via.placeholder.com/300x200",
-      demoLink: "#",
-      repoLink: "#",
-    },
-    {
-      title: "Campus Clubhouse",
-      description:
-        "A productivity app for managing tasks with real-time updates and user authentication.",
-      tech: ["React", "Firebase", "Node.js"],
-      image: "https://via.placeholder.com/300x200",
-      demoLink: "#",
-      repoLink: "#",
-    },
-  ];
 
   // Animation variants for sections
   const sectionVariants = {
@@ -89,6 +70,14 @@ function App() {
       opacity: 1,
       y: 0,
       transition: { duration: 0.6, ease: "easeOut" },
+    },
+  };
+
+    // Projects container variants for staggered reveal
+  const gridVariants = {
+    hidden: {},
+    visible: {
+      transition: { staggerChildren: 0.08, delayChildren: 0.1 },
     },
   };
 
@@ -136,57 +125,17 @@ function App() {
                 </p>
               )}
               {section.id === "projects" && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                  {projects.map((project, index) => (
-                    <motion.div
-                      key={index}
-                      className="bg-gray-800 rounded-lg overflow-hidden shadow-lg"
-                      whileHover={{
-                        scale: 1.05,
-                        boxShadow: "0 10px 20px rgba(255, 255, 255, 0.2)",
-                      }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <img
-                        src={project.image}
-                        alt={project.title}
-                        className="w-full h-48 object-cover"
-                      />
-                      <div className="p-6">
-                        <h3 className="text-xl font-semibold text-white mb-2">
-                          {project.title}
-                        </h3>
-                        <p className="text-gray-300 mb-4">
-                          {project.description}
-                        </p>
-                        <div className="flex flex-wrap gap-2 mb-4">
-                          {project.tech.map((tech) => (
-                            <span
-                              key={tech}
-                              className="bg-yellow-400 text-black text-sm font-medium px-2 py-1 rounded"
-                            >
-                              {tech}
-                            </span>
-                          ))}
-                        </div>
-                        <div className="flex gap-4">
-                          <a
-                            href={project.demoLink}
-                            className="text-white hover:text-yellow-400 transition-colors"
-                          >
-                            Demo
-                          </a>
-                          <a
-                            href={project.repoLink}
-                            className="text-white hover:text-yellow-400 transition-colors"
-                          >
-                            Repo
-                          </a>
-                        </div>
-                      </div>
-                    </motion.div>
+                <motion.div
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto"
+                  variants={gridVariants}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: false, amount: 0.2 }}
+                >
+                  {projects.map((p, i) => (
+                    <ProjectCard key={p.title} project={p} index={i} />
                   ))}
-                </div>
+                </motion.div>
               )}
               {section.id === "contact" && (
                 <div>
@@ -195,7 +144,7 @@ function App() {
                   </p>
                   <div className="flex justify-center gap-6">
                     <a
-                      href="https://github.com/yourusername"
+                      href="https://github.com/venaxin"
                       className="text-white hover:text-yellow-400 transition-colors"
                       target="_blank"
                       rel="noopener noreferrer"
@@ -203,7 +152,7 @@ function App() {
                       <FaGithub size={32} />
                     </a>
                     <a
-                      href="https://linkedin.com/in/yourusername"
+                      href="https://linkedin.com/in/abdul-rahman-hussain"
                       className="text-white hover:text-yellow-400 transition-colors"
                       target="_blank"
                       rel="noopener noreferrer"
