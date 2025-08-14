@@ -12,6 +12,29 @@ const projects = [
     demoLink: "#",
     repoLink: "#",
     metrics: { perf: 98, a11y: 100, bundle: "165KB" },
+    caseStudy: {
+      problem:
+        "Users drop off after week 2 in generic habit apps; streak motivation and quick wins aren’t visible enough.",
+      constraints: [
+        "TTI < 2.5s on mid-tier Android",
+        "Offline-first with queued sync",
+        "Accessible (WCAG) with keyboard + SR labels",
+      ],
+      approach:
+        "Built a contribution-grid UI with weekly goals, streak boosters, and micro-interactions using Framer Motion. Implemented optimistic updates and background sync via Firebase. Honored prefers-reduced-motion and added semantic roles for tiles and controls.",
+      results: [
+        "+22% weekly retention (pilot)",
+        "+18% average streak length",
+        "Lighthouse: Perf 98 / A11y 100",
+      ],
+      highlights: [
+        "Virtualized 12-month grid",
+        "Tokenized themes with Tailwind + CSS vars",
+        "Motion-reduced fallbacks",
+      ],
+      links: [{ label: "Design notes", href: "#" }],
+      images: [],
+    },
   },
   {
     title: "SplitVoice",
@@ -76,8 +99,7 @@ const projects = [
     tech: ["iOS Shortcuts", "HTML", "CSS"],
     image:
       "https://images.unsplash.com/photo-1505238680356-667803448bb6?q=80&w=1200&auto=format&fit=crop",
-    demoLink: "#",
-    repoLink: "#",
+    repoLink: "https://github.com/venaxin/IOS-Dyna-Schedule-Wallpaper",
     metrics: { perf: 99, a11y: 100, bundle: "0KB" },
   },
 ];

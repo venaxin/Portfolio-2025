@@ -4,7 +4,7 @@ import { FaGithub } from "react-icons/fa";
 import { FiActivity, FiTrendingUp, FiShield } from "react-icons/fi";
 import { FiExternalLink } from "react-icons/fi";
 
-function ProjectCard({ project, index }) {
+function ProjectCard({ project, index, onOpenCaseStudy }) {
   const {
     title,
     description,
@@ -107,6 +107,14 @@ function ProjectCard({ project, index }) {
         </div>
 
         <div className="flex items-center gap-3">
+          {onOpenCaseStudy && (
+            <button
+              onClick={onOpenCaseStudy}
+              className="inline-flex items-center gap-2 rounded-md border border-white/20 px-3 py-2 text-sm font-semibold text-white transition hover:border-white/40"
+            >
+              Case Study
+            </button>
+          )}
           {demoLink && (
             <a
               href={demoLink}
