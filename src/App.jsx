@@ -9,6 +9,7 @@ import CaseStudy from "./components/CaseStudy.jsx";
 import ExperienceSection from "./components/ExperienceSection.jsx";
 import projects from "./data/projects.js";
 
+
 function App() {
   const sections = useMemo(
     () => [
@@ -23,6 +24,7 @@ function App() {
 
   const [activeSection, setActiveSection] = useState("home");
   const [openCaseStudy, setOpenCaseStudy] = useState(null);
+
 
   // Scroll tracking for parallax
   useEffect(() => {
