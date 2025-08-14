@@ -1,7 +1,13 @@
-export default function ExperienceSection() {
+export default function ExperienceSection({ eightBit = false }) {
   return (
     <div className="w-full max-w-4xl mx-auto text-left">
-      <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur p-6 md:p-8 text-white shadow-[0_8px_40px_rgba(0,0,0,0.35)]">
+      <div
+        className={`${
+          eightBit
+            ? "pixel-card"
+            : "rounded-2xl border border-white/10 bg-white/5 backdrop-blur"
+        } p-6 md:p-8 text-white shadow-[0_8px_40px_rgba(0,0,0,0.35)]`}
+      >
         <header className="mb-4">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <h3 className="text-2xl font-semibold">Goodz</h3>

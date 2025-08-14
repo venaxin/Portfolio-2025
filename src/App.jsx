@@ -5,6 +5,7 @@ import { TypeAnimation } from "react-type-animation";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { FiMoon, FiSun, FiAperture } from "react-icons/fi";
 import MeteorShower from "./MeteorShower.jsx";
+import PixelBlackhole from "./components/PixelBlackhole.jsx";
 const ProjectCardLazy = lazy(() => import("./components/ProjectCard.jsx"));
 const CaseStudyLazy = lazy(() => import("./components/CaseStudy.jsx"));
 const ResumeSectionLazy = lazy(() => import("./components/ResumeSection.jsx"));
@@ -48,10 +49,15 @@ function App() {
   const [lowPower, setLowPower] = useState(() => {
     return localStorage.getItem("lowPower") === "true";
   });
+  const [eightBit, setEightBit] = useState(() => {
+    return localStorage.getItem("eightBit") === "true";
+  });
 
   // Environment flags for perf tuning
   const [prefersReduced, setPrefersReduced] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  // Guard to skip persisting lowPower during initial refresh toggle
+  const lowPowerPersistSkipRef = useRef(false);
 
   useEffect(() => {
     const mqReduced = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -123,7 +129,7 @@ function App() {
     localStorage.setItem("snapEnabled", String(snapEnabled));
   }, [snapEnabled]);
 
-  // Apply theme class to html
+  // Apply theme class to html (supports 8-bit theme override)
   useEffect(() => {
     const html = document.documentElement;
     const themes = [
@@ -131,13 +137,14 @@ function App() {
       "theme-teal",
       "theme-rose",
       "theme-emerald",
+      "theme-8bit",
     ];
     themes.forEach((t) => html.classList.remove(t));
-    html.classList.add(theme);
+    html.classList.add(eightBit ? "theme-8bit" : theme);
     localStorage.setItem("theme", theme);
     // Appearance changed
     window.dispatchEvent(new Event("appearance-change"));
-  }, [theme]);
+  }, [theme, eightBit]);
 
   // Apply sky gradient overrides via CSS variables
   useEffect(() => {
@@ -205,10 +212,40 @@ function App() {
     window.dispatchEvent(new Event("appearance-change"));
   }, [starsColor, meteorsColor, theme]);
 
-  // Persist Low Power
+  // Persist Low Power (skip during initial refresh toggle)
   useEffect(() => {
+    if (lowPowerPersistSkipRef.current) return;
     localStorage.setItem("lowPower", String(lowPower));
   }, [lowPower]);
+  useEffect(() => {
+    localStorage.setItem("eightBit", String(eightBit));
+  }, [eightBit]);
+
+  // One-time background refresh on first load: toggle lowPower on then off
+  // This forces canvas backgrounds to fully recalc size and span the viewport
+  useEffect(() => {
+    // run after first paint
+    const original = lowPower;
+    lowPowerPersistSkipRef.current = true;
+    const raf1 = requestAnimationFrame(() => {
+      setLowPower(!original);
+      window.dispatchEvent(new Event("appearance-change"));
+      window.dispatchEvent(new Event("resize"));
+      const t = setTimeout(() => {
+        setLowPower(original);
+        window.dispatchEvent(new Event("appearance-change"));
+        window.dispatchEvent(new Event("resize"));
+        // allow persistence again on next tick
+        setTimeout(() => {
+          lowPowerPersistSkipRef.current = false;
+        }, 0);
+      }, 60);
+      // cleanup timer on unmount
+      return () => clearTimeout(t);
+    });
+    return () => cancelAnimationFrame(raf1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
@@ -259,12 +296,16 @@ function App() {
   return (
     <div className="relative min-h-screen">
       <div className="fixed inset-0 gradient-sky z-[-2]"></div>
-      <MeteorShower
-        disabled={prefersReduced || lowPower}
-        density={isMobile ? 0.55 : 0.85}
-        sizeScale={isMobile ? 0.9 : 1}
-        fps={isMobile ? 24 : 30}
-      />
+      {eightBit ? (
+        <PixelBlackhole disabled={prefersReduced || lowPower} fps={28} />
+      ) : (
+        <MeteorShower
+          disabled={prefersReduced || lowPower}
+          density={isMobile ? 0.55 : 0.85}
+          sizeScale={isMobile ? 0.9 : 1}
+          fps={isMobile ? 24 : 30}
+        />
+      )}
       <div className="relative z-10">
         {sections.map((section) => (
           <Section key={section.id} id={section.id} variants={sectionVariants}>
@@ -310,7 +351,7 @@ function App() {
                   <Suspense
                     fallback={<div className="text-white/70">Loading…</div>}
                   >
-                    <ExperienceSectionLazy />
+                    <ExperienceSectionLazy eightBit={eightBit} />
                   </Suspense>
                 )}
                 {section.id === "resume" && (
@@ -339,6 +380,7 @@ function App() {
                           project={p}
                           index={i}
                           lowPower={lowPower || prefersReduced}
+                          eightBit={eightBit}
                           onOpenCaseStudy={() => setOpenCaseStudy(p)}
                         />
                       ))}
@@ -384,7 +426,9 @@ function App() {
               activeSection === section.id
                 ? "text-accent"
                 : "text-white hover:text-gray-300"
-            } focus:outline-none focus:ring-2 focus:ring-white/30`}
+            } focus:outline-none focus:ring-2 focus:ring-white/30 ${
+              eightBit ? "pixel-button" : ""
+            }`}
           >
             {section.label}
           </button>
@@ -400,9 +444,27 @@ function App() {
       </button>
       {/* Accessibility Menu Panel */}
       {menuOpen && (
-        <div className="fixed bottom-16 right-4 z-30 w-[min(92vw,380px)] rounded-xl border border-white/10 bg-black/70 backdrop-blur-md p-4 text-white shadow-2xl">
+        <div
+          className={`fixed bottom-16 right-4 z-30 w-[min(92vw,380px)] rounded-xl border border-white/10 bg-black/70 ${
+            eightBit ? "pixel-panel" : "backdrop-blur-md"
+          } p-4 text-white shadow-2xl`}
+        >
           <div className="mb-3 text-base font-semibold">
             Accessibility & Themes
+          </div>
+          {/* 8-bit mode */}
+          <div className="mb-3 flex items-center justify-between">
+            <span className="text-sm text-white/80">8-bit Retro Mode</span>
+            <button
+              onClick={() => setEightBit((v) => !v)}
+              className={`text-xs px-2 py-1 rounded-md border ${
+                eightBit
+                  ? "border-white/40 text-accent"
+                  : "border-white/20 hover:border-white/40"
+              } ${eightBit ? "pixel-button" : ""}`}
+            >
+              {eightBit ? "On" : "Off"}
+            </button>
           </div>
           {/* Low Power toggle */}
           <div className="mb-3 flex items-center justify-between">
@@ -500,6 +562,7 @@ function App() {
         <CaseStudyLazy
           project={openCaseStudy}
           onClose={() => setOpenCaseStudy(null)}
+          eightBit={eightBit}
         />
       </Suspense>
     </div>
