@@ -14,6 +14,7 @@ const ExperienceSectionLazy = lazy(() =>
 );
 import projects from "./data/projects.js";
 import resumePdf from "./data/Resume.pdf";
+import blackholeImg from "./data/blackhole.webp";
 
 function App() {
   const sections = useMemo(
@@ -51,6 +52,19 @@ function App() {
   });
   const [eightBit, setEightBit] = useState(() => {
     return localStorage.getItem("eightBit") === "true";
+  });
+  // High detail and target size for PixelBlackhole (8-bit mode)
+  const [bhHighDetail, setBhHighDetail] = useState(() => {
+    const v = localStorage.getItem("bhHighDetail");
+    return v ? v === "true" : true;
+  });
+  const [bhPixelSize, setBhPixelSize] = useState(() => {
+    const v = parseInt(localStorage.getItem("bhPixelSize") || "1", 10);
+    return Number.isFinite(v) ? Math.min(4, Math.max(1, v)) : 1;
+  });
+  const [bhTargetSize, setBhTargetSize] = useState(() => {
+    const v = parseInt(localStorage.getItem("bhTargetSize") || "500", 10);
+    return Number.isFinite(v) ? Math.min(1000, Math.max(200, v)) : 500;
   });
 
   // Environment flags for perf tuning
@@ -220,6 +234,15 @@ function App() {
   useEffect(() => {
     localStorage.setItem("eightBit", String(eightBit));
   }, [eightBit]);
+  useEffect(() => {
+    localStorage.setItem("bhHighDetail", String(bhHighDetail));
+  }, [bhHighDetail]);
+  useEffect(() => {
+    localStorage.setItem("bhPixelSize", String(bhPixelSize));
+  }, [bhPixelSize]);
+  useEffect(() => {
+    localStorage.setItem("bhTargetSize", String(bhTargetSize));
+  }, [bhTargetSize]);
 
   // One-time background refresh on first load: toggle lowPower on then off
   // This forces canvas backgrounds to fully recalc size and span the viewport
@@ -297,7 +320,24 @@ function App() {
     <div className="relative min-h-screen">
       <div className="fixed inset-0 gradient-sky z-[-2]"></div>
       {eightBit ? (
-        <PixelBlackhole disabled={prefersReduced || lowPower} fps={28} />
+        <PixelBlackhole
+          imageUrl={blackholeImg}
+          disabled={prefersReduced || lowPower}
+          fps={isMobile ? 26 : 30}
+          scale={0.2}
+          yScale={0.44}
+          diskRadius={0.48}
+          beaming={0.7}
+          beamingPhase={0}
+          glow={0.85}
+          lensing={0.32}
+          backGlow={0.92}
+          underGlow={0.4}
+          innerHot={0.45}
+          highDetail={bhHighDetail}
+          pixelSize={bhPixelSize}
+          targetDisplaySize={bhTargetSize}
+        />
       ) : (
         <MeteorShower
           disabled={prefersReduced || lowPower}
@@ -466,6 +506,65 @@ function App() {
               {eightBit ? "On" : "Off"}
             </button>
           </div>
+          {eightBit && (
+            <div className="mb-3 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-white/80">High Detail</span>
+                <button
+                  onClick={() => setBhHighDetail((v) => !v)}
+                  className={`text-xs px-2 py-1 rounded-md border ${
+                    bhHighDetail
+                      ? "border-white/40 text-accent"
+                      : "border-white/20 hover:border-white/40"
+                  } ${eightBit ? "pixel-button" : ""}`}
+                >
+                  {bhHighDetail ? "On" : "Off"}
+                </button>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-white/80">Pixel Size</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setBhPixelSize((v) => Math.max(1, v - 1))}
+                    className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                  >
+                    -
+                  </button>
+                  <span className="text-xs w-8 text-center">{bhPixelSize}</span>
+                  <button
+                    onClick={() => setBhPixelSize((v) => Math.min(4, v + 1))}
+                    className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-white/80">Target Size (px)</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() =>
+                      setBhTargetSize((v) => Math.max(200, v - 50))
+                    }
+                    className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                  >
+                    -
+                  </button>
+                  <span className="text-xs w-12 text-center">
+                    {bhTargetSize}
+                  </span>
+                  <button
+                    onClick={() =>
+                      setBhTargetSize((v) => Math.min(1000, v + 50))
+                    }
+                    className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
           {/* Low Power toggle */}
           <div className="mb-3 flex items-center justify-between">
             <span className="text-sm text-white/80">Low Power Mode</span>
