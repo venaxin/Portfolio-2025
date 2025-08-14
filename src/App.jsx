@@ -1,14 +1,16 @@
 /* eslint-disable no-unused-vars */
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, lazy, Suspense } from "react";
 import { motion, useInView } from "framer-motion";
 import { TypeAnimation } from "react-type-animation";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { FiMoon, FiSun, FiAperture } from "react-icons/fi";
 import MeteorShower from "./MeteorShower.jsx";
-import ProjectCard from "./components/ProjectCard.jsx";
-import CaseStudy from "./components/CaseStudy.jsx";
-import ResumeSection from "./components/ResumeSection.jsx";
-import ExperienceSection from "./components/ExperienceSection.jsx";
+const ProjectCardLazy = lazy(() => import("./components/ProjectCard.jsx"));
+const CaseStudyLazy = lazy(() => import("./components/CaseStudy.jsx"));
+const ResumeSectionLazy = lazy(() => import("./components/ResumeSection.jsx"));
+const ExperienceSectionLazy = lazy(() =>
+  import("./components/ExperienceSection.jsx")
+);
 import projects from "./data/projects.js";
 import resumePdf from "./data/Resume.pdf";
 
@@ -43,27 +45,61 @@ function App() {
   const [meteorsColor, setMeteorsColor] = useState(
     () => localStorage.getItem("meteorsColor") || "accent"
   );
+  const [lowPower, setLowPower] = useState(() => {
+    return localStorage.getItem("lowPower") === "true";
+  });
 
-  // Scroll tracking for parallax
+  // Environment flags for perf tuning
+  const [prefersReduced, setPrefersReduced] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
   useEffect(() => {
-    const handleScroll = () => {
-      document.documentElement.style.setProperty(
-        "--scroll-y",
-        `${window.scrollY}px`
-      );
+    const mqReduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const mqMobile = window.matchMedia("(max-width: 768px)");
+    const update = () => {
+      setPrefersReduced(mqReduced.matches);
+      setIsMobile(mqMobile.matches);
     };
-    window.addEventListener("scroll", handleScroll);
+    update();
+    mqReduced.addEventListener("change", update);
+    mqMobile.addEventListener("change", update);
+    return () => {
+      mqReduced.removeEventListener("change", update);
+      mqMobile.removeEventListener("change", update);
+    };
+  }, []);
+
+  // Scroll tracking for parallax (rAF-throttled, passive)
+  useEffect(() => {
+    let ticking = false;
+    const handleScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        document.documentElement.style.setProperty(
+          "--scroll-y",
+          `${window.scrollY}px`
+        );
+        ticking = false;
+      });
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // IntersectionObserver for scrollspy
   useEffect(() => {
+    // Mount-on-demand set
+    const mountedRef = mountedSectionsRef;
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setActiveSection(entry.target.id);
-            console.log("Active section:", entry.target.id);
+            if (!mountedRef.current.has(entry.target.id)) {
+              mountedRef.current.add(entry.target.id);
+              forceRerender((n) => n + 1);
+            }
           }
         });
       },
@@ -99,6 +135,8 @@ function App() {
     themes.forEach((t) => html.classList.remove(t));
     html.classList.add(theme);
     localStorage.setItem("theme", theme);
+    // Appearance changed
+    window.dispatchEvent(new Event("appearance-change"));
   }, [theme]);
 
   // Apply sky gradient overrides via CSS variables
@@ -142,6 +180,8 @@ function App() {
       );
     }
     localStorage.setItem("sky", sky);
+    // Trigger appearance update for canvas without polling
+    window.dispatchEvent(new Event("appearance-change"));
   }, [sky]);
 
   // Apply stars/meteors color through CSS variables
@@ -162,7 +202,13 @@ function App() {
     root.style.setProperty("--meteor-rgb", meteorRGB);
     localStorage.setItem("starsColor", starsColor);
     localStorage.setItem("meteorsColor", meteorsColor);
+    window.dispatchEvent(new Event("appearance-change"));
   }, [starsColor, meteorsColor, theme]);
+
+  // Persist Low Power
+  useEffect(() => {
+    localStorage.setItem("lowPower", String(lowPower));
+  }, [lowPower]);
 
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
@@ -184,109 +230,148 @@ function App() {
   }, []);
 
   // Animation variants for sections
-  const sectionVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: "easeOut" },
-    },
-  };
+  const sectionVariants = prefersReduced
+    ? undefined
+    : {
+        hidden: { opacity: 0, y: 50 },
+        visible: {
+          opacity: 1,
+          y: 0,
+          transition: { duration: 0.5, ease: "easeOut" },
+        },
+      };
 
   // Projects container variants for staggered reveal
-  const gridVariants = {
-    hidden: {},
-    visible: {
-      transition: { staggerChildren: 0.08, delayChildren: 0.1 },
-    },
-  };
+  const gridVariants =
+    lowPower || prefersReduced
+      ? undefined
+      : {
+          hidden: {},
+          visible: {
+            transition: { staggerChildren: 0.08, delayChildren: 0.1 },
+          },
+        };
+
+  // Mount-on-demand: track which sections have been seen
+  const mountedSectionsRef = useRef(new Set(["home"]));
+  const [, forceRerender] = useState(0);
 
   return (
     <div className="relative min-h-screen">
-      <div className="fixed inset-0 gradient-sky z-[-2]"></div> <MeteorShower />
+      <div className="fixed inset-0 gradient-sky z-[-2]"></div>
+      <MeteorShower
+        disabled={prefersReduced || lowPower}
+        density={isMobile ? 0.55 : 0.85}
+        sizeScale={isMobile ? 0.9 : 1}
+        fps={isMobile ? 24 : 30}
+      />
       <div className="relative z-10">
         {sections.map((section) => (
           <Section key={section.id} id={section.id} variants={sectionVariants}>
-            <div className="text-center">
-              <h2 className="text-4xl font-bold text-white mb-4">
-                {section.label}
-              </h2>
-              {section.id === "home" && (
-                <div>
-                  <p className="text-lg text-white mb-4">
-                    Welcome to my portfolio! Scroll to explore.
-                  </p>
-                  <TypeAnimation
-                    sequence={[
-                      "Developer",
-                      1000,
-                      "UI/UX Designer",
-                      1000,
-                      "Frontend Engineer",
-                      1000,
-                    ]}
-                    wrapper="span"
-                    repeat={Infinity}
-                    className="text-2xl text-yellow-400 font-semibold"
-                  />
-                </div>
-              )}
-              {section.id === "about" && (
-                <p className="text-lg text-white">
-                  I am a passionate developer with a love for creating impactful
-                  solutions.
-                </p>
-              )}
-              {section.id === "experience" && <ExperienceSection />}
-              {section.id === "resume" && (
-                <div className="max-w-6xl mx-auto">
-                  <ResumeSection pdfUrl={resumePdf} showTitle={false} />
-                </div>
-              )}
-              {section.id === "projects" && (
-                <motion.div
-                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto"
-                  variants={gridVariants}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: false, amount: 0.2 }}
-                >
-                  {projects.map((p, i) => (
-                    <ProjectCard
-                      key={p.title}
-                      project={p}
-                      index={i}
-                      onOpenCaseStudy={() => setOpenCaseStudy(p)}
-                    />
-                  ))}
-                </motion.div>
-              )}
-              {section.id === "contact" && (
-                <div>
-                  <p className="text-lg text-white mb-4">
-                    Reach out to me via email or social media!
-                  </p>
-                  <div className="flex justify-center gap-6">
-                    <a
-                      href="https://github.com/venaxin"
-                      className="text-white hover:text-yellow-400 transition-colors"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <FaGithub size={32} />
-                    </a>
-                    <a
-                      href="https://linkedin.com/in/abdul-rahman-hussain"
-                      className="text-white hover:text-yellow-400 transition-colors"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <FaLinkedin size={32} />
-                    </a>
+            {(mountedSectionsRef.current.has(section.id) ||
+              section.id === "home") && (
+              <div className="text-center">
+                <h2 className="text-4xl font-bold text-white mb-4">
+                  {section.label}
+                </h2>
+                {section.id === "home" && (
+                  <div>
+                    <p className="text-lg text-white mb-4">
+                      Welcome to my portfolio! Scroll to explore.
+                    </p>
+                    {prefersReduced ? (
+                      <span className="text-2xl text-yellow-400 font-semibold">
+                        Frontend Engineer
+                      </span>
+                    ) : (
+                      <TypeAnimation
+                        sequence={[
+                          "Developer",
+                          1000,
+                          "UI/UX Designer",
+                          1000,
+                          "Frontend Engineer",
+                          1000,
+                        ]}
+                        wrapper="span"
+                        repeat={Infinity}
+                        className="text-2xl text-yellow-400 font-semibold"
+                      />
+                    )}
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+                {section.id === "about" && (
+                  <p className="text-lg text-white">
+                    I am a passionate developer with a love for creating
+                    impactful solutions.
+                  </p>
+                )}
+                {section.id === "experience" && (
+                  <Suspense
+                    fallback={<div className="text-white/70">Loading…</div>}
+                  >
+                    <ExperienceSectionLazy />
+                  </Suspense>
+                )}
+                {section.id === "resume" && (
+                  <div className="max-w-6xl mx-auto">
+                    <Suspense
+                      fallback={<div className="text-white/70">Loading…</div>}
+                    >
+                      <ResumeSectionLazy pdfUrl={resumePdf} showTitle={false} />
+                    </Suspense>
+                  </div>
+                )}
+                {section.id === "projects" && (
+                  <motion.div
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto"
+                    variants={gridVariants}
+                    initial={gridVariants ? "hidden" : false}
+                    whileInView={gridVariants ? "visible" : undefined}
+                    viewport={{ once: false, amount: 0.2 }}
+                  >
+                    <Suspense
+                      fallback={<div className="text-white/70">Loading…</div>}
+                    >
+                      {projects.map((p, i) => (
+                        <ProjectCardLazy
+                          key={p.title}
+                          project={p}
+                          index={i}
+                          lowPower={lowPower || prefersReduced}
+                          onOpenCaseStudy={() => setOpenCaseStudy(p)}
+                        />
+                      ))}
+                    </Suspense>
+                  </motion.div>
+                )}
+                {section.id === "contact" && (
+                  <div>
+                    <p className="text-lg text-white mb-4">
+                      Reach out to me via email or social media!
+                    </p>
+                    <div className="flex justify-center gap-6">
+                      <a
+                        href="https://github.com/venaxin"
+                        className="text-white hover:text-yellow-400 transition-colors"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <FaGithub size={32} />
+                      </a>
+                      <a
+                        href="https://linkedin.com/in/abdul-rahman-hussain"
+                        className="text-white hover:text-yellow-400 transition-colors"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <FaLinkedin size={32} />
+                      </a>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </Section>
         ))}
       </div>
@@ -318,6 +403,20 @@ function App() {
         <div className="fixed bottom-16 right-4 z-30 w-[min(92vw,380px)] rounded-xl border border-white/10 bg-black/70 backdrop-blur-md p-4 text-white shadow-2xl">
           <div className="mb-3 text-base font-semibold">
             Accessibility & Themes
+          </div>
+          {/* Low Power toggle */}
+          <div className="mb-3 flex items-center justify-between">
+            <span className="text-sm text-white/80">Low Power Mode</span>
+            <button
+              onClick={() => setLowPower((v) => !v)}
+              className={`text-xs px-2 py-1 rounded-md border ${
+                lowPower
+                  ? "border-white/40 text-accent"
+                  : "border-white/20 hover:border-white/40"
+              }`}
+            >
+              {lowPower ? "On" : "Off"}
+            </button>
           </div>
           {/* Snap toggle */}
           <div className="mb-3 flex items-center justify-between">
@@ -397,10 +496,12 @@ function App() {
         </div>
       )}
       {/* Case Study Modal */}
-      <CaseStudy
-        project={openCaseStudy}
-        onClose={() => setOpenCaseStudy(null)}
-      />
+      <Suspense fallback={null}>
+        <CaseStudyLazy
+          project={openCaseStudy}
+          onClose={() => setOpenCaseStudy(null)}
+        />
+      </Suspense>
     </div>
   );
 }
@@ -414,10 +515,10 @@ function Section({ id, children, variants }) {
     <motion.section
       ref={ref}
       id={id}
-      className="min-h-screen flex items-center justify-center p-[10%]"
+      className="min-h-screen flex items-center justify-center p-[10%] content-auto"
       variants={variants}
-      initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
+      initial={variants ? "hidden" : false}
+      animate={variants ? (isInView ? "visible" : "hidden") : false}
     >
       {children}
     </motion.section>

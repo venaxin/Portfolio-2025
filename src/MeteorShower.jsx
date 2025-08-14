@@ -1,11 +1,30 @@
 import { useRef, useEffect } from "react";
 
-function MeteorShower() {
+// Lightweight, adaptive meteor shower. Props allow dialing down work.
+function MeteorShower({
+  disabled = false,
+  density = 1,
+  sizeScale = 1,
+  fps = 30,
+}) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
+    if (disabled) {
+      // Ensure canvas is sized and cleared, but do no animation work
+      const cssW = window.innerWidth;
+      const cssH = window.innerHeight;
+      const dpr = Math.max(1, window.devicePixelRatio || 1);
+      canvas.width = Math.floor(cssW * dpr);
+      canvas.height = Math.floor(cssH * dpr);
+      canvas.style.width = cssW + "px";
+      canvas.style.height = cssH + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+      return;
+    }
 
     // Read CSS variable colors
     const getCssVar = (name) =>
@@ -20,9 +39,6 @@ function MeteorShower() {
     let starRGB = parseRgb(getCssVar("--star-rgb"), [255, 255, 255]);
     let meteorRGB = parseRgb(getCssVar("--meteor-rgb"), [255, 255, 255]);
 
-    // Responsive, lightweight density controls via data-attrs
-    const density = parseFloat(canvas.dataset.density || "1"); // 1 = default
-    const sizeScale = parseFloat(canvas.dataset.sizeScale || "1");
     let animationFrameId;
 
     // Debounce function for resize
@@ -34,19 +50,28 @@ function MeteorShower() {
       };
     };
 
-    // Set canvas size (we will reposition stars after instantiation)
+    // Track DPR and size canvas accordingly (keep coordinates in CSS pixels)
+    let dpr = Math.max(1, window.devicePixelRatio || 1);
     const resizeCanvas = debounce(() => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      console.log("Canvas resized to:", canvas.width, canvas.height);
+      const cssW = window.innerWidth;
+      const cssH = window.innerHeight;
+      dpr = Math.max(1, window.devicePixelRatio || 1);
+      canvas.width = Math.floor(cssW * dpr);
+      canvas.height = Math.floor(cssH * dpr);
+      canvas.style.width = cssW + "px";
+      canvas.style.height = cssH + "px";
+      // Reset transform then scale so 1 unit = 1 CSS pixel
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }, 100);
 
     // Star class
     class Star {
       constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.radius = (Math.random() * 2 + 1.5) * sizeScale; // scaled
+        const cssW = canvas.width / dpr;
+        const cssH = canvas.height / dpr;
+        this.x = Math.random() * cssW;
+        this.y = Math.random() * cssH;
+        this.radius = (Math.random() * 1.1 + 0.6) * sizeScale; // smaller & cheaper
         this.baseAlpha = 0.5;
         this.pulsePhase = Math.random() * Math.PI * 2;
         this.pulseSpeed = Math.random() * 0.006 + 0.002; // Pulse: 0.002 to 0.008
@@ -56,6 +81,7 @@ function MeteorShower() {
         this.alpha = 0.5 + Math.sin(this.pulsePhase) * 0.3; // Alpha: 0.2 to 0.8
       }
       draw() {
+        // Simple fill (no shadows/compositing) for performance
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(${starRGB[0]}, ${starRGB[1]}, ${starRGB[2]}, ${this.alpha})`;
@@ -69,10 +95,13 @@ function MeteorShower() {
         this.reset();
       }
       reset() {
-        this.x = canvas.width * 0.2 + Math.random() * (canvas.width * 0.6);
-        this.y = canvas.height * 0.2 + Math.random() * (canvas.height * 0.6);
-        this.length = Math.random() * 50 + 50;
-        this.speed = Math.random() * 5 + 5;
+        const cssW = canvas.width / dpr;
+        const cssH = canvas.height / dpr;
+        this.x = cssW * 0.2 + Math.random() * (cssW * 0.6);
+        this.y = cssH * 0.2 + Math.random() * (cssH * 0.6);
+        this.length = Math.random() * 40 + 40; // shorter
+        this.speed = Math.random() * 3 + 3.2; // slower
+        this.thickness = Math.random() * 0.8 + 1.2; // thinner
         this.angle = Math.random() > 0.5 ? Math.PI / 4 : (3 * Math.PI) / 4;
         this.alpha = 1;
         this.active = true;
@@ -80,63 +109,134 @@ function MeteorShower() {
       update() {
         this.x += Math.cos(this.angle) * this.speed;
         this.y += Math.sin(this.angle) * this.speed;
-        this.alpha -= 0.02;
+        this.alpha -= 0.018;
         if (
           this.alpha <= 0 ||
-          this.y > canvas.height ||
+          this.y > canvas.height / dpr ||
           this.x < 0 ||
-          this.x > canvas.width
+          this.x > canvas.width / dpr
         ) {
           this.active = false;
         }
       }
       draw() {
+        const tailX = this.x - Math.cos(this.angle) * this.length;
+        const tailY = this.y - Math.sin(this.angle) * this.length;
+
+        // Tail gradient
+        const grad = ctx.createLinearGradient(this.x, this.y, tailX, tailY);
+        grad.addColorStop(
+          0,
+          `rgba(${meteorRGB[0]}, ${meteorRGB[1]}, ${meteorRGB[2]}, ${
+            0.9 * this.alpha
+          })`
+        );
+        grad.addColorStop(
+          0.3,
+          `rgba(${meteorRGB[0]}, ${meteorRGB[1]}, ${meteorRGB[2]}, ${
+            0.28 * this.alpha
+          })`
+        );
+        grad.addColorStop(
+          1,
+          `rgba(${meteorRGB[0]}, ${meteorRGB[1]}, ${meteorRGB[2]}, 0)`
+        );
+
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        ctx.lineCap = "round";
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = this.thickness;
         ctx.beginPath();
         ctx.moveTo(this.x, this.y);
-        ctx.lineTo(
-          this.x - Math.cos(this.angle) * this.length,
-          this.y - Math.sin(this.angle) * this.length
-        );
-        ctx.strokeStyle = `rgba(${meteorRGB[0]}, ${meteorRGB[1]}, ${meteorRGB[2]}, ${this.alpha})`;
-        ctx.lineWidth = 2;
+        ctx.lineTo(tailX, tailY);
         ctx.stroke();
+
+        // Head aura (radial gradient)
+        const headRadius = this.thickness * 1.8;
+        const radial = ctx.createRadialGradient(
+          this.x,
+          this.y,
+          0,
+          this.x,
+          this.y,
+          headRadius
+        );
+        radial.addColorStop(
+          0,
+          `rgba(${meteorRGB[0]}, ${meteorRGB[1]}, ${meteorRGB[2]}, ${
+            0.6 * this.alpha
+          })`
+        );
+        radial.addColorStop(
+          1,
+          `rgba(${meteorRGB[0]}, ${meteorRGB[1]}, ${meteorRGB[2]}, 0)`
+        );
+        ctx.fillStyle = radial;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, headRadius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
       }
     }
 
     // Create stars and meteors
     resizeCanvas(); // Set canvas size before creating stars
-    const baseStars = 60;
+    const area = (canvas.width / dpr) * (canvas.height / dpr);
+    const baseStars = Math.min(
+      120,
+      Math.max(20, Math.round(Math.sqrt(area) / 28))
+    );
     const stars = Array.from(
-      { length: Math.max(10, Math.round(baseStars * density)) },
+      {
+        length: Math.max(8, Math.round((baseStars * density) / Math.sqrt(dpr))),
+      },
       () => new Star()
     );
     const meteors = [];
-    const maxMeteors = Math.max(1, Math.round(5 * density));
+    const isSmall = Math.min(canvas.width / dpr, canvas.height / dpr) < 720;
+    const maxMeteors = Math.max(1, Math.round((isSmall ? 2 : 4) * density));
     const addMeteor = () => {
       if (meteors.length < maxMeteors) {
         meteors.push(new Meteor());
-        console.log("Meteor added, count:", meteors.length);
       }
     };
 
-    // Log a few star positions for debugging (remove after testing)
-    stars.slice(0, 3).forEach((star, i) => {
-      console.log(`Star ${i}: x=${star.x.toFixed(0)}, y=${star.y.toFixed(0)}`);
-    });
+    // Optional: debug a couple of stars
+    // stars.slice(0, 2).forEach((s, i) => console.log("Star", i, s.x, s.y));
 
     // Reposition stars when size changes
     const repositionStars = () => {
+      const cssW = canvas.width / dpr;
+      const cssH = canvas.height / dpr;
       for (const star of stars) {
-        star.x = Math.random() * canvas.width;
-        star.y = Math.random() * canvas.height;
+        star.x = Math.random() * cssW;
+        star.y = Math.random() * cssH;
       }
     };
     repositionStars();
 
-    // Animation loop
-    const animate = () => {
-      // Clear the canvas to keep background (gradient sky) visible
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Animation loop (FPS throttled)
+    let lastTime = 0;
+    const targetMs = Math.max(16, 1000 / Math.max(1, fps));
+    let hidden = document.visibilityState === "hidden";
+    const onVisibility = () => {
+      hidden = document.visibilityState === "hidden";
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
+    const animate = (time = 0) => {
+      if (hidden) {
+        animationFrameId = requestAnimationFrame(animate);
+        return;
+      }
+      if (time - lastTime < targetMs) {
+        animationFrameId = requestAnimationFrame(animate);
+        return;
+      }
+      lastTime = time;
+      // Clear the canvas using CSS pixel coords (context is scaled to DPR)
+      ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
       stars.forEach((star) => {
         star.update();
         star.draw();
@@ -149,47 +249,35 @@ function MeteorShower() {
           meteors.splice(index, 1);
         }
       });
-      if (Math.random() < 0.015) addMeteor();
+      if (Math.random() < 0.012) addMeteor();
       animationFrameId = requestAnimationFrame(animate);
     };
     animate();
-    window.addEventListener("resize", () => {
+    const onResize = () => {
       resizeCanvas();
       repositionStars();
-    });
+    };
+    window.addEventListener("resize", onResize);
 
-    // Poll CSS variables to update colors if theme changes while running
-    const colorPoll = setInterval(() => {
-      const getCssVar = (name) =>
-        getComputedStyle(document.documentElement)
-          .getPropertyValue(name)
-          .trim();
-      const parseRgb = (rgbStr, fallback) => {
-        if (!rgbStr) return fallback;
-        const parts = rgbStr.split(",").map((v) => parseFloat(v));
-        if (parts.length === 3 && parts.every((n) => Number.isFinite(n)))
-          return parts;
-        return fallback;
-      };
+    // Listen for app-driven appearance changes instead of polling
+    const onAppearance = () => {
       starRGB = parseRgb(getCssVar("--star-rgb"), starRGB);
       meteorRGB = parseRgb(getCssVar("--meteor-rgb"), meteorRGB);
-    }, 400);
-
-    console.log("MeteorShower initialized with theme-aware colors");
+    };
+    window.addEventListener("appearance-change", onAppearance);
 
     return () => {
       cancelAnimationFrame(animationFrameId);
-      window.removeEventListener("resize", resizeCanvas);
-      clearInterval(colorPoll);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("appearance-change", onAppearance);
+      document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, []);
+  }, [disabled, density, sizeScale, fps]);
 
   return (
     <canvas
       ref={canvasRef}
       className="fixed top-0 left-0 w-full h-full z-0 pointer-events-none bg-transparent"
-      data-density="1" /* can be lowered on mobile for performance */
-      data-size-scale="1"
     />
   );
 }

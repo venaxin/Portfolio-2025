@@ -1,10 +1,11 @@
 /* eslint-disable no-unused-vars */
 import { motion, useMotionValue, useSpring } from "framer-motion";
+import ResponsiveImage from "./ResponsiveImage.jsx";
 import { FaGithub } from "react-icons/fa";
 import { FiActivity, FiTrendingUp, FiShield } from "react-icons/fi";
 import { FiExternalLink } from "react-icons/fi";
 
-function ProjectCard({ project, index, onOpenCaseStudy }) {
+function ProjectCard({ project, index, onOpenCaseStudy, lowPower = false }) {
   const {
     title,
     description,
@@ -38,18 +39,26 @@ function ProjectCard({ project, index, onOpenCaseStudy }) {
 
   return (
     <motion.article
-      className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md shadow-[0_8px_40px_rgba(0,0,0,0.35)] hover:border-white/20 transition-colors"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.08, ease: "easeOut" }}
-      style={{
-        transformStyle: "preserve-3d",
-        perspective: 1000,
-        rotateX,
-        rotateY,
-      }}
+      className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm md:backdrop-blur-md shadow-[0_8px_40px_rgba(0,0,0,0.35)] hover:border-white/20 transition-colors"
+      onMouseMove={lowPower ? undefined : handleMouseMove}
+      onMouseLeave={lowPower ? undefined : handleMouseLeave}
+      initial={lowPower ? undefined : { opacity: 0, y: 30 }}
+      animate={lowPower ? undefined : { opacity: 1, y: 0 }}
+      transition={
+        lowPower
+          ? undefined
+          : { duration: 0.5, delay: index * 0.08, ease: "easeOut" }
+      }
+      style={
+        lowPower
+          ? undefined
+          : {
+              transformStyle: "preserve-3d",
+              perspective: 1000,
+              rotateX,
+              rotateY,
+            }
+      }
     >
       {/* Glow on hover */}
       <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -59,11 +68,14 @@ function ProjectCard({ project, index, onOpenCaseStudy }) {
       {/* Image / banner */}
       <div className="relative aspect-[16/9] w-full overflow-hidden">
         {image ? (
-          <img
+          <ResponsiveImage
             src={image}
             alt={title}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03] md:group-hover:scale-[1.05]"
+            widths={[320, 480, 640, 768, 960, 1200, 1600]}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             loading="lazy"
+            decoding="async"
           />
         ) : (
           <div className="h-full w-full bg-gradient-to-br from-purple-700/40 via-indigo-600/30 to-amber-500/30" />

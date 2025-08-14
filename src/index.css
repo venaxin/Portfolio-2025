@@ -5,13 +5,7 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Native smooth section snapping */
-html,
-body {
-  scroll-snap-type: y mandatory;
-}
-
-/* Snap behavior (toggled by adding `.snap-enabled` class to <html>) */
+/* Snap behavior (toggled by adding `.snap-enabled` class to <html> or <body>) */
 html.snap-enabled,
 body.snap-enabled {
   scroll-snap-type: y mandatory;
@@ -21,20 +15,10 @@ html.snap-enabled section {
   scroll-snap-stop: always; /* ensure it snaps even on fast flicks */
 }
 
-/* Background starfield layer */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: url("https://i.imgur.com/2cOaJ.png"); /* Starfield image */
-  background-size: cover;
-  background-repeat: no-repeat;
-  transform: translateY(calc(var(--scroll-y) * -0.1));
-  z-index: -3;
-  will-change: transform;
+/* Performance: avoid painting offscreen content */
+.content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 1000px 800px; /* Reserve space to prevent jumps */
 }
 
 /* Theme variables and helpers */
