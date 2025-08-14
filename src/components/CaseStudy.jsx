@@ -57,7 +57,6 @@ export default function CaseStudy({ project, onClose }) {
           transition={{ type: "spring", stiffness: 260, damping: 24 }}
           className="relative w-full max-w-5xl overflow-hidden rounded-2xl border border-white/10 bg-white/5 text-white shadow-xl"
         >
-          {/* Header / Hero */}
           {image && (
             <div className="relative h-56 w-full overflow-hidden">
               <img

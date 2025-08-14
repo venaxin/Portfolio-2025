@@ -14,28 +14,25 @@ const projects = [
     metrics: { perf: 98, a11y: 100, bundle: "165KB" },
     caseStudy: {
       problem:
-        "Users struggle to maintain consistency with generic habit apps; streak visibility and small wins are under-emphasized.",
+        "Users drop off after week 2 in generic habit apps; streak motivation and quick wins aren’t visible enough.",
       constraints: [
-        "Runs fast on low-end phones (TTI < 2.5s)",
+        "TTI < 2.5s on mid-tier Android",
         "Offline-first with queued sync",
-        "Accessible for keyboard and screen reader",
+        "Accessible (WCAG) with keyboard + SR labels",
       ],
       approach:
-        "Designed a GitHub-like grid with weekly goals, streak boosts, and celebratory micro-interactions. Implemented optimistic updates and background sync with Firebase. Added prefers-reduced-motion guards and semantic labels for all interactive tiles.",
+        "Built a contribution-grid UI with weekly goals, streak boosters, and micro-interactions using Framer Motion. Implemented optimistic updates and background sync via Firebase. Honored prefers-reduced-motion and added semantic roles for tiles and controls.",
       results: [
-        "+22% weekly retention in pilot",
+        "+22% weekly retention (pilot)",
         "+18% average streak length",
-        "Lighthouse Perf 98 / A11y 100",
+        "Lighthouse: Perf 98 / A11y 100",
       ],
       highlights: [
-        "Framer Motion spring-based micro-interactions",
-        "Virtualized grid rendering for smooth 12-month views",
-        "Theming via CSS vars and Tailwind utilities",
+        "Virtualized 12-month grid",
+        "Tokenized themes with Tailwind + CSS vars",
+        "Motion-reduced fallbacks",
       ],
-      links: [
-        { label: "Architecture notes", href: "#" },
-        { label: "Design tokens", href: "#" },
-      ],
+      links: [{ label: "Design notes", href: "#" }],
       images: [],
     },
   },
@@ -102,8 +99,7 @@ const projects = [
     tech: ["iOS Shortcuts", "HTML", "CSS"],
     image:
       "https://images.unsplash.com/photo-1505238680356-667803448bb6?q=80&w=1200&auto=format&fit=crop",
-    demoLink: "#",
-    repoLink: "#",
+    repoLink: "https://github.com/venaxin/IOS-Dyna-Schedule-Wallpaper",
     metrics: { perf: 99, a11y: 100, bundle: "0KB" },
   },
 ];
