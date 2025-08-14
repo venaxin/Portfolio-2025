@@ -103,7 +103,7 @@ export default function CaseStudy({ project, onClose }) {
                     href={demoLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-md bg-yellow-400/90 px-3 py-2 text-sm font-semibold text-black hover:bg-yellow-400"
+                    className="inline-flex items-center gap-2 rounded-md btn-accent px-3 py-2 text-sm font-semibold"
                   >
                     <FiExternalLink /> Live
                   </a>
@@ -190,7 +190,7 @@ export default function CaseStudy({ project, onClose }) {
                     {links.map(({ label, href }, i) => (
                       <li key={i}>
                         <a
-                          className="text-yellow-300 hover:underline"
+                          className="text-accent hover:underline"
                           href={href}
                           target="_blank"
                           rel="noreferrer"

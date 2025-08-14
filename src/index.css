@@ -4,10 +4,21 @@
 html {
   scroll-behavior: smooth;
 }
-canvas {
-  pointer-events: none;
-  transform: translateY(calc(var(--scroll-y) * -0.2));
-  will-change: transform;
+
+/* Native smooth section snapping */
+html,
+body {
+  scroll-snap-type: y mandatory;
+}
+
+/* Snap behavior (toggled by adding `.snap-enabled` class to <html>) */
+html.snap-enabled,
+body.snap-enabled {
+  scroll-snap-type: y mandatory;
+}
+html.snap-enabled section {
+  scroll-snap-align: center; /* center each section in viewport */
+  scroll-snap-stop: always; /* ensure it snaps even on fast flicks */
 }
 
 /* Background starfield layer */
@@ -26,18 +37,89 @@ body::before {
   will-change: transform;
 }
 
-/* Gradient sky layer */
+/* Theme variables and helpers */
+:root {
+  /* Accent */
+  --accent: #f59e0b; /* Amber */
+  --accent-rgb: 245, 158, 11;
+  --star-rgb: 255, 255, 255; /* default star color */
+  --meteor-rgb: 255, 255, 255; /* default meteor color */
+  --on-accent: #000000;
+
+  /* Gradient stops (default/indigo theme) */
+  --g1: #000000;
+  --g2: #000000;
+  --g3: #000000;
+  --g4: #4b0082; /* indigo */
+  --g5: #000000;
+}
+
+/* Additional themes (toggle by adding corresponding class to <html>) */
+html.theme-indigo {
+  --accent: #f59e0b; /* amber */
+  --on-accent: #000;
+  --g1: #000000;
+  --g2: #070311;
+  --g3: #0a0016;
+  --g4: #4b0082;
+  --g5: #000000;
+}
+html.theme-teal {
+  --accent: #f59e0b; /* amber */
+  --accent-rgb: 245, 158, 11;
+  --on-accent: #000;
+  --g1: #00110f;
+  --g2: #001a1a;
+  --g3: #01232a;
+  --g4: #0f766e;
+  --accent-rgb: 20, 184, 166;
+  --g5: #00110f;
+}
+html.theme-rose {
+  --accent: #fb7185; /* rose-400 */
+  --on-accent: #2a0006;
+  --accent-rgb: 251, 113, 133;
+  --g1: #120009;
+  --g2: #1a0512;
+  --g3: #22081b;
+  --g4: #7c3aed;
+  --g5: #0ea5e9;
+  --accent-rgb: 16, 185, 129;
+}
+html.theme-emerald {
+  --accent: #10b981; /* emerald-500 */
+  --on-accent: #00140d;
+  --g1: #00100a;
+  --g2: #051912;
+  --g3: #06211a;
+  --g4: #0ea5e9;
+  --g5: #000814;
+}
+
+/* Gradient sky layer uses theme variables */
 .gradient-sky {
   background: linear-gradient(
     to bottom,
-    #000000,
-    #000000,
-    #000000,
-    #4b0082,
-    #000000
+    var(--g1),
+    var(--g2),
+    var(--g3),
+    var(--g4),
+    var(--g5)
   );
   transform: translateY(calc(var(--scroll-y) * -0.05));
   will-change: transform;
+}
+
+/* Accent helpers */
+.text-accent {
+  color: var(--accent) !important;
+}
+.btn-accent {
+  background-color: var(--accent);
+  color: var(--on-accent);
+}
+.btn-accent:hover {
+  filter: brightness(1.05);
 }
 
 /* Ensure nav and buttons are clickable */

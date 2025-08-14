@@ -120,7 +120,7 @@ function ProjectCard({ project, index, onOpenCaseStudy }) {
               href={demoLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-md bg-yellow-400/90 px-3 py-2 text-sm font-semibold text-black transition hover:bg-yellow-400"
+              className="inline-flex items-center gap-2 rounded-md btn-accent px-3 py-2 text-sm font-semibold transition"
             >
               <FiExternalLink />
               Live

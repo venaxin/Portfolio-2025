@@ -1,11 +1,13 @@
 import { FiDownload, FiExternalLink, FiPrinter } from "react-icons/fi";
 
 // Simple, print-friendly Resume viewer that embeds the PDF and provides actions
-export default function ResumeSection({ pdfUrl }) {
+export default function ResumeSection({ pdfUrl, showTitle = true }) {
   return (
     <div className="w-full max-w-5xl mx-auto text-left">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-2xl font-semibold text-white">Resume</h3>
+        {showTitle && (
+          <h3 className="text-2xl font-semibold text-white">Resume</h3>
+        )}
         <div className="flex items-center gap-2">
           <a
             href={pdfUrl}
