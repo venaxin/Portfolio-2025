@@ -80,6 +80,18 @@ html.theme-emerald {
   --g5: #000814;
 }
 
+/* 8-bit theme: high-contrast accent with deep space gradient */
+html.theme-8bit {
+  --accent: #ffcc00; /* pixel gold */
+  --accent-rgb: 255, 204, 0;
+  --on-accent: #000;
+  --g1: #000000;
+  --g2: #0b0b16;
+  --g3: #121226;
+  --g4: #1c1c38;
+  --g5: #000000;
+}
+
 /* Gradient sky layer uses theme variables */
 .gradient-sky {
   background: linear-gradient(
@@ -120,4 +132,60 @@ button:focus {
 button {
   border: 0px;
   transition: border 0.2s ease-out;
+}
+
+/* Minimal 8-bit UI helpers */
+.pixel-button {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  border: 2px solid rgba(255, 255, 255, 0.35) !important;
+  background: rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.6) inset,
+    0 2px 0 0 rgba(255, 255, 255, 0.08);
+  image-rendering: pixelated;
+}
+
+/* Pixel card styling applied to project/experience/case study */
+.pixel-card {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 6px;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.6) inset,
+    0 4px 0 0 rgba(255, 255, 255, 0.08);
+}
+.pixel-badge {
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 0, 0.6);
+  padding: 2px 6px;
+}
+.pixel-chip {
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 4px;
+}
+.image-pixelated {
+  image-rendering: pixelated;
+}
+.pixel-button:hover {
+  filter: none;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.6) inset,
+    0 2px 0 0 rgba(255, 255, 255, 0.16);
+}
+.pixel-panel {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  backdrop-filter: none !important;
+  border-width: 2px !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.75),
+      rgba(0, 0, 0, 0.75) 2px,
+      rgba(0, 0, 0, 0.7) 2px,
+      rgba(0, 0, 0, 0.7) 4px
+    ),
+    rgba(0, 0, 0, 0.7);
+  image-rendering: pixelated;
 }
