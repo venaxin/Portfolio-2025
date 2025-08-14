@@ -55,10 +55,10 @@ export default function CaseStudy({ project, onClose }) {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 20, opacity: 0 }}
           transition={{ type: "spring", stiffness: 260, damping: 24 }}
-          className="relative w-full max-w-5xl overflow-hidden rounded-2xl border border-white/10 bg-white/5 text-white shadow-xl"
+          className="relative w-full max-w-5xl max-h-[calc(100vh-2rem)] flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 text-white shadow-xl"
         >
           {image && (
-            <div className="relative h-56 w-full overflow-hidden">
+            <div className="relative h-56 w-full overflow-hidden flex-shrink-0">
               <img
                 src={image}
                 alt={title}
@@ -80,7 +80,8 @@ export default function CaseStudy({ project, onClose }) {
             <FiX />
           </button>
 
-          <div className="p-6 md:p-8">
+          {/* Scrollable content area */}
+          <div className="flex-1 overflow-y-auto overscroll-contain p-6 md:p-8">
             <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
               <div>
                 <h3 className="text-2xl font-semibold">{title}</h3>
