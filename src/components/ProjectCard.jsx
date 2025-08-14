@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import { FaGithub } from "react-icons/fa";
+import { FiActivity, FiTrendingUp, FiShield } from "react-icons/fi";
 import { FiExternalLink } from "react-icons/fi";
 
 function ProjectCard({ project, index }) {
@@ -12,6 +13,7 @@ function ProjectCard({ project, index }) {
     demoLink,
     repoLink,
     status,
+    metrics,
   } = project;
 
   // Tilt effect
@@ -77,6 +79,21 @@ function ProjectCard({ project, index }) {
       <div className="p-5">
         <h3 className="mb-2 text-lg font-semibold text-white">{title}</h3>
         <p className="mb-4 text-sm text-gray-300">{description}</p>
+
+        {metrics && (
+          <div className="mb-4 grid grid-cols-3 gap-2 text-xs">
+            <div className="flex items-center gap-1 rounded-md bg-white/5 px-2 py-1 text-white/90 border border-white/10">
+              <FiTrendingUp className="opacity-80" /> Perf {metrics.perf ?? "—"}
+            </div>
+            <div className="flex items-center gap-1 rounded-md bg-white/5 px-2 py-1 text-white/90 border border-white/10">
+              <FiShield className="opacity-80" /> A11y {metrics.a11y ?? "—"}
+            </div>
+            <div className="flex items-center gap-1 rounded-md bg-white/5 px-2 py-1 text-white/90 border border-white/10">
+              <FiActivity className="opacity-80" /> Bundle{" "}
+              {metrics.bundle ?? "—"}
+            </div>
+          </div>
+        )}
 
         <div className="mb-5 flex flex-wrap gap-2">
           {tech.map((t) => (
