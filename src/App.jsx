@@ -66,6 +66,17 @@ function App() {
     const v = parseInt(localStorage.getItem("bhTargetSize") || "500", 10);
     return Number.isFinite(v) ? Math.min(1000, Math.max(200, v)) : 500;
   });
+  // Red Blackhole preset
+  const [bhRedPreset, setBhRedPreset] = useState(() => {
+    return localStorage.getItem("bhRedPreset") === "true";
+  });
+  // Moderate HQ
+  const [bhHQ, setBhHQ] = useState(() => {
+    return localStorage.getItem("bhHQ") === "true";
+  });
+  const [bhHQHigh, setBhHQHigh] = useState(() => {
+    return localStorage.getItem("bhHQHigh") === "true";
+  });
 
   // Environment flags for perf tuning
   const [prefersReduced, setPrefersReduced] = useState(false);
@@ -243,6 +254,15 @@ function App() {
   useEffect(() => {
     localStorage.setItem("bhTargetSize", String(bhTargetSize));
   }, [bhTargetSize]);
+  useEffect(() => {
+    localStorage.setItem("bhRedPreset", String(bhRedPreset));
+  }, [bhRedPreset]);
+  useEffect(() => {
+    localStorage.setItem("bhHQ", String(bhHQ));
+  }, [bhHQ]);
+  useEffect(() => {
+    localStorage.setItem("bhHQHigh", String(bhHQHigh));
+  }, [bhHQHigh]);
 
   // One-time background refresh on first load: toggle lowPower on then off
   // This forces canvas backgrounds to fully recalc size and span the viewport
@@ -324,19 +344,30 @@ function App() {
           imageUrl={blackholeImg}
           disabled={prefersReduced || lowPower}
           fps={isMobile ? 26 : 30}
-          scale={0.2}
-          yScale={0.44}
-          diskRadius={0.48}
-          beaming={0.7}
+          scale={isMobile ? 0.2 : bhHQHigh ? 0.26 : 0.2}
+          yScale={bhRedPreset ? 0.38 : 0.4}
+          diskRadius={bhRedPreset ? 0.54 : 0.5}
+          beaming={bhRedPreset ? 0.95 : 0.78}
           beamingPhase={0}
-          glow={0.85}
-          lensing={0.32}
-          backGlow={0.92}
-          underGlow={0.4}
-          innerHot={0.45}
+          beamingGamma={bhRedPreset ? 1.9 : 1.4}
+          glow={bhRedPreset ? 1.08 : 0.95}
+          lensing={bhRedPreset ? 0.42 : 0.36}
+          backGlow={bhRedPreset ? 1.18 : 1.08}
+          underGlow={bhRedPreset ? 0.62 : 0.52}
+          innerHot={bhRedPreset ? 0.62 : 0.5}
           highDetail={bhHighDetail}
           pixelSize={bhPixelSize}
           targetDisplaySize={bhTargetSize}
+          useRadialPalette={bhRedPreset}
+          paletteOuter={[156, 26, 18]}
+          paletteMid={[255, 106, 0]}
+          paletteInner={[255, 235, 180]}
+          photonRingPasses={bhRedPreset ? (bhHQHigh ? 4 : 3) : bhHQHigh ? 2 : 1}
+          inflowRate={bhRedPreset ? 0.02 : 0}
+          flickerAmp={bhRedPreset ? 0.08 : 0}
+          turbSize={bhHQHigh ? 512 : bhHQ ? 384 : 256}
+          sliceMul={bhHQHigh ? 1.6 : bhHQ ? 1.25 : 1.0}
+          stepAdd={bhHQHigh ? 8 : bhHQ ? 4 : 0}
         />
       ) : (
         <MeteorShower
@@ -509,6 +540,21 @@ function App() {
           {eightBit && (
             <div className="mb-3 space-y-3">
               <div className="flex items-center justify-between">
+                <span className="text-sm text-white/80">
+                  Red Blackhole Preset
+                </span>
+                <button
+                  onClick={() => setBhRedPreset((v) => !v)}
+                  className={`text-xs px-2 py-1 rounded-md border ${
+                    bhRedPreset
+                      ? "border-white/40 text-accent"
+                      : "border-white/20 hover:border-white/40"
+                  } ${eightBit ? "pixel-button" : ""}`}
+                >
+                  {bhRedPreset ? "On" : "Off"}
+                </button>
+              </div>
+              <div className="flex items-center justify-between">
                 <span className="text-sm text-white/80">High Detail</span>
                 <button
                   onClick={() => setBhHighDetail((v) => !v)}
@@ -519,6 +565,32 @@ function App() {
                   } ${eightBit ? "pixel-button" : ""}`}
                 >
                   {bhHighDetail ? "On" : "Off"}
+                </button>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-white/80">Moderate HQ</span>
+                <button
+                  onClick={() => setBhHQ((v) => !v)}
+                  className={`text-xs px-2 py-1 rounded-md border ${
+                    bhHQ
+                      ? "border-white/40 text-accent"
+                      : "border-white/20 hover:border-white/40"
+                  } ${eightBit ? "pixel-button" : ""}`}
+                >
+                  {bhHQ ? "On" : "Off"}
+                </button>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-white/80">High HQ</span>
+                <button
+                  onClick={() => setBhHQHigh((v) => !v)}
+                  className={`text-xs px-2 py-1 rounded-md border ${
+                    bhHQHigh
+                      ? "border-white/40 text-accent"
+                      : "border-white/20 hover:border-white/40"
+                  } ${eightBit ? "pixel-button" : ""}`}
+                >
+                  {bhHQHigh ? "On" : "Off"}
                 </button>
               </div>
               <div className="flex items-center justify-between">
