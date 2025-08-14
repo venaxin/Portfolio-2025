@@ -1,36 +1,24 @@
 /* eslint-disable no-unused-vars */
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, useInView } from "framer-motion";
 import { TypeAnimation } from "react-type-animation";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import MeteorShower from "./MeteorShower.jsx";
-<<<<<<< Updated upstream
-=======
-import ProjectCard from "./components/ProjectCard.jsx";
-import ProjectFilters from "./components/ProjectFilters.jsx";
-import ResumeSection from "./components/ResumeSection.jsx";
-import CaseStudy from "./components/CaseStudy.jsx";
-import ExperienceSection from "./components/ExperienceSection.jsx";
-import projects from "./data/projects.js";
-import resumePdfUrl from "./data/Resume.pdf";
->>>>>>> Stashed changes
 
 function App() {
-  const sections = [
-    { id: "home", label: "Home" },
-    { id: "about", label: "About" },
-    { id: "experience", label: "Experience" },
-    { id: "projects", label: "Projects" },
-    { id: "contact", label: "Contact" },
-  ];
+  const sections = useMemo(
+    () => [
+      { id: "home", label: "Home" },
+      { id: "about", label: "About" },
+      { id: "experience", label: "Experience" },
+      { id: "resume", label: "Resume" },
+      { id: "projects", label: "Projects" },
+      { id: "contact", label: "Contact" },
+    ],
+    []
+  );
 
   const [activeSection, setActiveSection] = useState("home");
-<<<<<<< Updated upstream
-=======
-  const [activeTech, setActiveTech] = useState(null);
-  const [sortBy, setSortBy] = useState("newest");
-  const [openCaseStudy, setOpenCaseStudy] = useState(null);
->>>>>>> Stashed changes
 
   // Scroll tracking for parallax
   useEffect(() => {
@@ -76,28 +64,6 @@ function App() {
     }
   };
 
-  // Project data (replace with your real projects)
-  const projects = [
-    {
-      title: "HealthAI Connect",
-      description:
-        "A dynamic portfolio with a meteor shower animation built using React and Tailwind CSS.",
-      tech: ["React", "Tailwind", "Canvas"],
-      image: "https://via.placeholder.com/300x200",
-      demoLink: "#",
-      repoLink: "#",
-    },
-    {
-      title: "Campus Clubhouse",
-      description:
-        "A productivity app for managing tasks with real-time updates and user authentication.",
-      tech: ["React", "Firebase", "Node.js"],
-      image: "https://via.placeholder.com/300x200",
-      demoLink: "#",
-      repoLink: "#",
-    },
-  ];
-
   // Animation variants for sections
   const sectionVariants = {
     hidden: { opacity: 0, y: 50 },
@@ -108,10 +74,17 @@ function App() {
     },
   };
 
+  // Projects container variants for staggered reveal
+  const gridVariants = {
+    hidden: {},
+    visible: {
+      transition: { staggerChildren: 0.08, delayChildren: 0.1 },
+    },
+  };
+
   return (
     <div className="relative min-h-screen">
-      <div className="fixed inset-0 gradient-sky z-[-2]"></div>{" "}
-      <MeteorShower /> 
+      <div className="fixed inset-0 gradient-sky z-[-2]"></div> <MeteorShower />
       <div className="relative z-10">
         {sections.map((section) => (
           <Section key={section.id} id={section.id} variants={sectionVariants}>
@@ -145,9 +118,13 @@ function App() {
                   solutions.
                 </p>
               )}
-              {section.id === "experience" && <ExperienceSection />}
+              {section.id === "experience" && (
+                <p className="text-lg text-white">
+                  I have worked on various projects, from web apps to AI
+                  solutions.
+                </p>
+              )}
               {section.id === "projects" && (
-<<<<<<< Updated upstream
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
                   {projects.map((project, index) => (
                     <motion.div
@@ -198,51 +175,6 @@ function App() {
                       </div>
                     </motion.div>
                   ))}
-=======
-                <div>
-                  <div className="max-w-6xl mx-auto">
-                    <ProjectFilters
-                      projects={projects}
-                      activeTech={activeTech}
-                      setActiveTech={setActiveTech}
-                      sortBy={sortBy}
-                      setSortBy={setSortBy}
-                    />
-                  </div>
-                  <motion.div
-                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto"
-                    variants={gridVariants}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: false, amount: 0.2 }}
-                  >
-                    {projects
-                      .filter((p) =>
-                        activeTech ? (p.tech || []).includes(activeTech) : true
-                      )
-                      .sort((a, b) => {
-                        if (sortBy === "newest")
-                          return (b.year || 0) - (a.year || 0);
-                        if (sortBy === "impact")
-                          return (
-                            (b.metrics?.a11y ?? 0) - (a.metrics?.a11y ?? 0)
-                          );
-                        if (sortBy === "perf")
-                          return (
-                            (b.metrics?.perf ?? 0) - (a.metrics?.perf ?? 0)
-                          );
-                        return 0;
-                      })
-                      .map((p, i) => (
-                        <ProjectCard
-                          key={p.title}
-                          project={p}
-                          index={i}
-                          onOpenCaseStudy={() => setOpenCaseStudy(p)}
-                        />
-                      ))}
-                  </motion.div>
->>>>>>> Stashed changes
                 </div>
               )}
               {section.id === "contact" && (
@@ -252,7 +184,7 @@ function App() {
                   </p>
                   <div className="flex justify-center gap-6">
                     <a
-                      href="https://github.com/yourusername"
+                      href="https://github.com/venaxin"
                       className="text-white hover:text-yellow-400 transition-colors"
                       target="_blank"
                       rel="noopener noreferrer"
@@ -260,7 +192,7 @@ function App() {
                       <FaGithub size={32} />
                     </a>
                     <a
-                      href="https://linkedin.com/in/yourusername"
+                      href="https://linkedin.com/in/abdul-rahman-hussain"
                       className="text-white hover:text-yellow-400 transition-colors"
                       target="_blank"
                       rel="noopener noreferrer"
