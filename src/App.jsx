@@ -6,6 +6,7 @@ import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { FiMoon, FiSun, FiAperture } from "react-icons/fi";
 import MeteorShower from "./MeteorShower.jsx";
 import PixelBlackhole from "./components/PixelBlackhole.jsx";
+import BlackholeGifParallax from "./components/BlackholeGifParallax.jsx";
 const ProjectCardLazy = lazy(() => import("./components/ProjectCard.jsx"));
 const CaseStudyLazy = lazy(() => import("./components/CaseStudy.jsx"));
 const ResumeSectionLazy = lazy(() => import("./components/ResumeSection.jsx"));
@@ -14,6 +15,7 @@ const ExperienceSectionLazy = lazy(() =>
 );
 import projects from "./data/projects.js";
 import resumePdf from "./data/Resume.pdf";
+import blackholeImg from "./data/blackhole.webp";
 
 function App() {
   const sections = useMemo(
@@ -34,7 +36,7 @@ function App() {
     return localStorage.getItem("snapEnabled") === "true";
   });
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("theme") || "theme-indigo";
+    return localStorage.getItem("theme") || "theme-mono";
   });
   const [menuOpen, setMenuOpen] = useState(false);
   const [sky, setSky] = useState(
@@ -51,6 +53,56 @@ function App() {
   });
   const [eightBit, setEightBit] = useState(() => {
     return localStorage.getItem("eightBit") === "true";
+  });
+  // High detail and target size for PixelBlackhole (8-bit mode)
+  const [bhHighDetail, setBhHighDetail] = useState(() => {
+    const v = localStorage.getItem("bhHighDetail");
+    return v ? v === "true" : true;
+  });
+  const [bhPixelSize, setBhPixelSize] = useState(() => {
+    const v = parseInt(localStorage.getItem("bhPixelSize") || "1", 10);
+    return Number.isFinite(v) ? Math.min(4, Math.max(1, v)) : 1;
+  });
+  const [bhTargetSize, setBhTargetSize] = useState(() => {
+    const v = parseInt(localStorage.getItem("bhTargetSize") || "500", 10);
+    return Number.isFinite(v) ? Math.min(1000, Math.max(200, v)) : 500;
+  });
+  // Red Blackhole preset
+  const [bhRedPreset, setBhRedPreset] = useState(() => {
+    return localStorage.getItem("bhRedPreset") === "true";
+  });
+  // Moderate HQ
+  const [bhHQ, setBhHQ] = useState(() => {
+    return localStorage.getItem("bhHQ") === "true";
+  });
+  const [bhHQHigh, setBhHQHigh] = useState(() => {
+    return localStorage.getItem("bhHQHigh") === "true";
+  });
+  // Master Black Hole enable toggle (default off)
+  const [bhEnabled, setBhEnabled] = useState(() => {
+    return localStorage.getItem("bhEnabled") === "true";
+  });
+  // Background element toggles
+  const [starsEnabled, setStarsEnabled] = useState(() => {
+    const v = localStorage.getItem("starsEnabled");
+    return v ? v === "true" : true;
+  });
+  const [bhGifsEnabled, setBhGifsEnabled] = useState(() => {
+    const v = localStorage.getItem("bhGifsEnabled");
+    return v ? v === "true" : true;
+  });
+  // Exposure & Vignette
+  const [bhExposure, setBhExposure] = useState(() => {
+    const stored = parseFloat(localStorage.getItem("bhExposure") || "");
+    if (!Number.isNaN(stored)) return Math.min(2, Math.max(0.8, stored));
+    const red = localStorage.getItem("bhRedPreset") === "true";
+    return red ? 1.25 : 1.18;
+  });
+  const [bhVignette, setBhVignette] = useState(() => {
+    const stored = parseFloat(localStorage.getItem("bhVignette") || "");
+    if (!Number.isNaN(stored)) return Math.min(1, Math.max(0, stored));
+    const red = localStorage.getItem("bhRedPreset") === "true";
+    return red ? 0.22 : 0.28;
   });
 
   // Environment flags for perf tuning
@@ -136,7 +188,9 @@ function App() {
       "theme-indigo",
       "theme-teal",
       "theme-rose",
-      "theme-emerald",
+      "theme-red",
+      "theme-sky",
+      "theme-mono",
       "theme-8bit",
     ];
     themes.forEach((t) => html.classList.remove(t));
@@ -152,25 +206,25 @@ function App() {
     const presets = {
       default: null, // use theme defaults
       dusk: {
-        g1: "#0b132b",
+        g1: "#000000",
         g2: "#1c2541",
         g3: "#3a506b",
         g4: "#1c2541",
-        g5: "#0b132b",
+        g5: "#000000",
       },
       aurora: {
-        g1: "#001510",
+        g1: "#000000",
         g2: "#003d31",
         g3: "#007f73",
         g4: "#00b894",
-        g5: "#001510",
+        g5: "#000000",
       },
       nebula: {
-        g1: "#10002b",
+        g1: "#000000",
         g2: "#240046",
         g3: "#3c096c",
         g4: "#5a189a",
-        g5: "#10002b",
+        g5: "#000000",
       },
     };
     const s = presets[sky];
@@ -220,6 +274,39 @@ function App() {
   useEffect(() => {
     localStorage.setItem("eightBit", String(eightBit));
   }, [eightBit]);
+  useEffect(() => {
+    localStorage.setItem("bhHighDetail", String(bhHighDetail));
+  }, [bhHighDetail]);
+  useEffect(() => {
+    localStorage.setItem("bhPixelSize", String(bhPixelSize));
+  }, [bhPixelSize]);
+  useEffect(() => {
+    localStorage.setItem("bhTargetSize", String(bhTargetSize));
+  }, [bhTargetSize]);
+  useEffect(() => {
+    localStorage.setItem("bhRedPreset", String(bhRedPreset));
+  }, [bhRedPreset]);
+  useEffect(() => {
+    localStorage.setItem("bhHQ", String(bhHQ));
+  }, [bhHQ]);
+  useEffect(() => {
+    localStorage.setItem("bhHQHigh", String(bhHQHigh));
+  }, [bhHQHigh]);
+  useEffect(() => {
+    localStorage.setItem("bhEnabled", String(bhEnabled));
+  }, [bhEnabled]);
+  useEffect(() => {
+    localStorage.setItem("starsEnabled", String(starsEnabled));
+  }, [starsEnabled]);
+  useEffect(() => {
+    localStorage.setItem("bhGifsEnabled", String(bhGifsEnabled));
+  }, [bhGifsEnabled]);
+  useEffect(() => {
+    localStorage.setItem("bhExposure", String(bhExposure));
+  }, [bhExposure]);
+  useEffect(() => {
+    localStorage.setItem("bhVignette", String(bhVignette));
+  }, [bhVignette]);
 
   // One-time background refresh on first load: toggle lowPower on then off
   // This forces canvas backgrounds to fully recalc size and span the viewport
@@ -296,15 +383,54 @@ function App() {
   return (
     <div className="relative min-h-screen">
       <div className="fixed inset-0 gradient-sky z-[-2]"></div>
-      {eightBit ? (
-        <PixelBlackhole disabled={prefersReduced || lowPower} fps={28} />
-      ) : (
-        <MeteorShower
+      {bhEnabled ? (
+        <PixelBlackhole
+          imageUrl={blackholeImg}
           disabled={prefersReduced || lowPower}
-          density={isMobile ? 0.55 : 0.85}
-          sizeScale={isMobile ? 0.9 : 1}
-          fps={isMobile ? 24 : 30}
+          fps={isMobile ? 26 : 30}
+          scale={isMobile ? 0.2 : bhHQHigh ? 0.26 : 0.2}
+          yScale={bhRedPreset ? 0.38 : 0.4}
+          diskRadius={bhRedPreset ? 0.54 : 0.5}
+          beaming={bhRedPreset ? 0.95 : 0.78}
+          beamingPhase={0}
+          beamingGamma={bhRedPreset ? 1.9 : 1.4}
+          glow={bhRedPreset ? 1.08 : 0.95}
+          lensing={bhRedPreset ? 0.42 : 0.36}
+          backGlow={bhRedPreset ? 1.18 : 1.08}
+          underGlow={bhRedPreset ? 0.62 : 0.52}
+          innerHot={bhRedPreset ? 0.62 : 0.5}
+          highDetail={bhHighDetail}
+          pixelSize={bhPixelSize}
+          targetDisplaySize={bhTargetSize}
+          useRadialPalette={bhRedPreset}
+          paletteOuter={[156, 26, 18]}
+          paletteMid={[255, 106, 0]}
+          paletteInner={[255, 235, 180]}
+          photonRingPasses={bhRedPreset ? (bhHQHigh ? 4 : 3) : bhHQHigh ? 2 : 1}
+          inflowRate={bhRedPreset ? 0.02 : 0}
+          flickerAmp={bhRedPreset ? 0.08 : 0}
+          turbSize={bhHQHigh ? 512 : bhHQ ? 384 : 256}
+          sliceMul={bhHQHigh ? 1.6 : bhHQ ? 1.25 : 1.0}
+          stepAdd={bhHQHigh ? 8 : bhHQ ? 4 : 0}
+          exposure={bhExposure}
+          vignette={bhVignette}
         />
+      ) : (
+        <>
+          {bhGifsEnabled && (
+            <BlackholeGifParallax
+              disabled={prefersReduced || lowPower}
+              opacity={0.16}
+            />
+          )}
+          <MeteorShower
+            disabled={prefersReduced || lowPower}
+            density={isMobile ? 0.55 : 0.85}
+            sizeScale={isMobile ? 0.9 : 1}
+            fps={isMobile ? 24 : 30}
+            showStars={starsEnabled}
+          />
+        </>
       )}
       <div className="relative z-10">
         {sections.map((section) => (
@@ -394,14 +520,6 @@ function App() {
                     </p>
                     <div className="flex justify-center gap-6">
                       <a
-                        href="https://github.com/venaxin"
-                        className="text-white hover:text-yellow-400 transition-colors"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <FaGithub size={32} />
-                      </a>
-                      <a
                         href="https://linkedin.com/in/abdul-rahman-hussain"
                         className="text-white hover:text-yellow-400 transition-colors"
                         target="_blank"
@@ -452,101 +570,373 @@ function App() {
           <div className="mb-3 text-base font-semibold">
             Accessibility & Themes
           </div>
-          {/* 8-bit mode */}
-          <div className="mb-3 flex items-center justify-between">
-            <span className="text-sm text-white/80">8-bit Retro Mode</span>
-            <button
-              onClick={() => setEightBit((v) => !v)}
-              className={`text-xs px-2 py-1 rounded-md border ${
-                eightBit
-                  ? "border-white/40 text-accent"
-                  : "border-white/20 hover:border-white/40"
-              } ${eightBit ? "pixel-button" : ""}`}
-            >
-              {eightBit ? "On" : "Off"}
-            </button>
-          </div>
-          {/* Low Power toggle */}
-          <div className="mb-3 flex items-center justify-between">
-            <span className="text-sm text-white/80">Low Power Mode</span>
-            <button
-              onClick={() => setLowPower((v) => !v)}
-              className={`text-xs px-2 py-1 rounded-md border ${
-                lowPower
-                  ? "border-white/40 text-accent"
-                  : "border-white/20 hover:border-white/40"
-              }`}
-            >
-              {lowPower ? "On" : "Off"}
-            </button>
-          </div>
-          {/* Snap toggle */}
-          <div className="mb-3 flex items-center justify-between">
-            <span className="text-sm text-white/80">Snap Scrolling</span>
-            <button
-              onClick={() => setSnapEnabled((v) => !v)}
-              className={`text-xs px-2 py-1 rounded-md border ${
-                snapEnabled
-                  ? "border-white/40 text-accent"
-                  : "border-white/20 hover:border-white/40"
-              }`}
-            >
-              {snapEnabled ? "On" : "Off"}
-            </button>
-          </div>
-          <div className="mb-3 text-xs text-white/70">
-            Choose a quick mood preset below. Changes apply instantly and
-            persist.
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {[
-              {
-                id: "midnight",
-                label: "Midnight Indigo",
-                theme: "theme-indigo",
-                sky: "default",
-                stars: "white",
-                meteors: "accent",
-              },
-              {
-                id: "aurora",
-                label: "Aurora Teal",
-                theme: "theme-teal",
-                sky: "aurora",
-                stars: "white",
-                meteors: "accent",
-              },
-              {
-                id: "cosmic",
-                label: "Cosmic Rose",
-                theme: "theme-rose",
-                sky: "nebula",
-                stars: "indigo",
-                meteors: "accent",
-              },
-              {
-                id: "nebula",
-                label: "Nebula Violet",
-                theme: "theme-indigo",
-                sky: "nebula",
-                stars: "rose",
-                meteors: "white",
-              },
-            ].map((m) => (
+          {/* 8-bit mode (hidden when Pixel Blackhole is ON) */}
+          {!bhEnabled && (
+            <div className="mb-3 flex items-center justify-between">
+              <span className="text-sm text-white/80">8-bit Retro Mode</span>
               <button
-                key={m.id}
-                onClick={() => {
-                  setTheme(m.theme);
-                  setSky(m.sky);
-                  setStarsColor(m.stars);
-                  setMeteorsColor(m.meteors);
-                }}
-                className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                onClick={() => setEightBit((v) => !v)}
+                className={`text-xs px-2 py-1 rounded-md border ${
+                  eightBit
+                    ? "border-white/40 text-accent"
+                    : "border-white/20 hover:border-white/40"
+                } ${eightBit ? "pixel-button" : ""}`}
               >
-                {m.label}
+                {eightBit ? "On" : "Off"}
               </button>
-            ))}
+            </div>
+          )}
+          {/* Pixel Blackhole controls */}
+          <div className="mb-3 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-white/80">Pixel Blackhole</span>
+              <button
+                onClick={() => setBhEnabled((v) => !v)}
+                className={`text-xs px-2 py-1 rounded-md border ${
+                  bhEnabled
+                    ? "border-white/40 text-accent"
+                    : "border-white/20 hover:border-white/40"
+                } ${eightBit ? "pixel-button" : ""}`}
+              >
+                {bhEnabled ? "On" : "Off"}
+              </button>
+            </div>
+            {bhEnabled && (
+              <>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-white/80">
+                    Red Blackhole Preset
+                  </span>
+                  <button
+                    onClick={() => setBhRedPreset((v) => !v)}
+                    className={`text-xs px-2 py-1 rounded-md border ${
+                      bhRedPreset
+                        ? "border-white/40 text-accent"
+                        : "border-white/20 hover:border-white/40"
+                    } ${eightBit ? "pixel-button" : ""}`}
+                  >
+                    {bhRedPreset ? "On" : "Off"}
+                  </button>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-white/80">High Detail</span>
+                  <button
+                    onClick={() => setBhHighDetail((v) => !v)}
+                    className={`text-xs px-2 py-1 rounded-md border ${
+                      bhHighDetail
+                        ? "border-white/40 text-accent"
+                        : "border-white/20 hover:border-white/40"
+                    } ${eightBit ? "pixel-button" : ""}`}
+                  >
+                    {bhHighDetail ? "On" : "Off"}
+                  </button>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-white/80">Moderate HQ</span>
+                  <button
+                    onClick={() => setBhHQ((v) => !v)}
+                    className={`text-xs px-2 py-1 rounded-md border ${
+                      bhHQ
+                        ? "border-white/40 text-accent"
+                        : "border-white/20 hover:border-white/40"
+                    } ${eightBit ? "pixel-button" : ""}`}
+                  >
+                    {bhHQ ? "On" : "Off"}
+                  </button>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-white/80">High HQ</span>
+                  <button
+                    onClick={() => setBhHQHigh((v) => !v)}
+                    className={`text-xs px-2 py-1 rounded-md border ${
+                      bhHQHigh
+                        ? "border-white/40 text-accent"
+                        : "border-white/20 hover:border-white/40"
+                    } ${eightBit ? "pixel-button" : ""}`}
+                  >
+                    {bhHQHigh ? "On" : "Off"}
+                  </button>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-white/80">Pixel Size</span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setBhPixelSize((v) => Math.max(1, v - 1))}
+                      className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                    >
+                      -
+                    </button>
+                    <span className="text-xs w-8 text-center">
+                      {bhPixelSize}
+                    </span>
+                    <button
+                      onClick={() => setBhPixelSize((v) => Math.min(4, v + 1))}
+                      className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-white/80">
+                    Target Size (px)
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() =>
+                        setBhTargetSize((v) => Math.max(200, v - 50))
+                      }
+                      className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                    >
+                      -
+                    </button>
+                    <span className="text-xs w-12 text-center">
+                      {bhTargetSize}
+                    </span>
+                    <button
+                      onClick={() =>
+                        setBhTargetSize((v) => Math.min(1000, v + 50))
+                      }
+                      className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-white/80">Exposure</span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() =>
+                        setBhExposure((v) =>
+                          parseFloat(Math.max(0.8, v - 0.03).toFixed(2))
+                        )
+                      }
+                      className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                    >
+                      -
+                    </button>
+                    <span className="text-xs w-12 text-center">
+                      {bhExposure.toFixed(2)}
+                    </span>
+                    <button
+                      onClick={() =>
+                        setBhExposure((v) =>
+                          parseFloat(Math.min(2, v + 0.03).toFixed(2))
+                        )
+                      }
+                      className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-white/80">Vignette</span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() =>
+                        setBhVignette((v) =>
+                          parseFloat(Math.max(0, v - 0.03).toFixed(2))
+                        )
+                      }
+                      className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                    >
+                      -
+                    </button>
+                    <span className="text-xs w-12 text-center">
+                      {bhVignette.toFixed(2)}
+                    </span>
+                    <button
+                      onClick={() =>
+                        setBhVignette((v) =>
+                          parseFloat(Math.min(1, v + 0.03).toFixed(2))
+                        )
+                      }
+                      className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
+          {/* Background elements (hidden when Pixel Blackhole is ON) */}
+          {!bhEnabled && (
+            <div className="mb-3 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-white/80">
+                  Blackhole GIF Parallax
+                </span>
+                <button
+                  onClick={() => setBhGifsEnabled((v) => !v)}
+                  className={`text-xs px-2 py-1 rounded-md border ${
+                    bhGifsEnabled
+                      ? "border-white/40 text-accent"
+                      : "border-white/20 hover:border-white/40"
+                  } ${eightBit ? "pixel-button" : ""}`}
+                >
+                  {bhGifsEnabled ? "On" : "Off"}
+                </button>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-white/80">Stars</span>
+                <button
+                  onClick={() => setStarsEnabled((v) => !v)}
+                  className={`text-xs px-2 py-1 rounded-md border ${
+                    starsEnabled
+                      ? "border-white/40 text-accent"
+                      : "border-white/20 hover:border-white/40"
+                  } ${eightBit ? "pixel-button" : ""}`}
+                >
+                  {starsEnabled ? "On" : "Off"}
+                </button>
+              </div>
+            </div>
+          )}
+          {/* Low Power toggle (hidden when Pixel Blackhole is ON) */}
+          {!bhEnabled && (
+            <div className="mb-3 flex items-center justify-between">
+              <span className="text-sm text-white/80">Low Power Mode</span>
+              <button
+                onClick={() => setLowPower((v) => !v)}
+                className={`text-xs px-2 py-1 rounded-md border ${
+                  lowPower
+                    ? "border-white/40 text-accent"
+                    : "border-white/20 hover:border-white/40"
+                }`}
+              >
+                {lowPower ? "On" : "Off"}
+              </button>
+            </div>
+          )}
+          {/* Snap toggle (hidden when Pixel Blackhole is ON) */}
+          {!bhEnabled && (
+            <div className="mb-3 flex items-center justify-between">
+              <span className="text-sm text-white/80">Snap Scrolling</span>
+              <button
+                onClick={() => setSnapEnabled((v) => !v)}
+                className={`text-xs px-2 py-1 rounded-md border ${
+                  snapEnabled
+                    ? "border-white/40 text-accent"
+                    : "border-white/20 hover:border-white/40"
+                }`}
+              >
+                {snapEnabled ? "On" : "Off"}
+              </button>
+            </div>
+          )}
+          {/* Mood presets (hidden when Pixel Blackhole is ON) */}
+          {!bhEnabled && (
+            <>
+              <div className="mb-3 text-xs text-white/70">
+                Choose a quick mood preset below. Changes apply instantly and
+                persist.
+              </div>
+              <div
+                className="grid grid-cols-3 gap-3"
+                role="radiogroup"
+                aria-label="Theme presets"
+              >
+                {[
+                  {
+                    id: "noir",
+                    label: "Noir Mono",
+                    theme: "theme-mono",
+                    sky: "default",
+                    stars: "white",
+                    meteors: "accent",
+                    swatch: { from: "#0a0a0a", to: "#1f2937" },
+                  },
+                  {
+                    id: "aurora",
+                    label: "Aurora Teal",
+                    theme: "theme-teal",
+                    sky: "aurora",
+                    stars: "white",
+                    meteors: "accent",
+                    swatch: { from: "#001a1a", to: "#0f766e" },
+                  },
+                  {
+                    id: "cosmic",
+                    label: "Cosmic Rose",
+                    theme: "theme-rose",
+                    sky: "nebula",
+                    stars: "indigo",
+                    meteors: "accent",
+                    swatch: { from: "#14000d", to: "#db2777" },
+                  },
+                  {
+                    id: "sky",
+                    label: "Sky Blue",
+                    theme: "theme-sky",
+                    sky: "default",
+                    stars: "white",
+                    meteors: "accent",
+                    swatch: { from: "#031320", to: "#0ea5e9" },
+                  },
+                  {
+                    id: "crimson",
+                    label: "Crimson Red",
+                    theme: "theme-red",
+                    sky: "default",
+                    stars: "white",
+                    meteors: "accent",
+                    swatch: { from: "#190000", to: "#dc2626" },
+                  },
+                  {
+                    id: "midnight",
+                    label: "Midnight Indigo",
+                    theme: "theme-indigo",
+                    sky: "default",
+                    stars: "white",
+                    meteors: "accent",
+                    swatch: { from: "#070311", to: "#4b0082" },
+                  },
+                ].map((m) => {
+                  const selected = theme === m.theme;
+                  return (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => {
+                        setTheme(m.theme);
+                        setSky(m.sky);
+                        setStarsColor(m.stars);
+                        setMeteorsColor(m.meteors);
+                      }}
+                      role="radio"
+                      aria-checked={selected}
+                      title={m.label}
+                      className="group w-24 flex flex-col items-center gap-1 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+                    >
+                      <div
+                        className={
+                          "w-12 h-12 rounded-full shadow-inner transition-all duration-150 " +
+                          (selected
+                            ? "ring-4 ring-[var(--accent)]"
+                            : "ring-2 ring-white/10 group-hover:ring-white/30")
+                        }
+                        style={{
+                          background: `linear-gradient(135deg, ${m.swatch.from}, ${m.swatch.to})`,
+                        }}
+                        aria-hidden="true"
+                      />
+                      <span
+                        className={
+                          "text-[10px] leading-tight text-center text-white/80 " +
+                          (selected ? "text-accent" : "")
+                        }
+                      >
+                        {m.label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          )}
           <div className="mt-3 flex justify-end">
             <button
               onClick={() => setMenuOpen(false)}
