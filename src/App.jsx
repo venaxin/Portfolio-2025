@@ -6,6 +6,7 @@ import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { FiMoon, FiSun, FiAperture } from "react-icons/fi";
 import MeteorShower from "./MeteorShower.jsx";
 import PixelBlackhole from "./components/PixelBlackhole.jsx";
+import BlackholeGifParallax from "./components/BlackholeGifParallax.jsx";
 const ProjectCardLazy = lazy(() => import("./components/ProjectCard.jsx"));
 const CaseStudyLazy = lazy(() => import("./components/CaseStudy.jsx"));
 const ResumeSectionLazy = lazy(() => import("./components/ResumeSection.jsx"));
@@ -80,6 +81,15 @@ function App() {
   // Master Black Hole enable toggle (default off)
   const [bhEnabled, setBhEnabled] = useState(() => {
     return localStorage.getItem("bhEnabled") === "true";
+  });
+  // Background element toggles
+  const [starsEnabled, setStarsEnabled] = useState(() => {
+    const v = localStorage.getItem("starsEnabled");
+    return v ? v === "true" : true;
+  });
+  const [bhGifsEnabled, setBhGifsEnabled] = useState(() => {
+    const v = localStorage.getItem("bhGifsEnabled");
+    return v ? v === "true" : true;
   });
   // Exposure & Vignette
   const [bhExposure, setBhExposure] = useState(() => {
@@ -284,6 +294,12 @@ function App() {
     localStorage.setItem("bhEnabled", String(bhEnabled));
   }, [bhEnabled]);
   useEffect(() => {
+    localStorage.setItem("starsEnabled", String(starsEnabled));
+  }, [starsEnabled]);
+  useEffect(() => {
+    localStorage.setItem("bhGifsEnabled", String(bhGifsEnabled));
+  }, [bhGifsEnabled]);
+  useEffect(() => {
     localStorage.setItem("bhExposure", String(bhExposure));
   }, [bhExposure]);
   useEffect(() => {
@@ -365,7 +381,7 @@ function App() {
   return (
     <div className="relative min-h-screen">
       <div className="fixed inset-0 gradient-sky z-[-2]"></div>
-      {eightBit && bhEnabled ? (
+      {bhEnabled ? (
         <PixelBlackhole
           imageUrl={blackholeImg}
           disabled={prefersReduced || lowPower}
@@ -398,12 +414,21 @@ function App() {
           vignette={bhVignette}
         />
       ) : (
-        <MeteorShower
-          disabled={prefersReduced || lowPower}
-          density={isMobile ? 0.55 : 0.85}
-          sizeScale={isMobile ? 0.9 : 1}
-          fps={isMobile ? 24 : 30}
-        />
+        <>
+          {bhGifsEnabled && (
+            <BlackholeGifParallax
+              disabled={prefersReduced || lowPower}
+              opacity={0.16}
+            />
+          )}
+          <MeteorShower
+            disabled={prefersReduced || lowPower}
+            density={isMobile ? 0.55 : 0.85}
+            sizeScale={isMobile ? 0.9 : 1}
+            fps={isMobile ? 24 : 30}
+            showStars={starsEnabled}
+          />
+        </>
       )}
       <div className="relative z-10">
         {sections.map((section) => (
@@ -493,14 +518,6 @@ function App() {
                     </p>
                     <div className="flex justify-center gap-6">
                       <a
-                        href="https://github.com/venaxin"
-                        className="text-white hover:text-yellow-400 transition-colors"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <FaGithub size={32} />
-                      </a>
-                      <a
                         href="https://linkedin.com/in/abdul-rahman-hussain"
                         className="text-white hover:text-yellow-400 transition-colors"
                         target="_blank"
@@ -551,285 +568,321 @@ function App() {
           <div className="mb-3 text-base font-semibold">
             Accessibility & Themes
           </div>
-          {/* 8-bit mode */}
-          <div className="mb-3 flex items-center justify-between">
-            <span className="text-sm text-white/80">8-bit Retro Mode</span>
-            <button
-              onClick={() => setEightBit((v) => !v)}
-              className={`text-xs px-2 py-1 rounded-md border ${
-                eightBit
-                  ? "border-white/40 text-accent"
-                  : "border-white/20 hover:border-white/40"
-              } ${eightBit ? "pixel-button" : ""}`}
-            >
-              {eightBit ? "On" : "Off"}
-            </button>
+          {/* 8-bit mode (hidden when Pixel Blackhole is ON) */}
+          {!bhEnabled && (
+            <div className="mb-3 flex items-center justify-between">
+              <span className="text-sm text-white/80">8-bit Retro Mode</span>
+              <button
+                onClick={() => setEightBit((v) => !v)}
+                className={`text-xs px-2 py-1 rounded-md border ${
+                  eightBit
+                    ? "border-white/40 text-accent"
+                    : "border-white/20 hover:border-white/40"
+                } ${eightBit ? "pixel-button" : ""}`}
+              >
+                {eightBit ? "On" : "Off"}
+              </button>
+            </div>
+          )}
+          {/* Pixel Blackhole controls */}
+          <div className="mb-3 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-white/80">Pixel Blackhole</span>
+              <button
+                onClick={() => setBhEnabled((v) => !v)}
+                className={`text-xs px-2 py-1 rounded-md border ${
+                  bhEnabled
+                    ? "border-white/40 text-accent"
+                    : "border-white/20 hover:border-white/40"
+                } ${eightBit ? "pixel-button" : ""}`}
+              >
+                {bhEnabled ? "On" : "Off"}
+              </button>
+            </div>
+            {bhEnabled && (
+              <>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-white/80">
+                    Red Blackhole Preset
+                  </span>
+                  <button
+                    onClick={() => setBhRedPreset((v) => !v)}
+                    className={`text-xs px-2 py-1 rounded-md border ${
+                      bhRedPreset
+                        ? "border-white/40 text-accent"
+                        : "border-white/20 hover:border-white/40"
+                    } ${eightBit ? "pixel-button" : ""}`}
+                  >
+                    {bhRedPreset ? "On" : "Off"}
+                  </button>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-white/80">High Detail</span>
+                  <button
+                    onClick={() => setBhHighDetail((v) => !v)}
+                    className={`text-xs px-2 py-1 rounded-md border ${
+                      bhHighDetail
+                        ? "border-white/40 text-accent"
+                        : "border-white/20 hover:border-white/40"
+                    } ${eightBit ? "pixel-button" : ""}`}
+                  >
+                    {bhHighDetail ? "On" : "Off"}
+                  </button>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-white/80">Moderate HQ</span>
+                  <button
+                    onClick={() => setBhHQ((v) => !v)}
+                    className={`text-xs px-2 py-1 rounded-md border ${
+                      bhHQ
+                        ? "border-white/40 text-accent"
+                        : "border-white/20 hover:border-white/40"
+                    } ${eightBit ? "pixel-button" : ""}`}
+                  >
+                    {bhHQ ? "On" : "Off"}
+                  </button>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-white/80">High HQ</span>
+                  <button
+                    onClick={() => setBhHQHigh((v) => !v)}
+                    className={`text-xs px-2 py-1 rounded-md border ${
+                      bhHQHigh
+                        ? "border-white/40 text-accent"
+                        : "border-white/20 hover:border-white/40"
+                    } ${eightBit ? "pixel-button" : ""}`}
+                  >
+                    {bhHQHigh ? "On" : "Off"}
+                  </button>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-white/80">Pixel Size</span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setBhPixelSize((v) => Math.max(1, v - 1))}
+                      className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                    >
+                      -
+                    </button>
+                    <span className="text-xs w-8 text-center">
+                      {bhPixelSize}
+                    </span>
+                    <button
+                      onClick={() => setBhPixelSize((v) => Math.min(4, v + 1))}
+                      className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-white/80">
+                    Target Size (px)
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() =>
+                        setBhTargetSize((v) => Math.max(200, v - 50))
+                      }
+                      className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                    >
+                      -
+                    </button>
+                    <span className="text-xs w-12 text-center">
+                      {bhTargetSize}
+                    </span>
+                    <button
+                      onClick={() =>
+                        setBhTargetSize((v) => Math.min(1000, v + 50))
+                      }
+                      className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-white/80">Exposure</span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() =>
+                        setBhExposure((v) =>
+                          parseFloat(Math.max(0.8, v - 0.03).toFixed(2))
+                        )
+                      }
+                      className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                    >
+                      -
+                    </button>
+                    <span className="text-xs w-12 text-center">
+                      {bhExposure.toFixed(2)}
+                    </span>
+                    <button
+                      onClick={() =>
+                        setBhExposure((v) =>
+                          parseFloat(Math.min(2, v + 0.03).toFixed(2))
+                        )
+                      }
+                      className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-white/80">Vignette</span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() =>
+                        setBhVignette((v) =>
+                          parseFloat(Math.max(0, v - 0.03).toFixed(2))
+                        )
+                      }
+                      className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                    >
+                      -
+                    </button>
+                    <span className="text-xs w-12 text-center">
+                      {bhVignette.toFixed(2)}
+                    </span>
+                    <button
+                      onClick={() =>
+                        setBhVignette((v) =>
+                          parseFloat(Math.min(1, v + 0.03).toFixed(2))
+                        )
+                      }
+                      className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
-          {eightBit && (
+          {/* Background elements (hidden when Pixel Blackhole is ON) */}
+          {!bhEnabled && (
             <div className="mb-3 space-y-3">
-              {/* Black Hole master toggle */}
               <div className="flex items-center justify-between">
                 <span className="text-sm text-white/80">
-                  Black Hole Background
+                  Blackhole GIF Parallax
                 </span>
                 <button
-                  onClick={() => setBhEnabled((v) => !v)}
+                  onClick={() => setBhGifsEnabled((v) => !v)}
                   className={`text-xs px-2 py-1 rounded-md border ${
-                    bhEnabled
+                    bhGifsEnabled
                       ? "border-white/40 text-accent"
                       : "border-white/20 hover:border-white/40"
                   } ${eightBit ? "pixel-button" : ""}`}
                 >
-                  {bhEnabled ? "On" : "Off"}
+                  {bhGifsEnabled ? "On" : "Off"}
                 </button>
               </div>
-              {bhEnabled && (
-                <>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-white/80">
-                      Red Blackhole Preset
-                    </span>
-                    <button
-                      onClick={() => setBhRedPreset((v) => !v)}
-                      className={`text-xs px-2 py-1 rounded-md border ${
-                        bhRedPreset
-                          ? "border-white/40 text-accent"
-                          : "border-white/20 hover:border-white/40"
-                      } ${eightBit ? "pixel-button" : ""}`}
-                    >
-                      {bhRedPreset ? "On" : "Off"}
-                    </button>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-white/80">High Detail</span>
-                    <button
-                      onClick={() => setBhHighDetail((v) => !v)}
-                      className={`text-xs px-2 py-1 rounded-md border ${
-                        bhHighDetail
-                          ? "border-white/40 text-accent"
-                          : "border-white/20 hover:border-white/40"
-                      } ${eightBit ? "pixel-button" : ""}`}
-                    >
-                      {bhHighDetail ? "On" : "Off"}
-                    </button>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-white/80">Moderate HQ</span>
-                    <button
-                      onClick={() => setBhHQ((v) => !v)}
-                      className={`text-xs px-2 py-1 rounded-md border ${
-                        bhHQ
-                          ? "border-white/40 text-accent"
-                          : "border-white/20 hover:border-white/40"
-                      } ${eightBit ? "pixel-button" : ""}`}
-                    >
-                      {bhHQ ? "On" : "Off"}
-                    </button>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-white/80">High HQ</span>
-                    <button
-                      onClick={() => setBhHQHigh((v) => !v)}
-                      className={`text-xs px-2 py-1 rounded-md border ${
-                        bhHQHigh
-                          ? "border-white/40 text-accent"
-                          : "border-white/20 hover:border-white/40"
-                      } ${eightBit ? "pixel-button" : ""}`}
-                    >
-                      {bhHQHigh ? "On" : "Off"}
-                    </button>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-white/80">Pixel Size</span>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() =>
-                          setBhPixelSize((v) => Math.max(1, v - 1))
-                        }
-                        className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
-                      >
-                        -
-                      </button>
-                      <span className="text-xs w-8 text-center">
-                        {bhPixelSize}
-                      </span>
-                      <button
-                        onClick={() =>
-                          setBhPixelSize((v) => Math.min(4, v + 1))
-                        }
-                        className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-white/80">
-                      Target Size (px)
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() =>
-                          setBhTargetSize((v) => Math.max(200, v - 50))
-                        }
-                        className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
-                      >
-                        -
-                      </button>
-                      <span className="text-xs w-12 text-center">
-                        {bhTargetSize}
-                      </span>
-                      <button
-                        onClick={() =>
-                          setBhTargetSize((v) => Math.min(1000, v + 50))
-                        }
-                        className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-white/80">Exposure</span>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() =>
-                          setBhExposure((v) =>
-                            parseFloat(Math.max(0.8, v - 0.03).toFixed(2))
-                          )
-                        }
-                        className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
-                      >
-                        -
-                      </button>
-                      <span className="text-xs w-12 text-center">
-                        {bhExposure.toFixed(2)}
-                      </span>
-                      <button
-                        onClick={() =>
-                          setBhExposure((v) =>
-                            parseFloat(Math.min(2, v + 0.03).toFixed(2))
-                          )
-                        }
-                        className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-white/80">Vignette</span>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() =>
-                          setBhVignette((v) =>
-                            parseFloat(Math.max(0, v - 0.03).toFixed(2))
-                          )
-                        }
-                        className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
-                      >
-                        -
-                      </button>
-                      <span className="text-xs w-12 text-center">
-                        {bhVignette.toFixed(2)}
-                      </span>
-                      <button
-                        onClick={() =>
-                          setBhVignette((v) =>
-                            parseFloat(Math.min(1, v + 0.03).toFixed(2))
-                          )
-                        }
-                        className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-                </>
-              )}
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-white/80">Stars</span>
+                <button
+                  onClick={() => setStarsEnabled((v) => !v)}
+                  className={`text-xs px-2 py-1 rounded-md border ${
+                    starsEnabled
+                      ? "border-white/40 text-accent"
+                      : "border-white/20 hover:border-white/40"
+                  } ${eightBit ? "pixel-button" : ""}`}
+                >
+                  {starsEnabled ? "On" : "Off"}
+                </button>
+              </div>
             </div>
           )}
-          {/* Low Power toggle */}
-          <div className="mb-3 flex items-center justify-between">
-            <span className="text-sm text-white/80">Low Power Mode</span>
-            <button
-              onClick={() => setLowPower((v) => !v)}
-              className={`text-xs px-2 py-1 rounded-md border ${
-                lowPower
-                  ? "border-white/40 text-accent"
-                  : "border-white/20 hover:border-white/40"
-              }`}
-            >
-              {lowPower ? "On" : "Off"}
-            </button>
-          </div>
-          {/* Snap toggle */}
-          <div className="mb-3 flex items-center justify-between">
-            <span className="text-sm text-white/80">Snap Scrolling</span>
-            <button
-              onClick={() => setSnapEnabled((v) => !v)}
-              className={`text-xs px-2 py-1 rounded-md border ${
-                snapEnabled
-                  ? "border-white/40 text-accent"
-                  : "border-white/20 hover:border-white/40"
-              }`}
-            >
-              {snapEnabled ? "On" : "Off"}
-            </button>
-          </div>
-          <div className="mb-3 text-xs text-white/70">
-            Choose a quick mood preset below. Changes apply instantly and
-            persist.
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {[
-              {
-                id: "midnight",
-                label: "Midnight Indigo",
-                theme: "theme-indigo",
-                sky: "default",
-                stars: "white",
-                meteors: "accent",
-              },
-              {
-                id: "aurora",
-                label: "Aurora Teal",
-                theme: "theme-teal",
-                sky: "aurora",
-                stars: "white",
-                meteors: "accent",
-              },
-              {
-                id: "cosmic",
-                label: "Cosmic Rose",
-                theme: "theme-rose",
-                sky: "nebula",
-                stars: "indigo",
-                meteors: "accent",
-              },
-              {
-                id: "nebula",
-                label: "Nebula Violet",
-                theme: "theme-indigo",
-                sky: "nebula",
-                stars: "rose",
-                meteors: "white",
-              },
-            ].map((m) => (
+          {/* Low Power toggle (hidden when Pixel Blackhole is ON) */}
+          {!bhEnabled && (
+            <div className="mb-3 flex items-center justify-between">
+              <span className="text-sm text-white/80">Low Power Mode</span>
               <button
-                key={m.id}
-                onClick={() => {
-                  setTheme(m.theme);
-                  setSky(m.sky);
-                  setStarsColor(m.stars);
-                  setMeteorsColor(m.meteors);
-                }}
-                className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                onClick={() => setLowPower((v) => !v)}
+                className={`text-xs px-2 py-1 rounded-md border ${
+                  lowPower
+                    ? "border-white/40 text-accent"
+                    : "border-white/20 hover:border-white/40"
+                }`}
               >
-                {m.label}
+                {lowPower ? "On" : "Off"}
               </button>
-            ))}
-          </div>
+            </div>
+          )}
+          {/* Snap toggle (hidden when Pixel Blackhole is ON) */}
+          {!bhEnabled && (
+            <div className="mb-3 flex items-center justify-between">
+              <span className="text-sm text-white/80">Snap Scrolling</span>
+              <button
+                onClick={() => setSnapEnabled((v) => !v)}
+                className={`text-xs px-2 py-1 rounded-md border ${
+                  snapEnabled
+                    ? "border-white/40 text-accent"
+                    : "border-white/20 hover:border-white/40"
+                }`}
+              >
+                {snapEnabled ? "On" : "Off"}
+              </button>
+            </div>
+          )}
+          {/* Mood presets (hidden when Pixel Blackhole is ON) */}
+          {!bhEnabled && (
+            <>
+              <div className="mb-3 text-xs text-white/70">
+                Choose a quick mood preset below. Changes apply instantly and
+                persist.
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  {
+                    id: "midnight",
+                    label: "Midnight Indigo",
+                    theme: "theme-indigo",
+                    sky: "default",
+                    stars: "white",
+                    meteors: "accent",
+                  },
+                  {
+                    id: "aurora",
+                    label: "Aurora Teal",
+                    theme: "theme-teal",
+                    sky: "aurora",
+                    stars: "white",
+                    meteors: "accent",
+                  },
+                  {
+                    id: "cosmic",
+                    label: "Cosmic Rose",
+                    theme: "theme-rose",
+                    sky: "nebula",
+                    stars: "indigo",
+                    meteors: "accent",
+                  },
+                  {
+                    id: "nebula",
+                    label: "Nebula Violet",
+                    theme: "theme-indigo",
+                    sky: "nebula",
+                    stars: "rose",
+                    meteors: "white",
+                  },
+                ].map((m) => (
+                  <button
+                    key={m.id}
+                    onClick={() => {
+                      setTheme(m.theme);
+                      setSky(m.sky);
+                      setStarsColor(m.stars);
+                      setMeteorsColor(m.meteors);
+                    }}
+                    className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                  >
+                    {m.label}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
           <div className="mt-3 flex justify-end">
             <button
               onClick={() => setMenuOpen(false)}

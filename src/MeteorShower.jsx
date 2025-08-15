@@ -6,6 +6,7 @@ function MeteorShower({
   density = 1,
   sizeScale = 1,
   fps = 30,
+  showStars = true,
 }) {
   const canvasRef = useRef(null);
 
@@ -313,12 +314,17 @@ function MeteorShower({
       110,
       Math.max(18, Math.round(Math.sqrt(area) / 30))
     );
-    const stars = Array.from(
-      {
-        length: Math.max(8, Math.round((baseStars * density) / Math.sqrt(dpr))),
-      },
-      () => new Star()
-    );
+    const stars = showStars
+      ? Array.from(
+          {
+            length: Math.max(
+              8,
+              Math.round((baseStars * density) / Math.sqrt(dpr))
+            ),
+          },
+          () => new Star()
+        )
+      : [];
     const meteors = [];
     const isSmall = Math.min(canvas.width / dpr, canvas.height / dpr) < 720;
     const maxMeteors = Math.max(1, Math.round((isSmall ? 2 : 4) * density));
@@ -335,9 +341,11 @@ function MeteorShower({
     const repositionStars = () => {
       const cssW = canvas.width / dpr;
       const cssH = canvas.height / dpr;
-      for (const star of stars) {
-        star.x = Math.random() * cssW;
-        star.y = Math.random() * cssH;
+      if (stars.length) {
+        for (const star of stars) {
+          star.x = Math.random() * cssW;
+          star.y = Math.random() * cssH;
+        }
       }
     };
     repositionStars();
@@ -364,23 +372,25 @@ function MeteorShower({
       // Clear the canvas using CSS pixel coords (context is scaled to DPR)
       ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
       // Limit number of cross stars drawn per frame to avoid spikes
-      let crossBudget = 28;
-      for (let i = 0; i < stars.length; i++) {
-        const star = stars[i];
-        star.update();
-        if (star.isCross) {
-          if (crossBudget <= 0) {
-            // Fallback: draw only core glow
-            const prev = star.isCross;
-            star.isCross = false;
-            star.draw();
-            star.isCross = prev;
+      if (stars.length) {
+        let crossBudget = 28;
+        for (let i = 0; i < stars.length; i++) {
+          const star = stars[i];
+          star.update();
+          if (star.isCross) {
+            if (crossBudget <= 0) {
+              // Fallback: draw only core glow
+              const prev = star.isCross;
+              star.isCross = false;
+              star.draw();
+              star.isCross = prev;
+            } else {
+              star.draw();
+              crossBudget--;
+            }
           } else {
             star.draw();
-            crossBudget--;
           }
-        } else {
-          star.draw();
         }
       }
       meteors.forEach((meteor, index) => {
@@ -414,7 +424,7 @@ function MeteorShower({
       window.removeEventListener("appearance-change", onAppearance);
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [disabled, density, sizeScale, fps]);
+  }, [disabled, density, sizeScale, fps, showStars]);
 
   return (
     <canvas
