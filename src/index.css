@@ -52,32 +52,59 @@ html.theme-teal {
   --accent: #f59e0b; /* amber */
   --accent-rgb: 245, 158, 11;
   --on-accent: #000;
-  --g1: #00110f;
+  --g1: #000000; /* top black */
   --g2: #001a1a;
   --g3: #01232a;
   --g4: #0f766e;
   --accent-rgb: 20, 184, 166;
-  --g5: #00110f;
+  --g5: #000000; /* bottom black */
 }
 html.theme-rose {
-  --accent: #fb7185; /* rose-400 */
-  --on-accent: #2a0006;
-  --accent-rgb: 251, 113, 133;
-  --g1: #120009;
-  --g2: #1a0512;
-  --g3: #22081b;
-  --g4: #7c3aed;
-  --g5: #0ea5e9;
-  --accent-rgb: 16, 185, 129;
+  /* Cosmic Rose: push more pink */
+  --accent: #ec4899; /* pink-500 */
+  --on-accent: #2a0019;
+  --accent-rgb: 236, 72, 153;
+  --g1: #000000; /* top black */
+  --g2: #14000d; /* deeper pink shadow */
+  --g3: #2e0b1f; /* saturated pink-violet */
+  --g4: #db2777; /* pink-600 */
+  --g5: #000000; /* bottom black */
 }
-html.theme-emerald {
-  --accent: #10b981; /* emerald-500 */
-  --on-accent: #00140d;
-  --g1: #00100a;
-  --g2: #051912;
-  --g3: #06211a;
-  --g4: #0ea5e9;
-  --g5: #000814;
+/* Replaced: Deep Emerald -> Crimson Red */
+html.theme-red {
+  --accent: #ef4444; /* red-500 */
+  --accent-rgb: 239, 68, 68;
+  --on-accent: #2b0000;
+  --g1: #000000; /* top black */
+  --g2: #190000; /* deep maroon */
+  --g3: #2a0000; /* crimson base */
+  --g4: #dc2626; /* red-600 */
+  --g5: #000000; /* bottom black */
+}
+
+/* New: Violet theme (distinct from rose) */
+html.theme-violet {
+  --accent: #8b5cf6; /* violet-500 */
+  --accent-rgb: 139, 92, 246;
+  --on-accent: #100826;
+  --g1: #000000; /* top black */
+  --g2: #0a0014; /* deep space purple */
+  --g3: #160b2e; /* cool violet */
+  --g4: #6d28d9; /* violet-600 */
+  --g5: #000000; /* bottom black */
+}
+
+/* New: Cyan theme */
+/* Replaced: Neon Cyan -> Noir Mono (Black & White) */
+html.theme-mono {
+  --accent: #e5e7eb; /* gray-200 for subtle light accent */
+  --accent-rgb: 229, 231, 235;
+  --on-accent: #000000;
+  --g1: #000000; /* top black */
+  --g2: #0a0a0a; /* deep charcoal */
+  --g3: #111111; /* near-black */
+  --g4: #1f2937; /* gray-800 gives depth */
+  --g5: #000000; /* bottom black */
 }
 
 /* 8-bit theme: high-contrast accent with deep space gradient */
@@ -85,11 +112,11 @@ html.theme-8bit {
   --accent: #ffcc00; /* pixel gold */
   --accent-rgb: 255, 204, 0;
   --on-accent: #000;
-  --g1: #000000;
+  --g1: #000000; /* top black */
   --g2: #0b0b16;
   --g3: #121226;
   --g4: #1c1c38;
-  --g5: #000000;
+  --g5: #000000; /* bottom black */
 }
 
 /* Gradient sky layer uses theme variables */

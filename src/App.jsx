@@ -188,7 +188,9 @@ function App() {
       "theme-indigo",
       "theme-teal",
       "theme-rose",
-      "theme-emerald",
+      "theme-red",
+      "theme-violet",
+      "theme-mono",
       "theme-8bit",
     ];
     themes.forEach((t) => html.classList.remove(t));
@@ -204,25 +206,25 @@ function App() {
     const presets = {
       default: null, // use theme defaults
       dusk: {
-        g1: "#0b132b",
+        g1: "#000000",
         g2: "#1c2541",
         g3: "#3a506b",
         g4: "#1c2541",
-        g5: "#0b132b",
+        g5: "#000000",
       },
       aurora: {
-        g1: "#001510",
+        g1: "#000000",
         g2: "#003d31",
         g3: "#007f73",
         g4: "#00b894",
-        g5: "#001510",
+        g5: "#000000",
       },
       nebula: {
-        g1: "#10002b",
+        g1: "#000000",
         g2: "#240046",
         g3: "#3c096c",
         g4: "#5a189a",
-        g5: "#10002b",
+        g5: "#000000",
       },
     };
     const s = presets[sky];
@@ -861,10 +863,26 @@ function App() {
                   {
                     id: "nebula",
                     label: "Nebula Violet",
-                    theme: "theme-indigo",
+                    theme: "theme-violet",
                     sky: "nebula",
-                    stars: "rose",
-                    meteors: "white",
+                    stars: "white",
+                    meteors: "accent",
+                  },
+                  {
+                    id: "crimson",
+                    label: "Crimson Red",
+                    theme: "theme-red",
+                    sky: "default",
+                    stars: "white",
+                    meteors: "accent",
+                  },
+                  {
+                    id: "noir",
+                    label: "Noir Mono",
+                    theme: "theme-mono",
+                    sky: "default",
+                    stars: "white",
+                    meteors: "accent",
                   },
                 ].map((m) => (
                   <button
