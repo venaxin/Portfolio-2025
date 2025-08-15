@@ -39,6 +39,9 @@ export default function PixelBlackhole({
   turbSize = 256, // turbulence texture resolution
   sliceMul = 1.0, // multiply angular slices for smoother arcs
   stepAdd = 0, // add radial steps to thicken disk sampling
+  // Global tonemapping
+  exposure = 1.15, // brighten colors slightly
+  vignette = 0.35, // edge darkening strength (0..1)
   disabled = false,
 }) {
   const canvasRef = useRef(null);
@@ -367,9 +370,13 @@ export default function PixelBlackhole({
               colBaseG = Math.min(255, Math.round(colBaseG * 1.12));
               colBaseB = Math.min(255, Math.round(colBaseB * 1.12));
             }
-            const colR = Math.round(colBaseR * (1 - whiten) + 255 * whiten);
-            const colG = Math.round(colBaseG * (1 - whiten) + 255 * whiten);
-            const colB = Math.round(colBaseB * (1 - whiten) + 255 * whiten);
+            let colR = Math.round(colBaseR * (1 - whiten) + 255 * whiten);
+            let colG = Math.round(colBaseG * (1 - whiten) + 255 * whiten);
+            let colB = Math.round(colBaseB * (1 - whiten) + 255 * whiten);
+            // Apply exposure
+            const eR = Math.min(255, Math.round(colR * exposure));
+            const eG = Math.min(255, Math.round(colG * exposure));
+            const eB = Math.min(255, Math.round(colB * exposure));
 
             // Base ellipse position
             const x0 = cx + sx * rr;
@@ -401,7 +408,7 @@ export default function PixelBlackhole({
                   1 + flickerAmp * (0.5 * flick + 0.5 * (turbVal - 0.5));
               }
               const yF = y0 + (sy < 0 ? lens * 0.35 : 0);
-              bctx.fillStyle = `rgba(${colR},${colG},${colB},${alphaFront})`;
+              bctx.fillStyle = `rgba(${eR},${eG},${eB},${alphaFront})`;
               const xi = Math.floor(x0);
               const yi = Math.floor(yF);
               bctx.fillRect(xi, yi, pixelSize, pixelSize);
@@ -425,7 +432,7 @@ export default function PixelBlackhole({
               const yB = y0 - lens; // lift upward over the hole
               const xi2 = Math.floor(x0);
               const yi2 = Math.floor(yB * 0.98 + cy * 0.02);
-              bctx.fillStyle = `rgba(${colR},${colG},${colB},${alphaBack})`;
+              bctx.fillStyle = `rgba(${eR},${eG},${eB},${alphaBack})`;
               bctx.fillRect(xi2, yi2, pixelSize, pixelSize);
             }
           }
@@ -446,9 +453,13 @@ export default function PixelBlackhole({
 
       // 4) Photon ring glow (gravitational lensing band above and below) on top
       const pr = maxR * photonRingScale;
-      const rR = Math.min(255, Math.round(ringRGB[0] * 1.12));
-      const rG = Math.min(255, Math.round(ringRGB[1] * 1.12));
-      const rB = Math.min(255, Math.round(ringRGB[2] * 1.12));
+      let rR = Math.min(255, Math.round(ringRGB[0] * 1.12));
+      let rG = Math.min(255, Math.round(ringRGB[1] * 1.12));
+      let rB = Math.min(255, Math.round(ringRGB[2] * 1.12));
+      // Apply exposure to photon ring color
+      rR = Math.min(255, Math.round(rR * exposure));
+      rG = Math.min(255, Math.round(rG * exposure));
+      rB = Math.min(255, Math.round(rB * exposure));
       const passes = Math.max(1, Math.floor(photonRingPasses));
       const step = Math.max(1, Math.round(pixelSize));
       for (let s = 0; s < slices; s++) {
@@ -503,7 +514,7 @@ export default function PixelBlackhole({
         maxR * 2
       );
       grad.addColorStop(0, "rgba(0,0,0,0)");
-      grad.addColorStop(1, "rgba(0,0,0,0.5)");
+      grad.addColorStop(1, `rgba(0,0,0,${Math.max(0, Math.min(1, vignette))})`);
       bctx.fillStyle = grad;
       bctx.fillRect(0, 0, w, h);
 
@@ -549,6 +560,8 @@ export default function PixelBlackhole({
     turbSize,
     sliceMul,
     stepAdd,
+    exposure,
+    vignette,
     disabled,
   ]);
 

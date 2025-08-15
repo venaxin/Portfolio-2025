@@ -64,28 +64,147 @@ function MeteorShower({
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }, 100);
 
-    // Star class
+    // Star class with optional HD star-cross sparkle
     class Star {
       constructor() {
         const cssW = canvas.width / dpr;
         const cssH = canvas.height / dpr;
         this.x = Math.random() * cssW;
         this.y = Math.random() * cssH;
-        this.radius = (Math.random() * 1.1 + 0.6) * sizeScale; // smaller & cheaper
-        this.baseAlpha = 0.5;
+        this.radius = (Math.random() * 1.1 + 0.6) * sizeScale; // base dot core
+        this.baseAlpha = 0.55;
         this.pulsePhase = Math.random() * Math.PI * 2;
-        this.pulseSpeed = Math.random() * 0.006 + 0.002; // Pulse: 0.002 to 0.008
+        this.pulseSpeed = Math.random() * 0.006 + 0.002; // 0.002..0.008
+
+        // A subset get fancy star-cross treatment for visuals; keep sparse for perf
+        this.isCross = Math.random() < 0.18; // ~18% of stars become sparkles
+        if (this.isCross) {
+          // Cross parameters
+          const hero = Math.random() < 0.25; // some a bit larger
+          this.armLength = (hero ? 18 : 12) * sizeScale;
+          this.armWidth = (hero ? 1.6 : 1.2) * sizeScale;
+          this.rotation = Math.random() * Math.PI * 2;
+          this.rotationSpeed =
+            (Math.random() * 0.0012 + 0.0004) * (Math.random() < 0.5 ? 1 : -1);
+          this.flowPhase = Math.random() * Math.PI * 2;
+          this.flowSpeed = Math.random() * 0.008 + 0.003; // breathing width for glow band
+          this.hasDiagonals = Math.random() < 0.5; // optional extra X arms
+        }
       }
       update() {
         this.pulsePhase += this.pulseSpeed;
-        this.alpha = 0.5 + Math.sin(this.pulsePhase) * 0.3; // Alpha: 0.2 to 0.8
+        this.alpha = 0.5 + Math.sin(this.pulsePhase) * 0.3; // 0.2..0.8
+        if (this.isCross) {
+          this.rotation += this.rotationSpeed;
+          this.flowPhase += this.flowSpeed;
+        }
       }
       draw() {
-        // Simple fill (no shadows/compositing) for performance
+        // Soft core glow for both types
+        const coreR = Math.max(1.2, this.radius * 1.2);
+        const outerR = coreR * 3.2;
+        const g = ctx.createRadialGradient(
+          this.x,
+          this.y,
+          0,
+          this.x,
+          this.y,
+          outerR
+        );
+        const a0 = Math.min(1, 0.9 * this.alpha);
+        g.addColorStop(
+          0,
+          `rgba(${starRGB[0]}, ${starRGB[1]}, ${starRGB[2]}, ${a0})`
+        );
+        g.addColorStop(
+          0.4,
+          `rgba(${starRGB[0]}, ${starRGB[1]}, ${starRGB[2]}, ${
+            0.45 * this.alpha
+          })`
+        );
+        g.addColorStop(
+          1,
+          `rgba(${starRGB[0]}, ${starRGB[1]}, ${starRGB[2]}, 0)`
+        );
+        ctx.fillStyle = g;
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${starRGB[0]}, ${starRGB[1]}, ${starRGB[2]}, ${this.alpha})`;
+        ctx.arc(this.x, this.y, outerR, 0, Math.PI * 2);
         ctx.fill();
+
+        if (!this.isCross) return;
+
+        // Animated star-cross arms with shimmering "flow"
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotation);
+        ctx.globalCompositeOperation = "lighter";
+
+        const L = this.armLength;
+        const W = this.armWidth;
+        // Flowing bright band around center
+        const band = 0.16 + 0.08 * Math.sin(this.flowPhase);
+        const center = 0.5;
+        // Build gradient for a given unit axis
+        const buildArmGradient = (horizontal = true) => {
+          const grad = ctx.createLinearGradient(
+            horizontal ? -L : 0,
+            horizontal ? 0 : -L,
+            horizontal ? L : 0,
+            horizontal ? 0 : L
+          );
+          const c = `rgba(${starRGB[0]}, ${starRGB[1]}, ${
+            starRGB[2]
+          }, ${Math.min(0.9, 0.75 * this.alpha)})`;
+          grad.addColorStop(
+            Math.max(0, center - band * 1.6),
+            `rgba(${starRGB[0]}, ${starRGB[1]}, ${starRGB[2]}, 0)`
+          );
+          grad.addColorStop(Math.max(0, center - band * 0.5), c);
+          grad.addColorStop(Math.min(1, center + band * 0.5), c);
+          grad.addColorStop(
+            Math.min(1, center + band * 1.6),
+            `rgba(${starRGB[0]}, ${starRGB[1]}, ${starRGB[2]}, 0)`
+          );
+          return grad;
+        };
+
+        // Draw horizontal arm
+        ctx.strokeStyle = buildArmGradient(true);
+        ctx.lineWidth = W;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(-L, 0);
+        ctx.lineTo(L, 0);
+        ctx.stroke();
+        // Draw vertical arm
+        ctx.strokeStyle = buildArmGradient(false);
+        ctx.beginPath();
+        ctx.moveTo(0, -L);
+        ctx.lineTo(0, L);
+        ctx.stroke();
+
+        if (this.hasDiagonals) {
+          // Diagonal arms, subtler
+          ctx.globalAlpha = 0.7;
+          const diagLen = L * 0.85;
+          const diagW = Math.max(0.8, W * 0.8);
+          const drawDiag = (angle) => {
+            ctx.save();
+            ctx.rotate(angle);
+            const grad = buildArmGradient(true);
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = diagW;
+            ctx.beginPath();
+            ctx.moveTo(-diagLen, 0);
+            ctx.lineTo(diagLen, 0);
+            ctx.stroke();
+            ctx.restore();
+          };
+          drawDiag(Math.PI / 4);
+          drawDiag(-Math.PI / 4);
+          ctx.globalAlpha = 1;
+        }
+        ctx.restore();
       }
     }
 
@@ -145,6 +264,7 @@ function MeteorShower({
         ctx.save();
         ctx.globalCompositeOperation = "lighter";
         ctx.lineCap = "round";
+        ctx.lineJoin = "round";
         ctx.strokeStyle = grad;
         ctx.lineWidth = this.thickness;
         ctx.beginPath();
@@ -153,7 +273,7 @@ function MeteorShower({
         ctx.stroke();
 
         // Head aura (radial gradient)
-        const headRadius = this.thickness * 1.8;
+        const headRadius = this.thickness * 2.1;
         const radial = ctx.createRadialGradient(
           this.x,
           this.y,
@@ -165,7 +285,13 @@ function MeteorShower({
         radial.addColorStop(
           0,
           `rgba(${meteorRGB[0]}, ${meteorRGB[1]}, ${meteorRGB[2]}, ${
-            0.6 * this.alpha
+            0.75 * this.alpha
+          })`
+        );
+        radial.addColorStop(
+          0.45,
+          `rgba(${meteorRGB[0]}, ${meteorRGB[1]}, ${meteorRGB[2]}, ${
+            0.35 * this.alpha
           })`
         );
         radial.addColorStop(
@@ -184,8 +310,8 @@ function MeteorShower({
     resizeCanvas(); // Set canvas size before creating stars
     const area = (canvas.width / dpr) * (canvas.height / dpr);
     const baseStars = Math.min(
-      120,
-      Math.max(20, Math.round(Math.sqrt(area) / 28))
+      110,
+      Math.max(18, Math.round(Math.sqrt(area) / 30))
     );
     const stars = Array.from(
       {
@@ -237,10 +363,26 @@ function MeteorShower({
       lastTime = time;
       // Clear the canvas using CSS pixel coords (context is scaled to DPR)
       ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
-      stars.forEach((star) => {
+      // Limit number of cross stars drawn per frame to avoid spikes
+      let crossBudget = 28;
+      for (let i = 0; i < stars.length; i++) {
+        const star = stars[i];
         star.update();
-        star.draw();
-      });
+        if (star.isCross) {
+          if (crossBudget <= 0) {
+            // Fallback: draw only core glow
+            const prev = star.isCross;
+            star.isCross = false;
+            star.draw();
+            star.isCross = prev;
+          } else {
+            star.draw();
+            crossBudget--;
+          }
+        } else {
+          star.draw();
+        }
+      }
       meteors.forEach((meteor, index) => {
         if (meteor.active) {
           meteor.update();

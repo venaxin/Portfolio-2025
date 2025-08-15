@@ -77,6 +77,23 @@ function App() {
   const [bhHQHigh, setBhHQHigh] = useState(() => {
     return localStorage.getItem("bhHQHigh") === "true";
   });
+  // Master Black Hole enable toggle (default off)
+  const [bhEnabled, setBhEnabled] = useState(() => {
+    return localStorage.getItem("bhEnabled") === "true";
+  });
+  // Exposure & Vignette
+  const [bhExposure, setBhExposure] = useState(() => {
+    const stored = parseFloat(localStorage.getItem("bhExposure") || "");
+    if (!Number.isNaN(stored)) return Math.min(2, Math.max(0.8, stored));
+    const red = localStorage.getItem("bhRedPreset") === "true";
+    return red ? 1.25 : 1.18;
+  });
+  const [bhVignette, setBhVignette] = useState(() => {
+    const stored = parseFloat(localStorage.getItem("bhVignette") || "");
+    if (!Number.isNaN(stored)) return Math.min(1, Math.max(0, stored));
+    const red = localStorage.getItem("bhRedPreset") === "true";
+    return red ? 0.22 : 0.28;
+  });
 
   // Environment flags for perf tuning
   const [prefersReduced, setPrefersReduced] = useState(false);
@@ -263,6 +280,15 @@ function App() {
   useEffect(() => {
     localStorage.setItem("bhHQHigh", String(bhHQHigh));
   }, [bhHQHigh]);
+  useEffect(() => {
+    localStorage.setItem("bhEnabled", String(bhEnabled));
+  }, [bhEnabled]);
+  useEffect(() => {
+    localStorage.setItem("bhExposure", String(bhExposure));
+  }, [bhExposure]);
+  useEffect(() => {
+    localStorage.setItem("bhVignette", String(bhVignette));
+  }, [bhVignette]);
 
   // One-time background refresh on first load: toggle lowPower on then off
   // This forces canvas backgrounds to fully recalc size and span the viewport
@@ -339,7 +365,7 @@ function App() {
   return (
     <div className="relative min-h-screen">
       <div className="fixed inset-0 gradient-sky z-[-2]"></div>
-      {eightBit ? (
+      {eightBit && bhEnabled ? (
         <PixelBlackhole
           imageUrl={blackholeImg}
           disabled={prefersReduced || lowPower}
@@ -368,6 +394,8 @@ function App() {
           turbSize={bhHQHigh ? 512 : bhHQ ? 384 : 256}
           sliceMul={bhHQHigh ? 1.6 : bhHQ ? 1.25 : 1.0}
           stepAdd={bhHQHigh ? 8 : bhHQ ? 4 : 0}
+          exposure={bhExposure}
+          vignette={bhVignette}
         />
       ) : (
         <MeteorShower
@@ -539,102 +567,186 @@ function App() {
           </div>
           {eightBit && (
             <div className="mb-3 space-y-3">
+              {/* Black Hole master toggle */}
               <div className="flex items-center justify-between">
                 <span className="text-sm text-white/80">
-                  Red Blackhole Preset
+                  Black Hole Background
                 </span>
                 <button
-                  onClick={() => setBhRedPreset((v) => !v)}
+                  onClick={() => setBhEnabled((v) => !v)}
                   className={`text-xs px-2 py-1 rounded-md border ${
-                    bhRedPreset
+                    bhEnabled
                       ? "border-white/40 text-accent"
                       : "border-white/20 hover:border-white/40"
                   } ${eightBit ? "pixel-button" : ""}`}
                 >
-                  {bhRedPreset ? "On" : "Off"}
+                  {bhEnabled ? "On" : "Off"}
                 </button>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-white/80">High Detail</span>
-                <button
-                  onClick={() => setBhHighDetail((v) => !v)}
-                  className={`text-xs px-2 py-1 rounded-md border ${
-                    bhHighDetail
-                      ? "border-white/40 text-accent"
-                      : "border-white/20 hover:border-white/40"
-                  } ${eightBit ? "pixel-button" : ""}`}
-                >
-                  {bhHighDetail ? "On" : "Off"}
-                </button>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-white/80">Moderate HQ</span>
-                <button
-                  onClick={() => setBhHQ((v) => !v)}
-                  className={`text-xs px-2 py-1 rounded-md border ${
-                    bhHQ
-                      ? "border-white/40 text-accent"
-                      : "border-white/20 hover:border-white/40"
-                  } ${eightBit ? "pixel-button" : ""}`}
-                >
-                  {bhHQ ? "On" : "Off"}
-                </button>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-white/80">High HQ</span>
-                <button
-                  onClick={() => setBhHQHigh((v) => !v)}
-                  className={`text-xs px-2 py-1 rounded-md border ${
-                    bhHQHigh
-                      ? "border-white/40 text-accent"
-                      : "border-white/20 hover:border-white/40"
-                  } ${eightBit ? "pixel-button" : ""}`}
-                >
-                  {bhHQHigh ? "On" : "Off"}
-                </button>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-white/80">Pixel Size</span>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setBhPixelSize((v) => Math.max(1, v - 1))}
-                    className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
-                  >
-                    -
-                  </button>
-                  <span className="text-xs w-8 text-center">{bhPixelSize}</span>
-                  <button
-                    onClick={() => setBhPixelSize((v) => Math.min(4, v + 1))}
-                    className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-white/80">Target Size (px)</span>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() =>
-                      setBhTargetSize((v) => Math.max(200, v - 50))
-                    }
-                    className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
-                  >
-                    -
-                  </button>
-                  <span className="text-xs w-12 text-center">
-                    {bhTargetSize}
-                  </span>
-                  <button
-                    onClick={() =>
-                      setBhTargetSize((v) => Math.min(1000, v + 50))
-                    }
-                    className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
+              {bhEnabled && (
+                <>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-white/80">
+                      Red Blackhole Preset
+                    </span>
+                    <button
+                      onClick={() => setBhRedPreset((v) => !v)}
+                      className={`text-xs px-2 py-1 rounded-md border ${
+                        bhRedPreset
+                          ? "border-white/40 text-accent"
+                          : "border-white/20 hover:border-white/40"
+                      } ${eightBit ? "pixel-button" : ""}`}
+                    >
+                      {bhRedPreset ? "On" : "Off"}
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-white/80">High Detail</span>
+                    <button
+                      onClick={() => setBhHighDetail((v) => !v)}
+                      className={`text-xs px-2 py-1 rounded-md border ${
+                        bhHighDetail
+                          ? "border-white/40 text-accent"
+                          : "border-white/20 hover:border-white/40"
+                      } ${eightBit ? "pixel-button" : ""}`}
+                    >
+                      {bhHighDetail ? "On" : "Off"}
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-white/80">Moderate HQ</span>
+                    <button
+                      onClick={() => setBhHQ((v) => !v)}
+                      className={`text-xs px-2 py-1 rounded-md border ${
+                        bhHQ
+                          ? "border-white/40 text-accent"
+                          : "border-white/20 hover:border-white/40"
+                      } ${eightBit ? "pixel-button" : ""}`}
+                    >
+                      {bhHQ ? "On" : "Off"}
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-white/80">High HQ</span>
+                    <button
+                      onClick={() => setBhHQHigh((v) => !v)}
+                      className={`text-xs px-2 py-1 rounded-md border ${
+                        bhHQHigh
+                          ? "border-white/40 text-accent"
+                          : "border-white/20 hover:border-white/40"
+                      } ${eightBit ? "pixel-button" : ""}`}
+                    >
+                      {bhHQHigh ? "On" : "Off"}
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-white/80">Pixel Size</span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() =>
+                          setBhPixelSize((v) => Math.max(1, v - 1))
+                        }
+                        className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                      >
+                        -
+                      </button>
+                      <span className="text-xs w-8 text-center">
+                        {bhPixelSize}
+                      </span>
+                      <button
+                        onClick={() =>
+                          setBhPixelSize((v) => Math.min(4, v + 1))
+                        }
+                        className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-white/80">
+                      Target Size (px)
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() =>
+                          setBhTargetSize((v) => Math.max(200, v - 50))
+                        }
+                        className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                      >
+                        -
+                      </button>
+                      <span className="text-xs w-12 text-center">
+                        {bhTargetSize}
+                      </span>
+                      <button
+                        onClick={() =>
+                          setBhTargetSize((v) => Math.min(1000, v + 50))
+                        }
+                        className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-white/80">Exposure</span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() =>
+                          setBhExposure((v) =>
+                            parseFloat(Math.max(0.8, v - 0.03).toFixed(2))
+                          )
+                        }
+                        className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                      >
+                        -
+                      </button>
+                      <span className="text-xs w-12 text-center">
+                        {bhExposure.toFixed(2)}
+                      </span>
+                      <button
+                        onClick={() =>
+                          setBhExposure((v) =>
+                            parseFloat(Math.min(2, v + 0.03).toFixed(2))
+                          )
+                        }
+                        className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-white/80">Vignette</span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() =>
+                          setBhVignette((v) =>
+                            parseFloat(Math.max(0, v - 0.03).toFixed(2))
+                          )
+                        }
+                        className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                      >
+                        -
+                      </button>
+                      <span className="text-xs w-12 text-center">
+                        {bhVignette.toFixed(2)}
+                      </span>
+                      <button
+                        onClick={() =>
+                          setBhVignette((v) =>
+                            parseFloat(Math.min(1, v + 0.03).toFixed(2))
+                          )
+                        }
+                        className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           )}
           {/* Low Power toggle */}
