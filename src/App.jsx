@@ -7,6 +7,8 @@ import { FiMoon, FiSun, FiAperture } from "react-icons/fi";
 import MeteorShower from "./MeteorShower.jsx";
 import PixelBlackhole from "./components/PixelBlackhole.jsx";
 import BlackholeGifParallax from "./components/BlackholeGifParallax.jsx";
+import GalaxyParallax from "./components/GalaxyParallax.jsx";
+import OnboardingModal from "./components/OnboardingModal.jsx";
 const ProjectCardLazy = lazy(() => import("./components/ProjectCard.jsx"));
 const CaseStudyLazy = lazy(() => import("./components/CaseStudy.jsx"));
 const ResumeSectionLazy = lazy(() => import("./components/ResumeSection.jsx"));
@@ -39,6 +41,10 @@ function App() {
     return localStorage.getItem("theme") || "theme-mono";
   });
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    const seen = localStorage.getItem("onboardingSeen");
+    return seen ? false : true;
+  });
   const [sky, setSky] = useState(
     () => localStorage.getItem("sky") || "default"
   );
@@ -90,6 +96,10 @@ function App() {
   const [bhGifsEnabled, setBhGifsEnabled] = useState(() => {
     const v = localStorage.getItem("bhGifsEnabled");
     return v ? v === "true" : true;
+  });
+  const [galaxiesEnabled, setGalaxiesEnabled] = useState(() => {
+    const v = localStorage.getItem("galaxiesEnabled");
+    return v ? v === "true" : false;
   });
   // Exposure & Vignette
   const [bhExposure, setBhExposure] = useState(() => {
@@ -302,11 +312,19 @@ function App() {
     localStorage.setItem("bhGifsEnabled", String(bhGifsEnabled));
   }, [bhGifsEnabled]);
   useEffect(() => {
+    localStorage.setItem("galaxiesEnabled", String(galaxiesEnabled));
+  }, [galaxiesEnabled]);
+  useEffect(() => {
     localStorage.setItem("bhExposure", String(bhExposure));
   }, [bhExposure]);
   useEffect(() => {
     localStorage.setItem("bhVignette", String(bhVignette));
   }, [bhVignette]);
+  // Persist onboarding state when dismissed with "Done"
+  const handleCloseOnboarding = (dontShowAgain) => {
+    setShowOnboarding(false);
+    if (dontShowAgain) localStorage.setItem("onboardingSeen", "true");
+  };
 
   // One-time background refresh on first load: toggle lowPower on then off
   // This forces canvas backgrounds to fully recalc size and span the viewport
@@ -417,6 +435,12 @@ function App() {
         />
       ) : (
         <>
+          {galaxiesEnabled && (
+            <GalaxyParallax
+              disabled={prefersReduced || lowPower}
+              opacity={0.12}
+            />
+          )}
           {bhGifsEnabled && (
             <BlackholeGifParallax
               disabled={prefersReduced || lowPower}
@@ -433,6 +457,18 @@ function App() {
         </>
       )}
       <div className="relative z-10">
+        <OnboardingModal
+          isOpen={showOnboarding}
+          onClose={handleCloseOnboarding}
+          onOpenAccessibility={() => setMenuOpen(true)}
+          lowPower={lowPower}
+          galaxiesEnabled={galaxiesEnabled}
+          bhGifsEnabled={bhGifsEnabled}
+          bhEnabled={bhEnabled}
+          setGalaxiesEnabled={setGalaxiesEnabled}
+          setBhGifsEnabled={setBhGifsEnabled}
+          setBhEnabled={setBhEnabled}
+        />
         {sections.map((section) => (
           <Section key={section.id} id={section.id} variants={sectionVariants}>
             {(mountedSectionsRef.current.has(section.id) ||
@@ -765,21 +801,44 @@ function App() {
           {/* Background elements (hidden when Pixel Blackhole is ON) */}
           {!bhEnabled && (
             <div className="mb-3 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-white/80">
-                  Blackhole GIF Parallax
-                </span>
-                <button
-                  onClick={() => setBhGifsEnabled((v) => !v)}
-                  className={`text-xs px-2 py-1 rounded-md border ${
-                    bhGifsEnabled
-                      ? "border-white/40 text-accent"
-                      : "border-white/20 hover:border-white/40"
-                  } ${eightBit ? "pixel-button" : ""}`}
-                >
-                  {bhGifsEnabled ? "On" : "Off"}
-                </button>
-              </div>
+              {!lowPower && (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-white/80">
+                    Blackhole GIF Parallax
+                  </span>
+                  <button
+                    onClick={() => setBhGifsEnabled((v) => !v)}
+                    className={`text-xs px-2 py-1 rounded-md border ${
+                      bhGifsEnabled
+                        ? "border-white/40 text-accent"
+                        : "border-white/20 hover:border-white/40"
+                    } ${eightBit ? "pixel-button" : ""}`}
+                  >
+                    {bhGifsEnabled ? "On" : "Off"}
+                  </button>
+                </div>
+              )}
+              {!lowPower && (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-white/80">Galaxy Parallax</span>
+                  <button
+                    onClick={() => setGalaxiesEnabled((v) => !v)}
+                    className={`text-xs px-2 py-1 rounded-md border ${
+                      galaxiesEnabled
+                        ? "border-white/40 text-accent"
+                        : "border-white/20 hover:border-white/40"
+                    } ${eightBit ? "pixel-button" : ""}`}
+                  >
+                    {galaxiesEnabled ? "On" : "Off"}
+                  </button>
+                </div>
+              )}
+              {lowPower && (
+                <div className="text-xs text-white/60">
+                  Low Power Mode is on. Visual effects are paused. You can still
+                  change themes below.
+                </div>
+              )}
               <div className="flex items-center justify-between">
                 <span className="text-sm text-white/80">Stars</span>
                 <button
