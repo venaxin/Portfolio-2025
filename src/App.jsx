@@ -36,7 +36,7 @@ function App() {
     return localStorage.getItem("snapEnabled") === "true";
   });
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("theme") || "theme-indigo";
+    return localStorage.getItem("theme") || "theme-mono";
   });
   const [menuOpen, setMenuOpen] = useState(false);
   const [sky, setSky] = useState(
@@ -189,7 +189,7 @@ function App() {
       "theme-teal",
       "theme-rose",
       "theme-red",
-      "theme-violet",
+      "theme-sky",
       "theme-mono",
       "theme-8bit",
     ];
@@ -834,15 +834,20 @@ function App() {
                 Choose a quick mood preset below. Changes apply instantly and
                 persist.
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div
+                className="grid grid-cols-3 gap-3"
+                role="radiogroup"
+                aria-label="Theme presets"
+              >
                 {[
                   {
-                    id: "midnight",
-                    label: "Midnight Indigo",
-                    theme: "theme-indigo",
+                    id: "noir",
+                    label: "Noir Mono",
+                    theme: "theme-mono",
                     sky: "default",
                     stars: "white",
                     meteors: "accent",
+                    swatch: { from: "#0a0a0a", to: "#1f2937" },
                   },
                   {
                     id: "aurora",
@@ -851,6 +856,7 @@ function App() {
                     sky: "aurora",
                     stars: "white",
                     meteors: "accent",
+                    swatch: { from: "#001a1a", to: "#0f766e" },
                   },
                   {
                     id: "cosmic",
@@ -859,14 +865,16 @@ function App() {
                     sky: "nebula",
                     stars: "indigo",
                     meteors: "accent",
+                    swatch: { from: "#14000d", to: "#db2777" },
                   },
                   {
-                    id: "nebula",
-                    label: "Nebula Violet",
-                    theme: "theme-violet",
-                    sky: "nebula",
+                    id: "sky",
+                    label: "Sky Blue",
+                    theme: "theme-sky",
+                    sky: "default",
                     stars: "white",
                     meteors: "accent",
+                    swatch: { from: "#031320", to: "#0ea5e9" },
                   },
                   {
                     id: "crimson",
@@ -875,29 +883,57 @@ function App() {
                     sky: "default",
                     stars: "white",
                     meteors: "accent",
+                    swatch: { from: "#190000", to: "#dc2626" },
                   },
                   {
-                    id: "noir",
-                    label: "Noir Mono",
-                    theme: "theme-mono",
+                    id: "midnight",
+                    label: "Midnight Indigo",
+                    theme: "theme-indigo",
                     sky: "default",
                     stars: "white",
                     meteors: "accent",
+                    swatch: { from: "#070311", to: "#4b0082" },
                   },
-                ].map((m) => (
-                  <button
-                    key={m.id}
-                    onClick={() => {
-                      setTheme(m.theme);
-                      setSky(m.sky);
-                      setStarsColor(m.stars);
-                      setMeteorsColor(m.meteors);
-                    }}
-                    className="text-xs px-2 py-1 rounded-md border border-white/20 hover:border-white/40"
-                  >
-                    {m.label}
-                  </button>
-                ))}
+                ].map((m) => {
+                  const selected = theme === m.theme;
+                  return (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => {
+                        setTheme(m.theme);
+                        setSky(m.sky);
+                        setStarsColor(m.stars);
+                        setMeteorsColor(m.meteors);
+                      }}
+                      role="radio"
+                      aria-checked={selected}
+                      title={m.label}
+                      className="group w-24 flex flex-col items-center gap-1 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+                    >
+                      <div
+                        className={
+                          "w-12 h-12 rounded-full shadow-inner transition-all duration-150 " +
+                          (selected
+                            ? "ring-4 ring-[var(--accent)]"
+                            : "ring-2 ring-white/10 group-hover:ring-white/30")
+                        }
+                        style={{
+                          background: `linear-gradient(135deg, ${m.swatch.from}, ${m.swatch.to})`,
+                        }}
+                        aria-hidden="true"
+                      />
+                      <span
+                        className={
+                          "text-[10px] leading-tight text-center text-white/80 " +
+                          (selected ? "text-accent" : "")
+                        }
+                      >
+                        {m.label}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </>
           )}

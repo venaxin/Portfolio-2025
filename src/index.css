@@ -82,15 +82,15 @@ html.theme-red {
   --g5: #000000; /* bottom black */
 }
 
-/* New: Violet theme (distinct from rose) */
-html.theme-violet {
-  --accent: #8b5cf6; /* violet-500 */
-  --accent-rgb: 139, 92, 246;
-  --on-accent: #100826;
+/* Light Blue (Sky) theme */
+html.theme-sky {
+  --accent: #38bdf8; /* sky-400 */
+  --accent-rgb: 56, 189, 248;
+  --on-accent: #00121a;
   --g1: #000000; /* top black */
-  --g2: #0a0014; /* deep space purple */
-  --g3: #160b2e; /* cool violet */
-  --g4: #6d28d9; /* violet-600 */
+  --g2: #031320; /* deep navy tint */
+  --g3: #06263a; /* cool blue */
+  --g4: #0ea5e9; /* sky-500 for vibrancy */
   --g5: #000000; /* bottom black */
 }
 
