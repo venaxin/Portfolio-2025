@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef, useMemo, lazy, Suspense } from "react";
 import { motion, useInView } from "framer-motion";
 import { TypeAnimation } from "react-type-animation";
-import { FaGithub, FaLinkedin } from "react-icons/fa";
+import { FaGithub, FaLinkedin, FaEnvelope } from "react-icons/fa";
 import { FiMoon, FiSun, FiAperture } from "react-icons/fi";
 import MeteorShower from "./MeteorShower.jsx";
 import PixelBlackhole from "./components/PixelBlackhole.jsx";
@@ -556,10 +556,18 @@ function App() {
                     </p>
                     <div className="flex justify-center gap-6">
                       <a
+                        href="mailto:abdulrahman.hussain02@gmail.com"
+                        className="text-white hover:text-yellow-400 transition-colors"
+                        aria-label="Send me an email"
+                      >
+                        <FaEnvelope size={32} />
+                      </a>
+                      <a
                         href="https://linkedin.com/in/abdul-rahman-hussain"
                         className="text-white hover:text-yellow-400 transition-colors"
                         target="_blank"
                         rel="noopener noreferrer"
+                        aria-label="Visit my LinkedIn profile"
                       >
                         <FaLinkedin size={32} />
                       </a>
