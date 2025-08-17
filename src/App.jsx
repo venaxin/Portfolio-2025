@@ -484,14 +484,14 @@ function App() {
                     </p>
                     {prefersReduced ? (
                       <span className="text-2xl text-yellow-400 font-semibold">
-                        Frontend Engineer
+                        Software Developer
                       </span>
                     ) : (
                       <TypeAnimation
                         sequence={[
-                          "Developer",
+                          "Software Developer",
                           1000,
-                          "UI/UX Designer",
+                          "Full‑stack Developer",
                           1000,
                           "Frontend Engineer",
                           1000,
@@ -504,10 +504,101 @@ function App() {
                   </div>
                 )}
                 {section.id === "about" && (
-                  <p className="text-lg text-white">
-                    I am a passionate developer with a love for creating
-                    impactful solutions.
-                  </p>
+                  <div className="max-w-5xl mx-auto grid gap-4 sm:grid-cols-2">
+                    <div className="p-4 rounded-lg border border-white/10 bg-white/5">
+                      <h3 className="text-xl font-semibold mb-2">
+                        Software Developer
+                      </h3>
+                      <p className="text-sm text-white/80">
+                        CS Master’s student at UB and former Goodz frontend
+                        intern. I build reliable, accessible software across the
+                        stack — from animated, responsive UIs to APIs and
+                        data-driven features. I care about correctness,
+                        performance, and great UX.
+                      </p>
+                      <div className="mt-3 flex flex-wrap gap-2 text-xs">
+                        {[
+                          "Full‑stack (React, Node)",
+                          "Systems & Performance",
+                          "AI/ML & OCR",
+                          "Testing (Jest)",
+                          "Cloud (Firebase)",
+                        ].map((s) => (
+                          <span
+                            key={s}
+                            className="px-2 py-1 rounded border border-white/15"
+                          >
+                            {s}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="p-4 rounded-lg border border-white/10 bg-white/5">
+                      <h3 className="text-xl font-semibold mb-2">Now / Next</h3>
+                      <ul className="text-sm text-white/80 space-y-1">
+                        <li>
+                          Now: Building CommitLife, SplitVoice, and PantryChef.
+                        </li>
+                        <li>
+                          Next: Seeking Software Developer Internship — Winter
+                          2026.
+                        </li>
+                      </ul>
+                      <div className="mt-3 flex flex-wrap gap-3">
+                        <a
+                          href={resumePdf}
+                          className="btn-accent rounded-md px-3 py-1 text-xs"
+                        >
+                          Resume
+                        </a>
+                        <a
+                          href="mailto:abdulrahman.hussain02@gmail.com"
+                          className="rounded-md border border-white/20 hover:border-white/40 px-3 py-1 text-xs"
+                        >
+                          Email
+                        </a>
+                        <a
+                          href="https://linkedin.com/in/abdul-rahman-hussain"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="rounded-md border border-white/20 hover:border-white/40 px-3 py-1 text-xs"
+                        >
+                          LinkedIn
+                        </a>
+                      </div>
+                    </div>
+                    <div className="p-4 rounded-lg border border-white/10 bg-white/5 sm:col-span-2">
+                      <h3 className="text-xl font-semibold mb-2">
+                        What I care about
+                      </h3>
+                      <div className="grid sm:grid-cols-3 gap-3 text-sm text-white/80">
+                        <div>
+                          <div className="font-medium text-white">
+                            Accessible‑first
+                          </div>
+                          <p className="text-white/70">
+                            WCAG-friendly, keyboard/SR labels, motion‑safe
+                            defaults.
+                          </p>
+                        </div>
+                        <div>
+                          <div className="font-medium text-white">
+                            Reliable & Tested
+                          </div>
+                          <p className="text-white/70">
+                            Clean architecture, meaningful tests, performance
+                            budgets.
+                          </p>
+                        </div>
+                        <div>
+                          <div className="font-medium text-white">Impact</div>
+                          <p className="text-white/70">
+                            Shipping features that solve real user problems.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 )}
                 {section.id === "experience" && (
                   <Suspense
