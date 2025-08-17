@@ -21,6 +21,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -35,6 +38,9 @@ jobs:
           # Set base path for project pages (owner.github.io/Portfolio-2025/)
           BASE_PATH: /Portfolio-2025/
         run: npm run build
+
+      - name: Create .nojekyll
+        run: echo > dist/.nojekyll
 
       - name: SPA fallback (copy index.html to 404.html)
         run: cp dist/index.html dist/404.html
