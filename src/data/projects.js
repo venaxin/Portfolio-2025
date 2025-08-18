@@ -103,6 +103,67 @@ const projects = [
     repoLink: "https://github.com/venaxin/codelab",
   },
 
+  // Research
+  {
+    title: "GRASP",
+    year: 2025,
+    status: "Completed",
+    description:
+      "Cross‑modal self‑supervised molecular representation learning that aligns graph structures and SMILES using contrastive pre‑training; transfers well to MoleculeNet tasks with less labeled data.",
+    tech: [
+      "PyTorch",
+      "PyTorch Geometric",
+      "Transformers",
+      "RDKit",
+      "GNN",
+      "ChemBERTa",
+      "Self‑Supervised",
+    ],
+    image:
+      "https://images.unsplash.com/photo-1559757175-08c8b1f984ec?q=80&w=1200&auto=format&fit=crop", // molecules/chemistry placeholder
+    repoLink: "https://github.com/RitwijParmar/grasp-deep-learning-project",
+    caseStudy: {
+      problem:
+        "Computational chemistry suffers from scarce labeled molecular data; labeling is expensive and slow. Goal: learn unified molecular embeddings by aligning graph and SMILES modalities for efficient transfer to downstream tasks.",
+      constraints: [
+        "Extremely limited labeled data",
+        "Scale to >100M unlabeled molecules (PubChem)",
+        "Train efficiently on commodity GPUs (Kaggle P100)",
+      ],
+      approach:
+        "Data: Pulled ~352 compressed SDF archives from PubChem (≈113 GB), extracted ~176M canonical SMILES using RDKit in a streaming, memory‑safe pass.\n\nPipeline: Initially on‑the‑fly featurization in PyTorch DataLoader (RDKit graphs + SMILES tokenization) caused CPU bottlenecks; mitigated via parallel workers and batching. Explored TFRecord precompute for >7 it/s on M1 GPU, but stayed with optimized PyTorch path for simplicity.\n\nModel: Dual‑encoder with a GIN graph encoder (PyTorch Geometric) and a ChemBERTa SMILES encoder (Hugging Face). Projection heads map to a shared embedding space. InfoNCE contrastive loss aligns modalities (same molecule close; different far).\n\nTraining: Pre‑trained on 500k PubChem samples for 5 epochs on a Kaggle P100, ~7.2–7.3 it/s; robust checkpointing for best/final models.",
+      results: [
+        "InfoNCE convergence: avg loss ↓ from 0.0786 → 0.0039 (E1→E5)",
+        "Strong cross‑modal alignment (cosine diag high; off‑diag low/neg)",
+        "BBBP ROC‑AUC 0.94",
+        "Tox21 ROC‑AUC 0.8186",
+        "ESOL RMSE 0.8986",
+      ],
+      highlights: [
+        "Cross‑modal contrastive learning (graphs + SMILES)",
+        "Dual encoders: GIN (graphs) + ChemBERTa (SMILES)",
+        "Optimized PyTorch data pipeline with RDKit streaming",
+        "Transfers with less labeled data than supervised baselines",
+      ],
+      links: [
+        {
+          label: "PubChem (Compounds)",
+          href: "https://pubchem.ncbi.nlm.nih.gov/docs/compounds",
+        },
+        { label: "MoleculeNet benchmark", href: "https://moleculenet.org/" },
+        {
+          label: "SimCLR (contrastive)",
+          href: "https://arxiv.org/abs/2002.05709",
+        },
+        {
+          label: "CLIP (cross‑modal)",
+          href: "https://arxiv.org/abs/2103.00020",
+        },
+        { label: "ChemBERTa", href: "https://arxiv.org/abs/2010.09885" },
+      ],
+    },
+  },
+
   // Completed
   {
     title: "HealthAI Connect",
