@@ -45,7 +45,7 @@ const projects = [
     tech: ["React", "Node", "OCR", "OpenAI"],
     image:
       "https://images.unsplash.com/photo-1554224155-1696413565d3?q=80&w=1200&auto=format&fit=crop",
-    demoLink: "#",
+    // demoLink: "#",
     repoLink: "https://github.com/venaxin/SplitVoice",
     metrics: { perf: 96, a11y: 100, bundle: "182KB" },
   },
@@ -58,8 +58,8 @@ const projects = [
     tech: ["React", "LangChain", "Vision OCR", "Tailwind"],
     image:
       "https://images.unsplash.com/photo-1512058564366-18510be2db19?q=80&w=1200&auto=format&fit=crop",
-    demoLink: "#",
-    repoLink: "#",
+    // demoLink: "#",
+    // repoLink: "#",
     metrics: { perf: 94, a11y: 100, bundle: "210KB" },
   },
 
@@ -73,8 +73,34 @@ const projects = [
     tech: ["React", "Tailwind", "LLM", "Spaced Repetition"],
     image:
       "https://images.unsplash.com/photo-1555212697-194d092e3b8f?q=80&w=1200&auto=format&fit=crop", // books/learning
-    demoLink: "#",
-    repoLink: "#",
+    // demoLink: "#",
+    repoLink: "https://github.com/venaxin/Cognito",
+  },
+
+  {
+    title: "CampusClub House",
+    year: 2023,
+    status: "Ongoing",
+    description:
+      "A social platform helping students discover and organize in‑person and virtual activities, gatherings, and events across shared interests, hobbies, and professions. Note: this build includes the frontend; sign‑up/auth flows were not completed.",
+    tech: ["React", "Tailwind", "Firebase"],
+    image:
+      "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?q=80&w=1200&auto=format&fit=crop", // campus/events placeholder
+    demoLink: "https://campusclubhouse.web.app/",
+    repoLink: "https://github.com/venaxin/CampusClubHouse",
+  },
+
+  {
+    title: "Codelab",
+    year: 2024,
+    status: "Ongoing",
+    description:
+      "Codelab is an online code editor to write, edit, and execute code directly in the browser. It offers multi‑language support (e.g., JavaScript, Python), real‑time execution, syntax highlighting, responsive design, and shareable links for quick collaboration.",
+    tech: ["React", "Tailwind", "Syntax Highlighting"],
+    image:
+      "https://images.unsplash.com/photo-1517433456452-f9633a875f6f?q=80&w=1200&auto=format&fit=crop", // code editor themed
+    // demoLink: none
+    repoLink: "https://github.com/venaxin/codelab",
   },
 
   // Completed
@@ -87,7 +113,7 @@ const projects = [
     tech: ["Python", "Flask", "CNN", "NLP"],
     image:
       "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=1200&auto=format&fit=crop",
-    demoLink: "#",
+    // demoLink: "#",
     repoLink: "https://github.com/venaxin/HealthAI-Connect",
     metrics: { perf: 92, a11y: 96, bundle: "—" },
   },
@@ -103,6 +129,30 @@ const projects = [
     demoLink: "https://intellibot-one.vercel.app/",
     repoLink: "https://github.com/venaxin/intellibot",
     metrics: { perf: 93, a11y: 98, bundle: "240KB" },
+  },
+  {
+    title: "WeatherWiz",
+    year: 2023,
+    status: "Completed",
+    description:
+      "WeatherWiz is a React app for checking current weather and weekly forecasts for any city using the OpenWeatherMap API. Built while learning React.",
+    tech: ["React", "OpenWeatherMap"],
+    image:
+      "https://images.unsplash.com/photo-1508182311256-3e5b8ee7c7c8?q=80&w=1200&auto=format&fit=crop", // weather-themed placeholder
+    // demoLink: none
+    repoLink: "https://github.com/venaxin/weatherwiz",
+  },
+  {
+    title: "SonicWave",
+    year: 2023,
+    status: "Completed",
+    description:
+      "SonicWave is a custom music player I built to practice JavaScript and UI design—simple controls, clean UI, and basic playlist handling.",
+    tech: ["JavaScript", "HTML", "CSS"],
+    image:
+      "https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=1200&auto=format&fit=crop", // music-themed placeholder
+    demoLink: "https://venaxin.github.io/SonicWave/",
+    repoLink: "https://github.com/venaxin/SonicWave",
   },
   {
     title: "Dynamic Calendar Wallpaper (iOS)",

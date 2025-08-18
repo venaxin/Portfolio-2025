@@ -15,6 +15,17 @@ html.snap-enabled section {
   scroll-snap-stop: always; /* ensure it snaps even on fast flicks */
 }
 
+/* On small screens, use proximity snapping to avoid trapping users */
+@media (max-width: 640px) {
+  html.snap-enabled,
+  body.snap-enabled {
+    scroll-snap-type: y proximity;
+  }
+  html.snap-enabled section {
+    scroll-snap-stop: normal;
+  }
+}
+
 /* Performance: avoid painting offscreen content */
 .content-auto {
   content-visibility: auto;

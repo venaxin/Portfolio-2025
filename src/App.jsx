@@ -470,8 +470,14 @@ function App() {
           setBhEnabled={setBhEnabled}
         />
         {sections.map((section) => (
-          <Section key={section.id} id={section.id} variants={sectionVariants}>
-            {(mountedSectionsRef.current.has(section.id) ||
+          <Section
+            key={section.id}
+            id={section.id}
+            variants={sectionVariants}
+            isMobile={isMobile}
+          >
+            {(isMobile ||
+              mountedSectionsRef.current.has(section.id) ||
               section.id === "home") && (
               <div className="text-center">
                 <h2 className="text-4xl font-bold text-white mb-4">
@@ -1118,18 +1124,19 @@ function App() {
 }
 
 // Section component with animation
-function Section({ id, children, variants }) {
+function Section({ id, children, variants, isMobile }) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: false, amount: 0.3 });
+  const isInView = useInView(ref, { once: true, amount: 0.25 });
+  const enableAnim = variants && !isMobile;
 
   return (
     <motion.section
       ref={ref}
       id={id}
       className="min-h-screen flex items-center justify-center p-[10%] content-auto"
-      variants={variants}
-      initial={variants ? "hidden" : false}
-      animate={variants ? (isInView ? "visible" : "hidden") : false}
+      variants={enableAnim ? variants : undefined}
+      initial={enableAnim ? "hidden" : false}
+      animate={enableAnim ? (isInView ? "visible" : "hidden") : false}
     >
       {children}
     </motion.section>
