@@ -119,7 +119,8 @@ const projects = [
       "ChemBERTa",
       "Self‑Supervised",
     ],
-    image: "/img/molecule.svg", // local reliable thumbnail
+    image:
+      "https://t4.ftcdn.net/jpg/07/28/41/19/360_F_728411989_LBR8P377a0nU8V6rZpVmVqzvrU128OhU.jpg", // local reliable thumbnail
     repoLink: "https://github.com/RitwijParmar/grasp-deep-learning-project",
     caseStudy: {
       problem:
@@ -197,7 +198,8 @@ const projects = [
     description:
       "WeatherWiz is a React app for checking current weather and weekly forecasts for any city using the OpenWeatherMap API. Built while learning React.",
     tech: ["React", "OpenWeatherMap"],
-    image: "/img/weather.svg", // local reliable thumbnail
+    image:
+      "https://images.pexels.com/photos/1118873/pexels-photo-1118873.jpeg?cs=srgb&dl=pexels-jplenio-1118873.jpg&fm=jpg", // local reliable thumbnail
     // demoLink: none
     repoLink: "https://github.com/venaxin/weatherwiz",
   },
