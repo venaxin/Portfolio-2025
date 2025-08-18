@@ -17,6 +17,20 @@ function buildUrlWithWidth(src, width) {
   }
 }
 
+function resolveSrc(src) {
+  // If path starts with '/', prefix with Vite base for GitHub Pages compatibility
+  try {
+    if (typeof src === "string" && src.startsWith("/")) {
+      const base = import.meta?.env?.BASE_URL || "/";
+      // Ensure no double slashes when concatenating
+      return `${base.replace(/\/$/, "/")}${src.replace(/^\//, "")}`;
+    }
+  } catch {
+    // ignore and fall through
+  }
+  return src;
+}
+
 export default function ResponsiveImage({
   src,
   alt = "",
@@ -27,12 +41,13 @@ export default function ResponsiveImage({
   decoding = "async",
   fetchpriority,
 }) {
+  const resolved = resolveSrc(src);
   const srcSet = widths
-    .map((w) => `${buildUrlWithWidth(src, w)} ${w}w`)
+    .map((w) => `${buildUrlWithWidth(resolved, w)} ${w}w`)
     .join(", ");
 
   // Choose a reasonable default src (largest width)
-  const fallbackSrc = buildUrlWithWidth(src, widths[widths.length - 1]);
+  const fallbackSrc = buildUrlWithWidth(resolved, widths[widths.length - 1]);
 
   return (
     <img
