@@ -46,7 +46,7 @@ const projects = [
     image:
       "https://images.unsplash.com/photo-1554224155-1696413565d3?q=80&w=1200&auto=format&fit=crop",
     demoLink: "#",
-    repoLink: "#",
+    repoLink: "https://github.com/venaxin/SplitVoice",
     metrics: { perf: 96, a11y: 100, bundle: "182KB" },
   },
   {
@@ -63,6 +63,20 @@ const projects = [
     metrics: { perf: 94, a11y: 100, bundle: "210KB" },
   },
 
+  // New
+  {
+    title: "Cognito",
+    year: 2025,
+    status: "Ongoing",
+    description:
+      "An intelligent learning coach to help you master any subject. Powered by a state-of-the-art LLM, it builds a personalized study plan, turns your inputs into learning cards, and uses a science-backed spaced repetition system to quiz you at the right moments. Track progress and build lasting knowledge efficiently.",
+    tech: ["React", "Tailwind", "LLM", "Spaced Repetition"],
+    image:
+      "https://images.unsplash.com/photo-1555212697-194d092e3b8f?q=80&w=1200&auto=format&fit=crop", // books/learning
+    demoLink: "#",
+    repoLink: "#",
+  },
+
   // Completed
   {
     title: "HealthAI Connect",
@@ -74,7 +88,7 @@ const projects = [
     image:
       "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=1200&auto=format&fit=crop",
     demoLink: "#",
-    repoLink: "#",
+    repoLink: "https://github.com/venaxin/HealthAI-Connect",
     metrics: { perf: 92, a11y: 96, bundle: "—" },
   },
   {
@@ -86,8 +100,8 @@ const projects = [
     tech: ["Node.js", "Express", "React"],
     image:
       "https://images.unsplash.com/photo-1518779578993-ec3579fee39f?q=80&w=1200&auto=format&fit=crop",
-    demoLink: "#",
-    repoLink: "#",
+    demoLink: "https://intellibot-one.vercel.app/",
+    repoLink: "https://github.com/venaxin/intellibot",
     metrics: { perf: 93, a11y: 98, bundle: "240KB" },
   },
   {

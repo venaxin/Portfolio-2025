@@ -177,7 +177,7 @@ function ProjectCard({
               Case Study
             </button>
           )}
-          {demoLink && (
+          {demoLink ? (
             <a
               href={demoLink}
               target="_blank"
@@ -189,8 +189,21 @@ function ProjectCard({
               <FiExternalLink />
               Live
             </a>
+          ) : (
+            <span
+              className={`inline-flex items-center gap-2 ${
+                eightBit
+                  ? "pixel-button opacity-50 cursor-not-allowed"
+                  : "rounded-md border border-white/10 text-white/40 cursor-not-allowed"
+              } px-3 py-2 text-sm font-semibold`}
+              aria-disabled="true"
+              title="Live link not available"
+            >
+              <FiExternalLink />
+              Live
+            </span>
           )}
-          {repoLink && (
+          {repoLink ? (
             <a
               href={repoLink}
               target="_blank"
@@ -204,6 +217,19 @@ function ProjectCard({
               <FaGithub />
               Code
             </a>
+          ) : (
+            <span
+              className={`inline-flex items-center gap-2 ${
+                eightBit
+                  ? "pixel-button opacity-50 cursor-not-allowed"
+                  : "rounded-md border border-white/10 text-white/40 cursor-not-allowed"
+              } px-3 py-2 text-sm font-semibold`}
+              aria-disabled="true"
+              title="Code link not available"
+            >
+              <FaGithub />
+              Code
+            </span>
           )}
         </div>
       </div>
