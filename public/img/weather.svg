@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <defs>
+    <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#0ea5e9"/>
+      <stop offset="100%" stop-color="#1e3a8a"/>
+    </linearGradient>
+    <linearGradient id="sun" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#fde68a"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="24" fill="url(#sky)"/>
+  <circle cx="64" cy="64" r="26" fill="url(#sun)"/>
+  <g fill="#e5e7eb">
+    <ellipse cx="120" cy="110" rx="44" ry="22"/>
+    <ellipse cx="96" cy="120" rx="36" ry="18"/>
+    <ellipse cx="144" cy="122" rx="30" ry="16"/>
+  </g>
+  <g stroke="#93c5fd" stroke-width="4" stroke-linecap="round">
+    <path d="M80 150 l-6 14"/>
+    <path d="M96 150 l-6 14"/>
+    <path d="M112 150 l-6 14"/>
+    <path d="M128 150 l-6 14"/>
+  </g>
+  <text x="16" y="188" fill="#d1d5db" font-size="10" font-family="ui-sans-serif, system-ui, -apple-system">WeatherWiz</text>
+</svg>
