@@ -5,6 +5,13 @@ html {
   scroll-behavior: smooth;
 }
 
+/* iOS Safari: create a stacking context to avoid fixed/transform paint bugs */
+html,
+body,
+#root {
+  isolation: isolate;
+}
+
 /* Snap behavior (toggled by adding `.snap-enabled` class to <html> or <body>) */
 html.snap-enabled,
 body.snap-enabled {
@@ -142,6 +149,7 @@ html.theme-8bit {
   );
   transform: translateY(calc(var(--scroll-y) * -0.05));
   will-change: transform;
+  z-index: 0;
 }
 
 /* Accent helpers */

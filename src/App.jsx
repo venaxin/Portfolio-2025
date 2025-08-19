@@ -400,7 +400,8 @@ function App() {
 
   return (
     <div className="relative min-h-screen">
-      <div className="fixed inset-0 gradient-sky z-[-2]"></div>
+      {/* Use positive z-index to avoid iOS Safari bugs with negative z on fixed elements */}
+      <div className="fixed inset-0 gradient-sky z-0"></div>
       {bhEnabled ? (
         <PixelBlackhole
           imageUrl={blackholeImg}
@@ -456,7 +457,7 @@ function App() {
           />
         </>
       )}
-      <div className="relative z-10">
+      <div className="relative z-20">
         <OnboardingModal
           isOpen={showOnboarding}
           onClose={handleCloseOnboarding}
@@ -1135,8 +1136,8 @@ function Section({ id, children, variants, isMobile }) {
       id={id}
       className="min-h-screen flex items-center justify-center p-[10%] content-auto"
       variants={enableAnim ? variants : undefined}
-      initial={enableAnim ? "hidden" : false}
-      animate={enableAnim ? (isInView ? "visible" : "hidden") : false}
+      initial={enableAnim ? "hidden" : "visible"}
+      animate={enableAnim ? (isInView ? "visible" : "hidden") : "visible"}
     >
       {children}
     </motion.section>

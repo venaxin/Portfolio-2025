@@ -64,7 +64,7 @@ export default function GalaxyParallax({ disabled = false, opacity = 0.14 }) {
   return (
     <div
       ref={rootRef}
-      className="pointer-events-none fixed inset-0 z-[-1] hidden sm:block"
+      className="pointer-events-none fixed inset-0 z-[5] hidden sm:block"
       style={{
         contain: "layout paint",
         contentVisibility: "auto",
