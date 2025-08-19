@@ -33,6 +33,10 @@ function App() {
   );
 
   const [activeSection, setActiveSection] = useState("home");
+  // Capture initial viewport width synchronously to handle first paint on mobile
+  const isNarrowAtMountRef = useRef(
+    typeof window !== "undefined" ? window.innerWidth <= 768 : false
+  );
   const [openCaseStudy, setOpenCaseStudy] = useState(null);
   const [snapEnabled, setSnapEnabled] = useState(() => {
     return localStorage.getItem("snapEnabled") === "true";
@@ -352,6 +356,29 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // iOS/mobile safety: if loading directly on a small screen, briefly disable heavy backgrounds
+  useEffect(() => {
+    const small =
+      window.matchMedia && window.matchMedia("(max-width: 768px)").matches;
+    const ua = navigator.userAgent || navigator.vendor || "";
+    const isiOS =
+      /iPad|iPhone|iPod/.test(ua) ||
+      (ua.includes("Mac") && "ontouchend" in document);
+    if (!small || !isiOS) return;
+    let reverted = false;
+    const prevBhEnabled = bhEnabled;
+    if (bhEnabled) setBhEnabled(false);
+    const id = setTimeout(() => {
+      if (bhEnabled !== prevBhEnabled) setBhEnabled(prevBhEnabled);
+      reverted = true;
+    }, 120);
+    return () => {
+      clearTimeout(id);
+      if (!reverted && bhEnabled !== prevBhEnabled) setBhEnabled(prevBhEnabled);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
     if (!element) return;
@@ -478,6 +505,7 @@ function App() {
             isMobile={isMobile}
           >
             {(isMobile ||
+              isNarrowAtMountRef.current ||
               mountedSectionsRef.current.has(section.id) ||
               section.id === "home") && (
               <div className="text-center">
@@ -1129,6 +1157,15 @@ function Section({ id, children, variants, isMobile }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.25 });
   const enableAnim = variants && !isMobile;
+  // Fallback: ensure visible at mount on mobile in case observer misses first frame
+  const initialIsNarrow =
+    typeof window !== "undefined" ? window.innerWidth <= 768 : false;
+  const initialState = enableAnim && !initialIsNarrow ? "hidden" : "visible";
+  const animateState = enableAnim
+    ? isInView
+      ? "visible"
+      : "hidden"
+    : "visible";
 
   return (
     <motion.section
@@ -1136,8 +1173,8 @@ function Section({ id, children, variants, isMobile }) {
       id={id}
       className="min-h-screen flex items-center justify-center p-[10%] content-auto"
       variants={enableAnim ? variants : undefined}
-      initial={enableAnim ? "hidden" : "visible"}
-      animate={enableAnim ? (isInView ? "visible" : "hidden") : "visible"}
+      initial={initialState}
+      animate={animateState}
     >
       {children}
     </motion.section>

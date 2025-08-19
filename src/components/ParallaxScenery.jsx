@@ -14,11 +14,11 @@ export default function ParallaxScenery({ disabled = false, opacity = 0.22 }) {
     sizes: "(max-width: 1024px) 30vw, 28vw",
     loading: "lazy",
     decoding: "async",
-    fetchpriority: "low",
+    fetchPriority: "low",
   };
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-[-1] hidden md:block">
+    <div className="pointer-events-none fixed inset-0 z-[5] hidden md:block">
       {/* Left nebula */}
       <div
         className="absolute left-0 top-[-10vh] h-[140vh] w-[30vw] md:w-[28vw] lg:w-[26vw]"

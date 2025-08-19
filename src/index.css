@@ -12,6 +12,13 @@ body,
   isolation: isolate;
 }
 
+/* iOS Safari viewport sizing guard */
+html,
+body {
+  min-height: 100%;
+  background-color: #000; /* ensure black base behind gradient */
+}
+
 /* Snap behavior (toggled by adding `.snap-enabled` class to <html> or <body>) */
 html.snap-enabled,
 body.snap-enabled {
@@ -150,6 +157,18 @@ html.theme-8bit {
   transform: translateY(calc(var(--scroll-y) * -0.05));
   will-change: transform;
   z-index: 0;
+}
+
+/* On small screens, turn off gradient transform and content-visibility to prevent iOS paint bugs */
+@media (max-width: 768px) {
+  .gradient-sky {
+    transform: none;
+    will-change: auto;
+  }
+  .content-auto {
+    content-visibility: visible;
+    contain-intrinsic-size: auto;
+  }
 }
 
 /* Accent helpers */

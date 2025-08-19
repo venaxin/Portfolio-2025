@@ -15,14 +15,14 @@ export default function ResumeSection({ pdfUrl, showTitle = true }) {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-md border border-white/20 px-3 py-2 text-sm font-semibold text-white hover:border-white/40"
           >
-            <FiExternalLink /> View in new tab
+            <FiExternalLink /> View
           </a>
           <a
             href={pdfUrl}
             download
             className="inline-flex items-center gap-2 rounded-md bg-yellow-400/90 px-3 py-2 text-sm font-semibold text-black hover:bg-yellow-400"
           >
-            <FiDownload /> Download PDF
+            <FiDownload /> Download
           </a>
           <button
             type="button"
@@ -34,14 +34,20 @@ export default function ResumeSection({ pdfUrl, showTitle = true }) {
         </div>
       </div>
 
-      {/* PDF embed with graceful fallback */}
+      {/* PDF embed with graceful fallback (avoid iframe to prevent separate document and Quirks warning) */}
       <div className="rounded-xl overflow-hidden border border-white/10 bg-black/20 backdrop-blur">
         <object
           data={pdfUrl}
           type="application/pdf"
           className="w-full h-[70vh]"
+          aria-label="Resume PDF"
+          role="document"
         >
-          <iframe title="Resume PDF" src={pdfUrl} className="w-full h-[70vh]" />
+          <embed
+            src={pdfUrl}
+            type="application/pdf"
+            className="w-full h-[70vh]"
+          />
           <div className="p-6 text-white/90">
             Your browser can’t display embedded PDFs. Use the buttons above to
             view or download the resume.
