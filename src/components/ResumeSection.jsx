@@ -1,7 +1,18 @@
 import { FiDownload, FiExternalLink, FiPrinter } from "react-icons/fi";
+import { useEffect, useState } from "react";
+import PdfCanvasFallback from "./PdfCanvasFallback.jsx";
 
 // Simple, print-friendly Resume viewer that embeds the PDF and provides actions
 export default function ResumeSection({ pdfUrl, showTitle = true }) {
+  const [useCanvasFallback, setUseCanvasFallback] = useState(false);
+  // Detect iOS Safari which often can't show inline PDFs reliably
+  useEffect(() => {
+    const ua = navigator.userAgent || navigator.vendor || "";
+    const isiOS =
+      /iPad|iPhone|iPod/.test(ua) ||
+      (ua.includes("Mac") && "ontouchend" in document);
+    if (isiOS) setUseCanvasFallback(true);
+  }, []);
   return (
     <div className="w-full max-w-5xl mx-auto text-left">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
@@ -34,25 +45,31 @@ export default function ResumeSection({ pdfUrl, showTitle = true }) {
         </div>
       </div>
 
-      {/* PDF embed with graceful fallback (avoid iframe to prevent separate document and Quirks warning) */}
+      {/* PDF embed with graceful fallback: use canvas-based renderer on iOS or when embedding fails */}
       <div className="rounded-xl overflow-hidden border border-white/10 bg-black/20 backdrop-blur">
-        <object
-          data={pdfUrl}
-          type="application/pdf"
-          className="w-full h-[70vh]"
-          aria-label="Resume PDF"
-          role="document"
-        >
-          <embed
-            src={pdfUrl}
+        {useCanvasFallback ? (
+          <PdfCanvasFallback src={pdfUrl} height={0.7} />
+        ) : (
+          <object
+            data={pdfUrl}
             type="application/pdf"
             className="w-full h-[70vh]"
-          />
-          <div className="p-6 text-white/90">
-            Your browser can’t display embedded PDFs. Use the buttons above to
-            view or download the resume.
-          </div>
-        </object>
+            aria-label="Resume PDF"
+            role="document"
+            onError={() => setUseCanvasFallback(true)}
+          >
+            <embed
+              src={pdfUrl}
+              type="application/pdf"
+              className="w-full h-[70vh]"
+              onError={() => setUseCanvasFallback(true)}
+            />
+            <div className="p-6 text-white/90">
+              Your browser can’t display embedded PDFs. Use the buttons above to
+              view or download the resume.
+            </div>
+          </object>
+        )}
       </div>
 
       {/* Print styles guidance (hidden on screen) */}

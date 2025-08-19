@@ -45,6 +45,7 @@ function App() {
     return localStorage.getItem("theme") || "theme-mono";
   });
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(() => {
     const seen = localStorage.getItem("onboardingSeen");
     return seen ? false : true;
@@ -175,7 +176,7 @@ function App() {
           }
         });
       },
-      { threshold: 0.5 }
+      { threshold: 0.2 }
     );
 
     sections.forEach((section) => {
@@ -504,7 +505,8 @@ function App() {
             variants={sectionVariants}
             isMobile={isMobile}
           >
-            {(isMobile ||
+            {(section.id === "projects" ||
+              isMobile ||
               isNarrowAtMountRef.current ||
               mountedSectionsRef.current.has(section.id) ||
               section.id === "home") && (
@@ -705,7 +707,8 @@ function App() {
           </Section>
         ))}
       </div>
-      <nav className="fixed right-4 top-1/2 transform -translate-y-1/2 flex flex-col space-y-4 z-20">
+      {/* Desktop sidebar nav (hidden on small screens) */}
+      <nav className="hidden sm:flex fixed right-4 top-1/2 -translate-y-1/2 flex-col space-y-4 z-20">
         {sections.map((section) => (
           <button
             key={section.id}
@@ -722,6 +725,51 @@ function App() {
           </button>
         ))}
       </nav>
+      {/* Mobile sections button + panel */}
+      <button
+        onClick={() => setMobileNavOpen((v) => !v)}
+        className="sm:hidden fixed bottom-4 left-4 z-30 rounded-full border border-white/20 bg-black/60 backdrop-blur px-3 py-2 text-sm text-white hover:border-white/40"
+        title="Sections"
+      >
+        Sections
+      </button>
+      {mobileNavOpen && (
+        <div
+          className={`sm:hidden fixed bottom-16 left-4 z-30 w-[min(92vw,360px)] rounded-xl border border-white/10 bg-black/70 ${
+            eightBit ? "pixel-panel" : "backdrop-blur-md"
+          } p-3 text-white shadow-2xl`}
+          role="dialog"
+          aria-label="Sections"
+        >
+          <div className="mb-2 text-base font-semibold">Sections</div>
+          <div className="grid grid-cols-2 gap-2">
+            {sections.map((s) => (
+              <button
+                key={s.id}
+                onClick={() => {
+                  setMobileNavOpen(false);
+                  scrollToSection(s.id);
+                }}
+                className={`text-xs px-2 py-2 rounded-md border ${
+                  activeSection === s.id
+                    ? "border-white/40 text-accent"
+                    : "border-white/20 hover:border-white/40"
+                } ${eightBit ? "pixel-button" : ""}`}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+          <div className="mt-3 flex justify-end">
+            <button
+              onClick={() => setMobileNavOpen(false)}
+              className="text-xs px-3 py-1 rounded-md border border-white/20 hover:border-white/40"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
       {/* Accessibility Menu Toggle */}
       <button
         onClick={() => setMenuOpen((v) => !v)}
