@@ -76,6 +76,66 @@ const projects = [
     // demoLink: "#",
     repoLink: "https://github.com/venaxin/Cognito",
   },
+  {
+    title: "Clarity Planner",
+    year: 2024,
+    status: "Completed",
+    description:
+      "Real‑time, cross‑device scheduling app with month/week/day views, drag & drop, resize, conflict resolution, and anonymous → Google auth upgrade.",
+    tech: [
+      "Vanilla JS",
+      "Firebase",
+      "Firestore",
+      "Auth",
+      "Interact.js",
+      "Tailwind",
+      "HTML",
+      "CSS",
+      "Notifications API",
+    ],
+    image:
+      "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?q=80&w=1200&auto=format&fit=crop", // planning / calendar themed
+    demoLink: "https://venaxin.github.io/Clarity_Planner/",
+    repoLink: "https://github.com/venaxin/Clarity_Planner",
+    metrics: { perf: 95, a11y: 100, bundle: "—" },
+    caseStudy: {
+      problem:
+        "Busy users need frictionless, always‑in‑sync scheduling without heavyweight calendar UX or reload delays.",
+      constraints: [
+        "Sub‑second cross‑device propagation",
+        "Mobile‑first auth & interactions",
+        "Framework‑less (vanilla JS) implementation",
+      ],
+      approach:
+        "Firestore onSnapshot listeners stream task documents; local state diffs patch UI incrementally. Anonymous sessions encourage zero‑friction trial; users can elevate to Google OAuth (signInWithRedirect) retaining data. Interact.js powers drag/resize; a custom overlap layout algorithm buckets colliding events by time span and assigns dynamic column widths. Notification + Storage APIs persist theme + send reminders. Pure ES modules + careful DOM diffing avoid a framework while keeping code maintainable.",
+      results: [
+        "<200ms typical multi‑device update latency (Wi‑Fi)",
+        "Seamless anonymous → Google account upgrade with data preserved",
+        "Lighthouse: Perf 95 / A11y 100 (desktop)",
+        "Conflict resolution keeps 100% of overlapping events visible",
+      ],
+      highlights: [
+        "Real‑time Firestore sync (onSnapshot)",
+        "Anonymous + Google OAuth auth flow",
+        "Drag, resize, and snap interactions (Interact.js)",
+        "Custom event overlap layout algorithm",
+        "Recurring events & checklist progress",
+        "Desktop reminder notifications",
+        "Light/dark theme persistence (localStorage)",
+      ],
+      links: [
+        {
+          label: "Firestore",
+          href: "https://firebase.google.com/docs/firestore",
+        },
+        {
+          label: "Interact.js",
+          href: "https://interactjs.io/",
+        },
+      ],
+      images: [],
+    },
+  },
 
   {
     title: "CampusClub House",
