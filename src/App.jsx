@@ -9,6 +9,7 @@ import PixelBlackhole from "./components/PixelBlackhole.jsx";
 import BlackholeGifParallax from "./components/BlackholeGifParallax.jsx";
 import GalaxyParallax from "./components/GalaxyParallax.jsx";
 import OnboardingModal from "./components/OnboardingModal.jsx";
+import SettingsGuide from "./components/SettingsGuide.jsx";
 const ProjectCardLazy = lazy(() => import("./components/ProjectCard.jsx"));
 const CaseStudyLazy = lazy(() => import("./components/CaseStudy.jsx"));
 const ResumeSectionLazy = lazy(() => import("./components/ResumeSection.jsx"));
@@ -50,6 +51,7 @@ function App() {
     const seen = localStorage.getItem("onboardingSeen");
     return seen ? false : true;
   });
+  const [showSettingsGuide, setShowSettingsGuide] = useState(false);
   const [sky, setSky] = useState(
     () => localStorage.getItem("sky") || "default"
   );
@@ -60,7 +62,9 @@ function App() {
     () => localStorage.getItem("meteorsColor") || "accent"
   );
   const [lowPower, setLowPower] = useState(() => {
-    return localStorage.getItem("lowPower") === "true";
+    const stored = localStorage.getItem("lowPower");
+    // Default to true (enabled) for better initial performance
+    return stored ? stored === "true" : true;
   });
   const [eightBit, setEightBit] = useState(() => {
     return localStorage.getItem("eightBit") === "true";
@@ -158,13 +162,6 @@ function App() {
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Listen for custom event to toggle low power from OnboardingModal
-  useEffect(() => {
-    const handler = () => setLowPower(true);
-    window.addEventListener("toggle-low-power", handler);
-    return () => window.removeEventListener("toggle-low-power", handler);
   }, []);
 
   // IntersectionObserver for scrollspy
@@ -335,7 +332,20 @@ function App() {
   // Persist onboarding state when dismissed with "Done"
   const handleCloseOnboarding = (dontShowAgain) => {
     setShowOnboarding(false);
-    if (dontShowAgain) localStorage.setItem("onboardingSeen", "true");
+    if (dontShowAgain) {
+      localStorage.setItem("onboardingSeen", "true");
+      // Show settings guide after onboarding is dismissed
+      setShowSettingsGuide(true);
+    }
+  };
+
+  // Handle opening accessibility panel with optional galaxy parallax enable
+  const handleOpenAccessibility = (enableGalaxy = false) => {
+    setMenuOpen(true);
+    if (enableGalaxy && !galaxiesEnabled) {
+      // Enable galaxy parallax when opening settings for first time
+      setGalaxiesEnabled(true);
+    }
   };
 
   // One-time background refresh on first load: toggle lowPower on then off
@@ -496,7 +506,7 @@ function App() {
         <OnboardingModal
           isOpen={showOnboarding}
           onClose={handleCloseOnboarding}
-          onOpenAccessibility={() => setMenuOpen(true)}
+          onOpenAccessibility={() => handleOpenAccessibility(false)}
           lowPower={lowPower}
           galaxiesEnabled={galaxiesEnabled}
           bhGifsEnabled={bhGifsEnabled}
@@ -505,6 +515,20 @@ function App() {
           setBhGifsEnabled={setBhGifsEnabled}
           setBhEnabled={setBhEnabled}
         />
+
+        {/* Settings Guide - shows after onboarding, points to accessibility button */}
+        {showSettingsGuide && !showOnboarding && (
+          <SettingsGuide
+            onDismiss={() => {
+              setShowSettingsGuide(false);
+              // Enable galaxy parallax when guide is dismissed (user explored settings)
+              if (!galaxiesEnabled) {
+                setTimeout(() => setGalaxiesEnabled(true), 500);
+              }
+            }}
+          />
+        )}
+
         {sections.map((section) => (
           <Section
             key={section.id}

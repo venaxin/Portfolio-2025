@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import redGif from "../assets/red-blackhole.gif";
+import redGifWebM from "../assets/red-blackhole.webm";
 
 /*
   BlackholeGifParallax
-  - Subtle, vertical parallax for the two provided GIFs.
+  - Subtle, vertical parallax for the provided video animation.
   - Sits behind MeteorShower. Avoids heavy effects; respects disabled.
   - Uses CSS var --scroll-y set by App for parallax.
-  - OPTIMIZED: Defers loading of heavy GIF until after initial render
+  - OPTIMIZED: Uses WebM video instead of GIF (90% smaller)
 */
 export default function BlackholeGifParallax({
   disabled = false,
@@ -21,16 +21,17 @@ export default function BlackholeGifParallax({
   const [gifLoaded, setGifLoaded] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
 
-  // Defer GIF loading until after initial render
+  // Defer video loading until after initial render
   useEffect(() => {
     if (disabled) return;
 
-    // Wait for idle time before loading heavy GIF
-    const loadGif = () => {
-      const img = new Image();
-      img.onload = () => {
+    // Wait for idle time before loading video
+    const loadVideo = () => {
+      // Preload the video
+      const video = document.createElement("video");
+      video.onloadeddata = () => {
         setGifLoaded(true);
-        // Show notification after GIF loads (only once)
+        // Show notification after video loads (only once)
         setTimeout(() => {
           const hasSeenNotif = localStorage.getItem("bhGifNotificationSeen");
           if (!hasSeenNotif) {
@@ -39,14 +40,15 @@ export default function BlackholeGifParallax({
           }
         }, 1000);
       };
-      img.src = redGif;
+      video.src = redGifWebM;
+      video.load();
     };
 
     // Use requestIdleCallback for better performance, fallback to timeout
     if ("requestIdleCallback" in window) {
-      requestIdleCallback(loadGif, { timeout: 2000 });
+      requestIdleCallback(loadVideo, { timeout: 2000 });
     } else {
-      setTimeout(loadGif, 2000);
+      setTimeout(loadVideo, 2000);
     }
   }, [disabled]);
 
@@ -80,10 +82,13 @@ export default function BlackholeGifParallax({
   }, [disabled]);
   if (disabled) return null;
 
-  const commonImg = {
-    loading: gifLoaded ? "eager" : "lazy",
-    decoding: "async",
-    draggable: false,
+  const commonVideo = {
+    autoPlay: true,
+    loop: true,
+    muted: true,
+    playsInline: true,
+    className: "block select-none",
+    style: { objectFit: "contain" },
   };
 
   return (
@@ -118,10 +123,10 @@ export default function BlackholeGifParallax({
           }}
         />
 
-        {/* Only render GIFs once loaded */}
+        {/* Only render videos once loaded */}
         {gifLoaded ? (
           <>
-            {/* Layered red GIF variants with artistic filters and slight rotation */}
+            {/* Layered video variants with artistic filters and slight rotation */}
             {/* Variant A - upper-left, magenta tint */}
             <div
               className="absolute left-[-5vw] top-[6vh]"
@@ -134,15 +139,13 @@ export default function BlackholeGifParallax({
                 mixBlendMode: "screen",
               }}
             >
-              <img
-                src={redGif}
-                alt="Decorative black hole animation"
-                className="block select-none"
+              <video
+                {...commonVideo}
                 width={Math.round(500 + jitter.a * 8)}
                 height={Math.round(500 + jitter.a * 8)}
-                style={{ objectFit: "contain" }}
-                {...commonImg}
-              />
+              >
+                <source src={redGifWebM} type="video/webm" />
+              </video>
             </div>
 
             {/* Variant B - right-center, warm golden tint */}
@@ -157,15 +160,13 @@ export default function BlackholeGifParallax({
                 mixBlendMode: "screen",
               }}
             >
-              <img
-                src={redGif}
-                alt="Decorative black hole animation"
-                className="block select-none"
+              <video
+                {...commonVideo}
                 width={Math.round(620 + jitter.b * 10)}
                 height={Math.round(620 + jitter.b * 10)}
-                style={{ objectFit: "contain" }}
-                {...commonImg}
-              />
+              >
+                <source src={redGifWebM} type="video/webm" />
+              </video>
             </div>
 
             {/* Variant C - bottom-left, cyan tint */}
@@ -180,15 +181,9 @@ export default function BlackholeGifParallax({
                 mixBlendMode: "screen",
               }}
             >
-              <img
-                src={redGif}
-                alt="Decorative black hole animation"
-                className="block select-none"
-                width={560}
-                height={560}
-                style={{ objectFit: "contain" }}
-                {...commonImg}
-              />
+              <video {...commonVideo} width={560} height={560}>
+                <source src={redGifWebM} type="video/webm" />
+              </video>
             </div>
 
             {/* Variant D - far top-right, cool blue tint */}
@@ -203,15 +198,9 @@ export default function BlackholeGifParallax({
                 mixBlendMode: "screen",
               }}
             >
-              <img
-                src={redGif}
-                alt="Decorative black hole animation"
-                className="block select-none"
-                width={480}
-                height={480}
-                style={{ objectFit: "contain" }}
-                {...commonImg}
-              />
+              <video {...commonVideo} width={480} height={480}>
+                <source src={redGifWebM} type="video/webm" />
+              </video>
             </div>
           </>
         ) : (

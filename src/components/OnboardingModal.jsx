@@ -70,40 +70,19 @@ export default function OnboardingModal({
       <div
         className="relative w-[92vw] max-w-md rounded-xl border border-white/15 bg-black/70 p-4 shadow-2xl"
         style={{
-          minHeight: lowPower ? "280px" : "420px",
+          minHeight: "280px",
           contain: "layout",
         }}
       >
-        <h2 className="text-lg font-semibold text-white mb-1">Quick tips</h2>
+        <h2 className="text-lg font-semibold text-white mb-1">Welcome! 👋</h2>
         <p className="text-xs text-white/70 mb-3">
-          {lowPower
-            ? "Low Power Mode is on — basic theme changes available."
-            : "Heavy backgrounds are loading. Try Low Power mode for instant performance, then explore visuals when ready."}
+          Explore the accessibility panel to customize your experience with
+          themes, animations, and visual effects.
         </p>
 
         <div className="space-y-3">
-          {/* Step 0: Suggest Low Power first if not enabled */}
-          {!lowPower && (
-            <Step done={false}>
-              <strong>Recommended:</strong> Enable Low Power mode for best
-              performance
-              <div className="mt-2">
-                <button
-                  className="text-xs px-2 py-1 rounded-md border border-amber-400/50 bg-amber-500/10 hover:bg-amber-500/20 transition-colors"
-                  onClick={() => {
-                    // Trigger low power from parent
-                    const event = new CustomEvent("toggle-low-power");
-                    window.dispatchEvent(event);
-                  }}
-                >
-                  Enable Low Power
-                </button>
-              </div>
-            </Step>
-          )}
-
           <Step done={step1Done}>
-            Open the Accessibility panel to customize visuals
+            Open the Accessibility panel to get started
             <div className="mt-2">
               <button
                 ref={firstBtnRef}
@@ -112,7 +91,7 @@ export default function OnboardingModal({
                   onOpenAccessibility();
                 }}
               >
-                Open now
+                Open Settings
               </button>
             </div>
           </Step>
