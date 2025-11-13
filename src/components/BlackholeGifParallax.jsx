@@ -6,11 +6,12 @@ import redGif from "../assets/red-blackhole.gif";
   - Subtle, vertical parallax for the provided GIF animation.
   - Sits behind MeteorShower. Avoids heavy effects; respects disabled.
   - Uses CSS var --scroll-y set by App for parallax.
-  - OPTIMIZED: Deferred loading to prevent blocking initial render
+  - OPTIMIZED: Uses preloaded GIF from App for instant rendering
 */
 export default function BlackholeGifParallax({
   disabled = false,
   opacity = 0.18,
+  preloaded = false,
 }) {
   // Slight randomization per mount to avoid looking too symmetrical
   const jitter = useMemo(
@@ -19,37 +20,32 @@ export default function BlackholeGifParallax({
   );
   const rootRef = useRef(null);
   const [gifLoaded, setGifLoaded] = useState(false);
-  const [showNotification, setShowNotification] = useState(false);
 
-  // Defer GIF loading until after initial render
+  // Use preloaded state from App, or defer loading if not preloaded
   useEffect(() => {
     if (disabled) return;
 
-    // Wait for idle time before loading GIF
-    const loadGif = () => {
-      // Preload the GIF
-      const img = new Image();
-      img.onload = () => {
-        setGifLoaded(true);
-        // Show notification after GIF loads (only once)
-        setTimeout(() => {
-          const hasSeenNotif = localStorage.getItem("bhGifNotificationSeen");
-          if (!hasSeenNotif) {
-            setShowNotification(true);
-            localStorage.setItem("bhGifNotificationSeen", "true");
-          }
-        }, 1000);
-      };
-      img.src = redGif;
-    };
-
-    // Use requestIdleCallback for better performance, fallback to timeout
-    if ("requestIdleCallback" in window) {
-      requestIdleCallback(loadGif, { timeout: 2000 });
+    if (preloaded) {
+      // GIF already preloaded by App, use it immediately
+      setGifLoaded(true);
     } else {
-      setTimeout(loadGif, 2000);
+      // Fallback: load GIF on-demand if not preloaded
+      const loadGif = () => {
+        const img = new Image();
+        img.onload = () => {
+          setGifLoaded(true);
+        };
+        img.src = redGif;
+      };
+
+      // Use requestIdleCallback for better performance, fallback to timeout
+      if ("requestIdleCallback" in window) {
+        requestIdleCallback(loadGif, { timeout: 2000 });
+      } else {
+        setTimeout(loadGif, 2000);
+      }
     }
-  }, [disabled]);
+  }, [disabled, preloaded]);
 
   // Interactive mouse parallax (very subtle), throttled via rAF
   useEffect(() => {
@@ -233,42 +229,6 @@ export default function BlackholeGifParallax({
           </>
         )}
       </div>
-
-      {/* Notification toast */}
-      {showNotification && (
-        <div className="fixed top-20 right-4 z-50 max-w-sm rounded-lg border border-white/20 bg-black/80 backdrop-blur-md p-3 shadow-xl animate-slide-in">
-          <div className="flex items-start gap-3">
-            <span className="text-2xl" aria-hidden="true">
-              ✨
-            </span>
-            <div className="flex-1">
-              <p className="text-sm text-white/90 mb-2">
-                Black hole parallax loaded! Want more visuals?
-              </p>
-              <button
-                onClick={() => {
-                  setShowNotification(false);
-                  // Try to open accessibility panel
-                  const btn = document.querySelector(
-                    '[title="Accessibility & Themes"]'
-                  );
-                  if (btn) btn.click();
-                }}
-                className="text-xs px-2 py-1 rounded border border-white/30 hover:border-white/60 transition-colors"
-              >
-                Open Settings
-              </button>
-            </div>
-            <button
-              onClick={() => setShowNotification(false)}
-              className="text-white/60 hover:text-white transition-colors"
-              aria-label="Close notification"
-            >
-              ✕
-            </button>
-          </div>
-        </div>
-      )}
     </>
   );
 }

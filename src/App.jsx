@@ -19,6 +19,7 @@ const ExperienceSectionLazy = lazy(() =>
 import projects from "./data/projects.js";
 import resumePdf from "./data/Resume.pdf";
 import blackholeImg from "./data/blackhole.webp";
+import redBlackholeGif from "./assets/red-blackhole.gif";
 
 function App() {
   const sections = useMemo(
@@ -128,6 +129,38 @@ function App() {
   const [isMobile, setIsMobile] = useState(false);
   // Guard to skip persisting lowPower during initial refresh toggle
   const lowPowerPersistSkipRef = useRef(false);
+  
+  // Blackhole GIF preloader state
+  const [bhGifPreloaded, setBhGifPreloaded] = useState(false);
+  const [showBhNotification, setShowBhNotification] = useState(false);
+  
+  // Preload blackhole GIF on app mount (independent of bhEnabled state)
+  useEffect(() => {
+    // Reset conflicting UI guide states - ensure only GuidedTour is active
+    localStorage.removeItem("settingsGuideSeen");
+    
+    const hasSeenNotif = localStorage.getItem("bhGifNotificationSeen");
+    
+    // Preload the GIF asset
+    const img = new Image();
+    img.onload = () => {
+      setBhGifPreloaded(true);
+      
+      // Show notification only if user hasn't seen it before
+      if (!hasSeenNotif) {
+        setTimeout(() => {
+          setShowBhNotification(true);
+          localStorage.setItem("bhGifNotificationSeen", "true");
+          
+          // Auto-hide notification after 5 seconds
+          setTimeout(() => {
+            setShowBhNotification(false);
+          }, 5000);
+        }, 1500);
+      }
+    };
+    img.src = redBlackholeGif;
+  }, []);
 
   useEffect(() => {
     const mqReduced = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -485,6 +518,7 @@ function App() {
             <BlackholeGifParallax
               disabled={prefersReduced || lowPower}
               opacity={0.16}
+              preloaded={bhGifPreloaded}
             />
           )}
           <MeteorShower
@@ -517,6 +551,41 @@ function App() {
           bhEnabled={bhEnabled}
           setBhEnabled={setBhEnabled}
         />
+
+        {/* Blackhole Preload Notification - shown after GIF is ready */}
+        {showBhNotification && (
+          <div className="fixed top-20 right-4 z-50 max-w-sm rounded-lg border border-emerald-400/30 bg-black/90 backdrop-blur-md p-4 shadow-2xl animate-slide-in">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl" aria-hidden="true">
+                🕳️
+              </span>
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold text-emerald-400 mb-1">
+                  Blackhole Effect Ready!
+                </h3>
+                <p className="text-xs text-white/80 mb-3">
+                  Enable the stunning blackhole parallax in settings for an immersive experience.
+                </p>
+                <button
+                  onClick={() => {
+                    setShowBhNotification(false);
+                    setMenuOpen(true);
+                  }}
+                  className="text-xs px-3 py-1.5 rounded-md border border-emerald-400/40 hover:border-emerald-400/70 transition-colors bg-emerald-400/10 hover:bg-emerald-400/20 text-emerald-300"
+                >
+                  Open Settings
+                </button>
+              </div>
+              <button
+                onClick={() => setShowBhNotification(false)}
+                className="text-white/60 hover:text-white transition-colors"
+                aria-label="Close notification"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
 
         {sections.map((section) => (
           <Section

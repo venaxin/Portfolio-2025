@@ -20,14 +20,19 @@ export default function GuidedTour({
   useEffect(() => {
     const tourCompleted = localStorage.getItem("guidedTourCompleted");
     const onboardingSeen = localStorage.getItem("onboardingSeen");
+    const bhNotifSeen = localStorage.getItem("bhGifNotificationSeen");
 
     if (!tourCompleted && onboardingSeen) {
+      // Wait for blackhole notification to finish (if it's the first time)
+      // This prevents UI conflicts between multiple guides
+      const delay = !bhNotifSeen ? 7500 : 800;
+      
       // Start tour after brief delay
       setTimeout(() => {
         setVisible(true);
         setCurrentStep(1);
         updateButtonPosition();
-      }, 800);
+      }, delay);
     }
   }, []);
 
