@@ -65,7 +65,7 @@ function MeteorShower({
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }, 100);
 
-    // Star class with optional HD star-cross sparkle
+    // Star class with optional HD star-cross sparkle and smooth directional drift
     class Star {
       constructor() {
         const cssW = canvas.width / dpr;
@@ -76,6 +76,10 @@ function MeteorShower({
         this.baseAlpha = 0.55;
         this.pulsePhase = Math.random() * Math.PI * 2;
         this.pulseSpeed = Math.random() * 0.006 + 0.002; // 0.002..0.008
+
+        // Smooth directional drift - all stars move together in same direction
+        this.driftSpeedX = 0.08; // slow horizontal drift to the right
+        this.driftSpeedY = 0.04; // slight downward drift
 
         // A subset get fancy star-cross treatment for visuals; keep sparse for perf
         this.isCross = Math.random() < 0.18; // ~18% of stars become sparkles
@@ -95,6 +99,19 @@ function MeteorShower({
       update() {
         this.pulsePhase += this.pulseSpeed;
         this.alpha = 0.5 + Math.sin(this.pulsePhase) * 0.3; // 0.2..0.8
+
+        // Apply smooth directional drift
+        this.x += this.driftSpeedX;
+        this.y += this.driftSpeedY;
+
+        // Wrap around screen edges for infinite drift effect
+        const cssW = canvas.width / dpr;
+        const cssH = canvas.height / dpr;
+        if (this.x > cssW) this.x = 0;
+        if (this.y > cssH) this.y = 0;
+        if (this.x < 0) this.x = cssW;
+        if (this.y < 0) this.y = cssH;
+
         if (this.isCross) {
           this.rotation += this.rotationSpeed;
           this.flowPhase += this.flowSpeed;

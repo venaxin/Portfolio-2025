@@ -1,6 +1,59 @@
 const projects = [
   // Ongoing
   {
+    title: "Lock-IN",
+    year: 2025,
+    status: "Completed",
+    description:
+      "AI-assisted focus coach that syncs tasks with Google Calendar, predicts procrastination risk, and nudges you into the right work block before momentum slips. Features adaptive priority scoring, smart scheduling with Pomodoro timers, and Gemini AI coaching for personalized productivity insights.",
+    tech: [
+      "Flask",
+      "SQLite",
+      "Google Calendar API",
+      "Gemini AI",
+      "Vanilla JS",
+      "OAuth 2.0",
+    ],
+    image:
+      "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?q=80&w=1200&auto=format&fit=crop",
+    demoLink: "https://lockin.nyc",
+    repoLink: "https://github.com/venaxin/Lock-IN",
+    metrics: { perf: 94, a11y: 98, bundle: "—" },
+    caseStudy: {
+      problem:
+        "Students struggle with procrastination and momentum loss between tasks. Generic to-do apps lack smart scheduling, risk prediction, and AI-powered coaching to catch issues before they snowball.",
+      constraints: [
+        "Bidirectional Google Calendar sync without conflicts",
+        "Real-time procrastination risk scoring",
+        "Smart browser notifications without spam",
+        "Lightweight AI coaching within Gemini API limits",
+      ],
+      approach:
+        "Built a Flask backend with SQLite for task/schedule persistence. Integrated Google OAuth for Calendar bidirectional sync, filtering conflicts and inserting Lock-IN focus blocks. Gemini AI classifies tasks (deep_work, planning, etc.) and estimates buffer days + Pomodoro blocks. Priority scoring algorithm fuses deadline slack, streak state, and completion history into 0-200 risk scores. Frontend implements adaptive Pomodoro timers, drag-and-drop scheduling, and background notification sweeps with localStorage deduplication. AI insights coach posts ~45min snapshots for personalized recovery tips.",
+      results: [
+        "Seamless Google Calendar conflict resolution",
+        "Smart notifications for upcoming blocks, deadlines, and missed sessions",
+        "AI-powered task classification and coaching",
+        "Procrastination analytics with streak tracking and category risk heat maps",
+      ],
+      highlights: [
+        "Gemini AI task classification & coaching",
+        "Adaptive priority & procrastination risk scoring (0-200)",
+        "Google Calendar bidirectional sync with conflict resolution",
+        "Smart Pomodoro scheduling with drag-and-drop",
+        "Browser notification sweeps with deduplication",
+        "Streak protection & recovery suggestions",
+        "OAuth 2.0 security with session management",
+      ],
+      links: [
+        { label: "Live App", href: "https://lockin.nyc" },
+        { label: "GitHub", href: "https://github.com/venaxin/Lock-IN" },
+        { label: "Gemini API", href: "https://ai.google.dev/" },
+      ],
+      images: [],
+    },
+  },
+  {
     title: "CommitLife",
     year: 2025,
     status: "Ongoing",
