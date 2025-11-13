@@ -14,8 +14,8 @@ export default function ExperienceSection({ eightBit = false }) {
             <span className="text-sm text-white/70">Hyderabad, India</span>
           </div>
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-white/90">Frontend Development Intern</p>
-            <p className="text-sm text-white/70">July 2024 – Dec 2024</p>
+            <p className="text-white/90">Software Developer</p>
+            <p className="text-sm text-white/70">July 2023 – Dec 2024</p>
           </div>
         </header>
 
