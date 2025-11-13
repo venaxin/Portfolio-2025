@@ -564,7 +564,7 @@ function App() {
                   Blackhole Effect Ready!
                 </h3>
                 <p className="text-xs text-white/80 mb-3">
-                  (TURN OFF THE LOW POWER MODE) Enable the stunning blackhole
+                  (TURN OFF THE LOW POWER MODE) to enable the stunning blackhole
                   parallax in settings for an immersive experience.
                 </p>
                 <button
