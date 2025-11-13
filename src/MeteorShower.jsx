@@ -78,8 +78,8 @@ function MeteorShower({
         this.pulseSpeed = Math.random() * 0.006 + 0.002; // 0.002..0.008
 
         // Smooth directional drift - all stars move together in same direction
-        this.driftSpeedX = 0.08; // slow horizontal drift to the right
-        this.driftSpeedY = 0.04; // slight downward drift
+        this.driftSpeedX = 0.12; // slow horizontal drift to the right
+        this.driftSpeedY = 0.1; // slight downward drift
 
         // A subset get fancy star-cross treatment for visuals; keep sparse for perf
         this.isCross = Math.random() < 0.18; // ~18% of stars become sparkles
