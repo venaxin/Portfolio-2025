@@ -514,8 +514,8 @@ function App() {
         <GuidedTour
           menuOpen={menuOpen}
           setMenuOpen={setMenuOpen}
-          galaxiesEnabled={galaxiesEnabled}
-          setGalaxiesEnabled={setGalaxiesEnabled}
+          bhEnabled={bhEnabled}
+          setBhEnabled={setBhEnabled}
         />
 
         {sections.map((section) => (

@@ -3,14 +3,14 @@ import React, { useEffect, useState } from "react";
 /**
  * GuidedTour - Professional 3-step onboarding experience
  * Step 1: Highlights accessibility button, encourages user to click
- * Step 2: Guides user to enable Galaxy Parallax
+ * Step 2: Guides user to enable Blackhole Parallax
  * Step 3: Prompts user to close settings and explore portfolio
  */
 export default function GuidedTour({
   menuOpen,
   setMenuOpen,
-  galaxiesEnabled,
-  setGalaxiesEnabled,
+  bhEnabled,
+  setBhEnabled,
 }) {
   const [currentStep, setCurrentStep] = useState(0);
   const [visible, setVisible] = useState(false);
@@ -51,13 +51,13 @@ export default function GuidedTour({
     }
   }, [menuOpen, currentStep]);
 
-  // Track when galaxy parallax is enabled
+  // Track when blackhole parallax is enabled
   useEffect(() => {
-    if (currentStep === 2 && galaxiesEnabled) {
-      // User enabled galaxy! Move to step 3
+    if (currentStep === 2 && bhEnabled) {
+      // User enabled blackhole! Move to step 3
       setTimeout(() => setCurrentStep(3), 800);
     }
-  }, [galaxiesEnabled, currentStep]);
+  }, [bhEnabled, currentStep]);
 
   const completeTour = () => {
     setVisible(false);
@@ -94,16 +94,16 @@ export default function GuidedTour({
     2: {
       title: "Step 2: Add Visual Magic ✨",
       description:
-        "Enable 'Galaxy Parallax' to see a stunning animated background effect as you scroll.",
+        "Enable 'Blackhole Parallax' to see a stunning animated background effect as you scroll.",
       highlightSelector: null, // Will highlight inside the menu
       position: "menu-content",
       showArrow: false,
       action: () => {
-        if (!galaxiesEnabled) {
-          setGalaxiesEnabled(true);
+        if (!bhEnabled) {
+          setBhEnabled(true);
         }
       },
-      actionText: "Enable Galaxy Parallax",
+      actionText: "Enable Blackhole Parallax",
     },
     3: {
       title: "Step 3: Explore My Work 🚀",
