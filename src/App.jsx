@@ -129,29 +129,29 @@ function App() {
   const [isMobile, setIsMobile] = useState(false);
   // Guard to skip persisting lowPower during initial refresh toggle
   const lowPowerPersistSkipRef = useRef(false);
-  
+
   // Blackhole GIF preloader state
   const [bhGifPreloaded, setBhGifPreloaded] = useState(false);
   const [showBhNotification, setShowBhNotification] = useState(false);
-  
+
   // Preload blackhole GIF on app mount (independent of bhEnabled state)
   useEffect(() => {
     // Reset conflicting UI guide states - ensure only GuidedTour is active
     localStorage.removeItem("settingsGuideSeen");
-    
+
     const hasSeenNotif = localStorage.getItem("bhGifNotificationSeen");
-    
+
     // Preload the GIF asset
     const img = new Image();
     img.onload = () => {
       setBhGifPreloaded(true);
-      
+
       // Show notification only if user hasn't seen it before
       if (!hasSeenNotif) {
         setTimeout(() => {
           setShowBhNotification(true);
           localStorage.setItem("bhGifNotificationSeen", "true");
-          
+
           // Auto-hide notification after 5 seconds
           setTimeout(() => {
             setShowBhNotification(false);
@@ -564,7 +564,8 @@ function App() {
                   Blackhole Effect Ready!
                 </h3>
                 <p className="text-xs text-white/80 mb-3">
-                  Enable the stunning blackhole parallax in settings for an immersive experience.
+                  (TURN OFF THE LOW POWER MODE) Enable the stunning blackhole
+                  parallax in settings for an immersive experience.
                 </p>
                 <button
                   onClick={() => {

@@ -26,7 +26,7 @@ export default function GuidedTour({
       // Wait for blackhole notification to finish (if it's the first time)
       // This prevents UI conflicts between multiple guides
       const delay = !bhNotifSeen ? 7500 : 800;
-      
+
       // Start tour after brief delay
       setTimeout(() => {
         setVisible(true);
