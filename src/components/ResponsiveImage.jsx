@@ -10,6 +10,9 @@ function buildUrlWithWidth(src, width) {
     const u = new URL(src);
     // Prefer `w` for Unsplash; otherwise keep existing and add w
     u.searchParams.set("w", String(width));
+    // Optimize: reduce quality from 80 to 75, force WebP format
+    u.searchParams.set("q", "75");
+    u.searchParams.set("fm", "webp");
     return u.toString();
   } catch {
     // Non-URL or invalid string; just return original

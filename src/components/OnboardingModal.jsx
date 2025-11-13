@@ -58,27 +58,56 @@ export default function OnboardingModal({
       role="dialog"
       aria-modal="true"
       aria-label="Welcome tips"
+      style={{
+        contain: "layout style paint",
+        minHeight: "100vh",
+      }}
     >
       <div
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
         onClick={() => onClose(false)}
       />
-      <div className="relative w-[92vw] max-w-md rounded-xl border border-white/15 bg-black/70 p-4 shadow-2xl">
+      <div
+        className="relative w-[92vw] max-w-md rounded-xl border border-white/15 bg-black/70 p-4 shadow-2xl"
+        style={{
+          minHeight: lowPower ? "280px" : "420px",
+          contain: "layout",
+        }}
+      >
         <h2 className="text-lg font-semibold text-white mb-1">Quick tips</h2>
         <p className="text-xs text-white/70 mb-3">
-          Use the Accessibility panel to tweak visuals.{" "}
           {lowPower
-            ? "Low Power Mode is on, so only theme changes are available."
-            : "You can change the theme, add gentle parallax, or enable the high‑fidelity black hole."}
+            ? "Low Power Mode is on — basic theme changes available."
+            : "Heavy backgrounds are loading. Try Low Power mode for instant performance, then explore visuals when ready."}
         </p>
 
         <div className="space-y-3">
+          {/* Step 0: Suggest Low Power first if not enabled */}
+          {!lowPower && (
+            <Step done={false}>
+              <strong>Recommended:</strong> Enable Low Power mode for best
+              performance
+              <div className="mt-2">
+                <button
+                  className="text-xs px-2 py-1 rounded-md border border-amber-400/50 bg-amber-500/10 hover:bg-amber-500/20 transition-colors"
+                  onClick={() => {
+                    // Trigger low power from parent
+                    const event = new CustomEvent("toggle-low-power");
+                    window.dispatchEvent(event);
+                  }}
+                >
+                  Enable Low Power
+                </button>
+              </div>
+            </Step>
+          )}
+
           <Step done={step1Done}>
-            Open the Accessibility panel
+            Open the Accessibility panel to customize visuals
             <div className="mt-2">
               <button
                 ref={firstBtnRef}
-                className="text-xs px-2 py-1 rounded-md border border-white/30 hover:border-white/60"
+                className="text-xs px-2 py-1 rounded-md border border-white/30 hover:border-white/60 transition-colors"
                 onClick={() => {
                   onOpenAccessibility();
                 }}
@@ -90,10 +119,10 @@ export default function OnboardingModal({
 
           {!lowPower && (
             <Step done={step2Done}>
-              Add a soft galaxy or black hole GIF parallax
+              Add a soft galaxy or black hole parallax
               <div className="mt-2 flex gap-2">
                 <button
-                  className={`text-xs px-2 py-1 rounded-md border ${
+                  className={`text-xs px-2 py-1 rounded-md border transition-colors ${
                     galaxiesEnabled
                       ? "border-white/60 text-accent"
                       : "border-white/30 hover:border-white/60"
@@ -103,7 +132,7 @@ export default function OnboardingModal({
                   Galaxy
                 </button>
                 <button
-                  className={`text-xs px-2 py-1 rounded-md border ${
+                  className={`text-xs px-2 py-1 rounded-md border transition-colors ${
                     bhGifsEnabled
                       ? "border-white/60 text-accent"
                       : "border-white/30 hover:border-white/60"
@@ -121,7 +150,7 @@ export default function OnboardingModal({
               Switch to the high‑fidelity Pixel Blackhole
               <div className="mt-2">
                 <button
-                  className={`text-xs px-2 py-1 rounded-md border ${
+                  className={`text-xs px-2 py-1 rounded-md border transition-colors ${
                     bhEnabled
                       ? "border-white/60 text-accent"
                       : "border-white/30 hover:border-white/60"
@@ -137,16 +166,16 @@ export default function OnboardingModal({
 
         <div className="mt-4 flex items-center justify-end gap-2">
           <button
-            className="text-xs px-3 py-1 rounded-md border border-white/25 hover:border-white/50"
+            className="text-xs px-3 py-1 rounded-md border border-white/25 hover:border-white/50 transition-colors"
             onClick={() => onClose(false)}
           >
             Maybe later
           </button>
           <button
-            className="text-xs px-3 py-1 rounded-md btn-accent"
+            className="text-xs px-3 py-1 rounded-md btn-accent transition-colors"
             onClick={() => onClose(true)}
           >
-            Done, don’t show again
+            Done, don't show again
           </button>
         </div>
       </div>

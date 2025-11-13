@@ -160,6 +160,13 @@ function App() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Listen for custom event to toggle low power from OnboardingModal
+  useEffect(() => {
+    const handler = () => setLowPower(true);
+    window.addEventListener("toggle-low-power", handler);
+    return () => window.removeEventListener("toggle-low-power", handler);
+  }, []);
+
   // IntersectionObserver for scrollspy
   useEffect(() => {
     // Mount-on-demand set

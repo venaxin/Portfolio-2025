@@ -39,6 +39,29 @@ jobs:
           BASE_PATH: /Portfolio-2025/
         run: npm run build
 
+      - name: Add cache control headers
+        run: |
+          cat > dist/_headers << 'EOF'
+          # Cache static assets for 1 year (immutable)
+          /assets/*
+            Cache-Control: public, max-age=31536000, immutable
+          /*.js
+            Cache-Control: public, max-age=31536000, immutable
+          /*.css
+            Cache-Control: public, max-age=31536000, immutable
+          /*.gif
+            Cache-Control: public, max-age=31536000, immutable
+          /*.webp
+            Cache-Control: public, max-age=31536000, immutable
+          /*.avif
+            Cache-Control: public, max-age=31536000, immutable
+          # Cache HTML for 1 hour with revalidation
+          /
+            Cache-Control: public, max-age=3600, must-revalidate
+          /*.html
+            Cache-Control: public, max-age=3600, must-revalidate
+          EOF
+
       - name: Create .nojekyll
         run: echo > dist/.nojekyll
 
