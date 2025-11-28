@@ -19,51 +19,65 @@ export default function ExperienceSection({ eightBit = false }) {
           </div>
         </header>
 
+        {/* MOBILE DEVELOPMENT */}
         <section className="mb-6">
           <h4 className="mb-2 text-lg font-semibold">
             Mobile Application Development
           </h4>
           <ul className="list-disc pl-5 space-y-1 text-white/90">
             <li>
-              Resolved UI/UX issues in a React Native app, improving navigation
-              bars and ensuring cross-device compatibility.
+              Improved the React Native app’s UI/UX by fixing navigation
+              inconsistencies across Android and iOS, resulting in smoother
+              event-planning flows and fewer user drop-offs.
             </li>
             <li>
-              Integrated push notifications for Android using Firebase Cloud
-              Messaging.
+              Integrated Firebase Cloud Messaging to deliver real-time updates
+              for drivers and customers.
             </li>
             <li>
-              Diagnosed and resolved keystore signing errors for secure Android
-              release builds.
+              Diagnosed and resolved Android keystore signing issues to ensure
+              reliable and secure release builds.
             </li>
             <li>
-              Reduced APK size by optimizing resources and enabling ProGuard.
+              Optimized the production APK by 24.5% (66MB → ~49.8MB) through
+              asset cleanup and ProGuard configuration.
+            </li>
+            <li>
+              Implemented OpenStreetMap-based delivery tracking using a
+              Leaflet-powered WebView with optimized refresh cycles for
+              cost-efficient real-time updates.
             </li>
           </ul>
         </section>
 
+        {/* WEB DEVELOPMENT */}
         <section>
           <h4 className="mb-2 text-lg font-semibold">
             Web Application Development
           </h4>
           <ul className="list-disc pl-5 space-y-1 text-white/90">
             <li>
-              Led the migration of a major front-end application from legacy
-              technology to a modern Angular framework.
+              Led the migration of a legacy HTML/PHP website to a modern Angular
+              architecture, improving initial load times by 50% and bringing key
+              pages under 2 seconds.
             </li>
             <li>
-              Engineered a high-performance web component to display thousands
-              of data records with virtualization, multi-level grouping,
-              sorting, filtering, drag/drop, and WCAG accessibility, achieving
-              ~90% faster load times than third-party libraries.
+              Built a high-performance data grid using Angular CDK
+              virtualization and RxJS, enabling smooth rendering of 3,000+
+              orders and reducing dashboard load time from 5s to 0.5s.
             </li>
             <li>
-              Developed and optimized features for an Angular-based eCommerce
-              platform, enhancing UI consistency and user workflows.
+              Implemented real-time order tracking through PHP WebSockets with a
+              polling fallback, cutting customer “where is my order?” calls by
+              25%.
             </li>
             <li>
-              Revamped dynamic banners, promotions, and infinite scrolling for
-              smooth browse experiences.
+              Refactored and stabilized Paytm payment flows by fixing checksum
+              mismatches, webhook issues, and timestamp sync errors.
+            </li>
+            <li>
+              Improved deployment reliability and collaboration workflows by
+              standardizing version control practices on Bitbucket.
             </li>
           </ul>
         </section>
