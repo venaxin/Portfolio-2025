@@ -636,20 +636,31 @@ function App() {
                       <h3 className="text-xl font-semibold mb-2">
                         Software Developer
                       </h3>
+
                       <p className="text-sm text-white/80">
-                        CS Master’s student at UB and former Goodz frontend
-                        intern. I build reliable, accessible software across the
-                        stack — from animated, responsive UIs to APIs and
-                        data-driven features. I care about correctness,
-                        performance, and great UX.
+                        CS Master’s student at UB and former Software Developer
+                        at Goodz, where I built and optimized production systems
+                        across both web and mobile. I’ve led front-end
+                        migrations to Angular, engineered high-performance UI
+                        components, implemented real-time features with
+                        WebSockets, and improved React Native app stability,
+                        navigation, and build performance. I care deeply about
+                        UX, performance, and delivering reliable experiences
+                        under real constraints.
                       </p>
+
                       <div className="mt-3 flex flex-wrap gap-2 text-xs">
                         {[
-                          "Full‑stack (React, Node)",
-                          "Systems & Performance",
-                          "AI/ML & OCR",
-                          "Testing (Jest)",
-                          "Cloud (Firebase)",
+                          "Angular",
+                          "React Native",
+                          "JavaScript / TypeScript",
+                          "PHP + MySQL",
+                          "WebSockets",
+                          "Firebase (FCM)",
+                          "Mobile Performance",
+                          "UI/UX Engineering",
+                          "Bitbucket / Git",
+                          "OpenStreetMap APIs",
                         ].map((s) => (
                           <span
                             key={s}
@@ -660,6 +671,7 @@ function App() {
                         ))}
                       </div>
                     </div>
+
                     <div className="p-4 rounded-lg border border-white/10 bg-white/5">
                       <h3 className="text-xl font-semibold mb-2">Now / Next</h3>
                       <ul className="text-sm text-white/80 space-y-1">
