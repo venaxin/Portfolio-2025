@@ -1,4 +1,127 @@
 const projects = [
+  // New 8 Projects (2025)
+  {
+    title: "Venyx: Hierarchical Multi-Agent OS Assistant",
+    year: 2025,
+    status: "Ongoing",
+    description:
+      "A centralized, hierarchical intelligence layer for macOS that decomposes complex user intents into executable sub-tasks using a Lead Agent orchestrator and specialized Sub-Agents.",
+    tech: ["Swift", "SwiftUI", "Gemini API", "Python"],
+    image:
+      "https://images.unsplash.com/photo-1677442d019cecf8514f0c04e7a36a3d18b440f23?q=80&w=1200&auto=format&fit=crop",
+    repoLink: "#",
+    caseStudy: {
+      problem:
+        "macOS lacks a unified intelligence layer that can intelligently decompose complex user intents across multiple applications and delegate to specialized agents.",
+      constraints: [
+        "Cross-application orchestration",
+        "Context-aware task execution",
+        "Unified command interface",
+        "Native macOS integration",
+      ],
+      approach:
+        "Architected a Hierarchical Multi-Agent System (HMAS) where a Lead Agent receives natural language input, uses Gemini API to decompose tasks, and delegates to specialized Sub-Agents (File Manager, Web Searcher, App Automator). Implemented in Swift with SwiftUI for native macOS UI and Python backend for core logic orchestration.",
+      results: [
+        "Seamless cross-application task orchestration",
+        "Context-aware execution with multi-agent coordination",
+        "Unified natural language command interface",
+      ],
+      highlights: [
+        "Hierarchical Multi-Agent System architecture",
+        "Lead Agent orchestration with Gemini API",
+        "Specialized Sub-Agents for different domains",
+        "Native macOS SwiftUI interface",
+        "Cross-application automation",
+      ],
+      links: [
+        { label: "Gemini API", href: "https://ai.google.dev/" },
+        { label: "SwiftUI", href: "https://developer.apple.com/swiftui/" },
+      ],
+      images: [],
+    },
+  },
+  {
+    title: "The Fire Squad: Multi-Agent Reinforcement Learning",
+    year: 2025,
+    status: "Completed",
+    description:
+      "An advanced MARL system optimizing emergency response coordination in wildfire scenarios, addressing credit assignment and multi-agent communication challenges.",
+    tech: ["Python", "Stable Baselines3", "Gymnasium", "PyTorch"],
+    image:
+      "https://images.unsplash.com/photo-1633613286991-611bcede9134?q=80&w=1200&auto=format&fit=crop",
+    repoLink: "#",
+    caseStudy: {
+      problem:
+        "Wildfire containment requires coordinated multi-agent decision-making with limited resources. Single-agent approaches fail to capture collaborative suppression and movement policies.",
+      constraints: [
+        "Multi-agent credit assignment problem",
+        "Agent communication and coordination",
+        "Limited resource constraints",
+        "Real-time decision making",
+      ],
+      approach:
+        "Extended the FirecastRL environment with Multi-Agent Reinforcement Learning (MARL) using Stable Baselines3. Implemented coordinated movement and suppression policies, allowing multiple autonomous agents to collaborate in containing fires while managing limited resources. Addressed credit assignment through policy gradient methods and communication channels.",
+      results: [
+        "Improved containment efficiency vs. single-agent baselines",
+        "Effective multi-agent coordination policies",
+        "Scalable to large fire scenarios",
+      ],
+      highlights: [
+        "Multi-Agent Reinforcement Learning framework",
+        "Coordinated suppression and movement policies",
+        "Credit assignment problem solutions",
+        "Agent communication protocols",
+        "FirecastRL environment extension",
+      ],
+      links: [
+        { label: "Stable Baselines3", href: "https://stable-baselines3.readthedocs.io/" },
+        { label: "Gymnasium", href: "https://gymnasium.farama.org/" },
+        { label: "PyTorch", href: "https://pytorch.org/" },
+      ],
+      images: [],
+    },
+  },
+  {
+    title: "Promptly: Real-Time Prompt Engineering Utility",
+    year: 2025,
+    status: "Completed",
+    description:
+      "A lightweight, floating macOS widget that instantly optimizes rough drafts into engineered LLM prompts using Gemini API with ultra-low latency.",
+    tech: ["Swift", "SwiftUI", "Gemini API"],
+    image:
+      "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?q=80&w=1200&auto=format&fit=crop",
+    repoLink: "#",
+    caseStudy: {
+      problem:
+        "Users struggle to bridge the gap between rough ideas and well-structured LLM prompts. Manual prompt engineering is time-consuming and blocks workflow.",
+      constraints: [
+        "Low-latency UI/UX",
+        "Floating widget always-on-top",
+        "Seamless clipboard integration",
+        "Real-time API calls",
+      ],
+      approach:
+        "Built a lightweight macOS widget using SwiftUI that stays on top of the workspace. Users paste a draft prompt; Gemini API restructures it based on engineering principles (Context, Task, Constraints, Output Format). Optimized for minimal latency with async API calls and caching.",
+      results: [
+        "Sub-second prompt optimization",
+        "Seamless clipboard workflow integration",
+        "Improved prompt quality and LLM response relevance",
+      ],
+      highlights: [
+        "Lightweight floating widget design",
+        "Real-time Gemini API integration",
+        "Prompt engineering principle templates",
+        "Clipboard automation",
+        "Low-latency UI/UX",
+      ],
+      links: [
+        { label: "Gemini API", href: "https://ai.google.dev/" },
+        { label: "SwiftUI", href: "https://developer.apple.com/swiftui/" },
+      ],
+      images: [],
+    },
+  },
+
   // Ongoing
   {
     title: "Lock-IN",
@@ -53,6 +176,171 @@ const projects = [
       images: [],
     },
   },
+  {
+    title: "Zenith Planner: High-Performance Productivity Suite",
+    year: 2025,
+    status: "Completed",
+    description:
+      "A robust task management system with complex drag-and-drop functionality across Daily, Weekly, and Monthly views, featuring state persistence and hierarchical task organization.",
+    tech: ["JavaScript", "React", "Node.js", "PostgreSQL"],
+    image:
+      "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?q=80&w=1200&auto=format&fit=crop",
+    repoLink: "#",
+    caseStudy: {
+      problem:
+        "Users need a high-speed task management system with multiple temporal views without data loss when switching between Daily, Weekly, and Monthly perspectives.",
+      constraints: [
+        "Complex drag-and-drop across different views",
+        "State persistence without data loss",
+        "Real-time task updates",
+        "Hierarchical task organization",
+      ],
+      approach:
+        "Implemented complex Drag-and-Drop (DnD) functionality using React with state management ensuring seamless transitions between temporal views. Built a robust backend with PostgreSQL for state persistence. Interactive calendar views with real-time updates and hierarchical task organization using a tree-based data structure.",
+      results: [
+        "Seamless view transitions with zero data loss",
+        "High-performance drag-and-drop across all views",
+        "Real-time collaborative updates",
+      ],
+      highlights: [
+        "Complex drag-and-drop functionality",
+        "Multiple temporal views (Daily, Weekly, Monthly)",
+        "State persistence architecture",
+        "Hierarchical task organization",
+        "Real-time task updates",
+        "Interactive calendar interfaces",
+      ],
+      links: [
+        { label: "React", href: "https://react.dev/" },
+        { label: "PostgreSQL", href: "https://www.postgresql.org/" },
+      ],
+      images: [],
+    },
+  },
+  {
+    title: "Algorithmic Stock Analysis & RL Trading Policy",
+    year: 2025,
+    status: "Completed",
+    description:
+      "A big data system leveraging PySpark for technical indicator calculation and Reinforcement Learning to automate trading decisions on high-frequency market data.",
+    tech: ["PySpark", "Python", "Pandas", "Reinforcement Learning", "RLlib"],
+    image:
+      "https://images.unsplash.com/photo-1611974789855-9c2a0a7fbda1?q=80&w=1200&auto=format&fit=crop",
+    repoLink: "#",
+    caseStudy: {
+      problem:
+        "Identifying profitable trading signals in massive datasets and automating decision-making requires both efficient data processing and intelligent policy learning.",
+      constraints: [
+        "Large-scale data processing",
+        "Technical indicator calculation at scale",
+        "Real-time decision making",
+        "Risk management in RL policies",
+      ],
+      approach:
+        "Leveraged PySpark for large-scale data processing, calculating technical indicators like RSI (Relative Strength Index) and identifying price gaps across massive datasets. Developed a Reinforcement Learning policy using RLlib or Stable Baselines that treats the market as an environment where the agent learns to 'Buy,' 'Hold,' or 'Sell' based on processed technical indicators to maximize cumulative returns.",
+      results: [
+        "Efficient processing of high-frequency market data",
+        "Profitable trading signals identified",
+        "Automated decision-making policy learned",
+      ],
+      highlights: [
+        "PySpark-based data processing pipeline",
+        "Technical indicator computation at scale",
+        "Reinforcement Learning trading policy",
+        "Risk-adjusted return optimization",
+        "Buy/Hold/Sell decision automation",
+      ],
+      links: [
+        { label: "PySpark", href: "https://spark.apache.org/" },
+        { label: "RLlib", href: "https://docs.ray.io/en/latest/rllib/" },
+      ],
+      images: [],
+    },
+  },
+  {
+    title: "Automated Security & CI/CD Pipeline",
+    year: 2025,
+    status: "Completed",
+    description:
+      "A security-first deployment pipeline automating vulnerability detection through Docker Scout integration with every code commit to prevent CVEs in production.",
+    tech: ["Docker", "Docker Scout", "GitHub Actions", "Linux Shell"],
+    image:
+      "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1200&auto=format&fit=crop",
+    repoLink: "#",
+    caseStudy: {
+      problem:
+        "Containerized applications are vulnerable if security scanning is manual or deferred. CVEs can reach production without automated detection gates.",
+      constraints: [
+        "Automated vulnerability detection",
+        "Pre-production security gates",
+        "Fast build/scan cycle",
+        "CVE reporting and remediation",
+      ],
+      approach:
+        "Built a CI/CD pipeline where every code commit triggers an automated build and scan. Integrated Docker Scout to perform deep image analysis, identifying CVEs (Common Vulnerabilities and Exposures) before the image reaches production. Enforced security gates in the deployment lifecycle using GitHub Actions orchestration.",
+      results: [
+        "Zero CVEs reaching production",
+        "Significantly reduced attack surface",
+        "Fast feedback loop for developers",
+      ],
+      highlights: [
+        "Automated CI/CD pipeline",
+        "Docker Scout integration",
+        "Deep image analysis and scanning",
+        "CVE detection and prevention",
+        "GitHub Actions orchestration",
+        "Security gate enforcement",
+      ],
+      links: [
+        { label: "Docker Scout", href: "https://www.docker.com/products/scout/" },
+        { label: "GitHub Actions", href: "https://github.com/features/actions" },
+      ],
+      images: [],
+    },
+  },
+  {
+    title: "OS Core Architecture Implementation",
+    year: 2025,
+    status: "Completed",
+    description:
+      "Research and development of fundamental OS components including Process Schedulers, Memory Management (Paging/Segmentation), and File Systems with focus on resource efficiency.",
+    tech: ["C", "C++", "Systems Programming", "Unix/Linux"],
+    image:
+      "https://images.unsplash.com/photo-1550439062-2cba8dba8a97?q=80&w=1200&auto=format&fit=crop",
+    repoLink: "#",
+    caseStudy: {
+      problem:
+        "Building scalable and efficient operating systems requires deep understanding of low-level resource management, concurrency, and deadlock prevention.",
+      constraints: [
+        "Process scheduling efficiency",
+        "Memory management optimization",
+        "Deadlock prevention and detection",
+        "File system reliability",
+      ],
+      approach:
+        "Designed and implemented low-level systems including Process Schedulers with priority queues and preemption logic, Memory Management Units supporting both Paging and Segmentation, and reliable File Systems. Focused on managing concurrency, preventing deadlocks, and optimizing CPU utilization through careful resource allocation and synchronization primitives.",
+      results: [
+        "Stable multi-process environment",
+        "Efficient resource management",
+        "Minimal deadlock incidents",
+      ],
+      highlights: [
+        "Process scheduler implementation",
+        "Memory management (Paging/Segmentation)",
+        "File system design",
+        "Concurrency and synchronization",
+        "Deadlock prevention mechanisms",
+        "CPU utilization optimization",
+      ],
+      links: [
+        { label: "OSDEV.org", href: "https://wiki.osdev.org/" },
+        { label: "Linux Kernel", href: "https://kernel.org/" },
+      ],
+      images: [],
+    },
+  },
+
+  // Previous
   {
     title: "CommitLife",
     year: 2025,
