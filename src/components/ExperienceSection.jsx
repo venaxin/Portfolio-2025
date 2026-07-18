@@ -2,86 +2,68 @@ export default function ExperienceSection() {
   return (
     <div className="w-full max-w-4xl mx-auto text-left space-y-6">
 
-      {/* RESEARCH ASSISTANT — UB */}
+      {/* RESEARCH AIDE — SUNY */}
       <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur p-6 md:p-8 text-white shadow-[0_8px_40px_rgba(0,0,0,0.35)]">
         <header className="mb-4">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h3 className="text-2xl font-semibold">University at Buffalo</h3>
+            <h3 className="text-2xl font-semibold">SUNY Research Foundation</h3>
             <span className="text-sm text-white/70">Buffalo, NY, US</span>
           </div>
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-white/90">Graduate Research Assistant</p>
-            <p className="text-sm text-white/70">February 2026 – Present</p>
+            <p className="text-white/90">Research Aide</p>
+            <p className="text-sm text-white/70">Apr 2026 – May 2026</p>
           </div>
         </header>
 
         <p className="text-white/80 mb-4 text-sm">
-          <strong>Tech Stack:</strong> Python, FastAPI, InsightFace, ONNX Runtime, FAISS, SQLAlchemy, SQLite, React, Tauri / Rust, PyInstaller
+          <strong>Tech Stack:</strong> Python, PyTorch, Neo4j, FAISS, Llama-3.3 (70B), Qwen-32B, LoRA, Hugging Face PEFT, Kafka, Multi-Agent Systems
         </p>
 
         <p className="text-white/80 mb-4 text-sm">
-          Building a local-first desktop application for organizing and searching large personal photo libraries using AI — fully offline, no cloud, no data leaving the machine. Owns the backend engineering: ML pipeline, API layer, database, and CI/CD build system.
+          Engineered the L-GRIP (Log Graph-Reasoning Inference Pipeline), a zero-trust, dual-tier autonomous Site Reliability Engineering (SRE) engine. The architecture fuses high-speed SLM geometric routing (Tier 1) with an asynchronous Agentic RAG Control Plane (Tier 2) to diagnose zero-day hardware failures and distributed state-machine anomalies across millions of supercomputer telemetry events.
         </p>
 
         <section className="mb-6">
-          <h4 className="mb-2 text-lg font-semibold">VLM Pipeline — Offline Image Captioning</h4>
+          <h4 className="mb-2 text-lg font-semibold">Tier 1: Multi-LoRA Ensemble &amp; Early Latent Fusion</h4>
           <ul className="list-disc pl-5 space-y-1 text-white/90">
             <li>
-              Built a local VLM pipeline for offline image captioning across 10GB+ of imagery, benchmarking Moondream2 against LLaVA to optimize VRAM usage and inference latency.
+              Designed a Universal Multi-LoRA Engine dynamically hot-swapping Llama-3.2 (1B), Phi-3.5-Mini (3.8B), and GPT-2 (124M) adapters into a single frozen VRAM footprint.
             </li>
             <li>
-              <strong>Model Selection:</strong> Moondream2 (1.8B params) ran on CPU-only machines at 3–5s per image; LLaVA required a GPU and was unusable at 30+s per image — chose Moondream2 for the desktop-first, privacy-first constraint.
+              Implemented <strong>Early Latent Fusion</strong> by extracting and concatenating un-pooled terminal hidden states into a unified 5,888-D Super-Vector, leveraging Logistic Regression to achieve a 98.54% compute reduction on safe logs while maintaining near-perfect recall.
             </li>
             <li>
-              <strong>Constraint:</strong> Everything runs fully offline with no API calls — the entire pipeline from face detection to captioning runs on the user's own hardware.
+              Solved sequence chronological destruction by pivoting from Mean Pooling to <strong>Causal Last-Token Pooling</strong> and explicitly injecting Structural Metadata (Node Drift ratios, Temporal physics ∆t) prior to inference.
             </li>
           </ul>
         </section>
 
         <section className="mb-6">
-          <h4 className="mb-2 text-lg font-semibold">C++ ONNX Memory Leak &amp; Thread Collision Fix</h4>
+          <h4 className="mb-2 text-lg font-semibold">Tier 2: Graph-Augmented Agentic RAG &amp; Control Plane</h4>
           <ul className="list-disc pl-5 space-y-1 text-white/90">
             <li>
-              Resolved severe C++ ONNX memory leaks and thread collisions during concurrent ML inference by re-architecting FastAPI dependency injection into a cached Python Singleton.
+              Built an asynchronous Tier 2 <strong>Cognitive Judge</strong> using a quantized Llama-3.3-70B-Instruct model to analyze anomalies escalated by Tier 1.
             </li>
             <li>
-              <strong>Root Cause:</strong> FastAPI was creating a new <code className="text-yellow-300">FaceIndexer</code> (loading InsightFace ONNX models from disk) on every request — including every 3-second UI poll. Multiple threads tried to own the same C++ ONNX runtime simultaneously, corrupting internal state (<code className="text-yellow-300">AttributeError: 'NoneType' object has no attribute 'get_provider_options'</code>).
+              Engineered a <strong>Universal Security Ontology</strong> mapping 1D log streams into a 3D Neo4j Graph Database. Bypassed global O(|V|+|E|) query bottlenecks by implementing O(1) Ego-Graph extraction (a strict 3-hop radius around the target node) to serialize local topological context for the LLM.
             </li>
             <li>
-              <strong>Fix:</strong> Wrapped the dependency function with <code className="text-yellow-300">@lru_cache()</code> — the Singleton pattern. Models load exactly once; all threads share one instance safely.
+              Resolved LLM hallucination and cognitive overload by extracting 8,192-D hidden state vectors from the 70B model, utilizing it purely as a mathematical feature extractor feeding into a <strong>Focal Loss MLP</strong> to mine hard negatives and catch stealthy zero-day attacks.
             </li>
           </ul>
         </section>
 
         <section className="mb-6">
-          <h4 className="mb-2 text-lg font-semibold">SQLite Schema Refactor — Transaction Locks &amp; ORM Warnings</h4>
+          <h4 className="mb-2 text-lg font-semibold">Autonomous Swarm &amp; Temporal Physics Tracking</h4>
           <ul className="list-disc pl-5 space-y-1 text-white/90">
             <li>
-              Refactored the SQLite schema using SQLAlchemy, eliminating orphaned database transaction locks and ORM ambiguity warnings to guarantee stability during heavy FAISS vector indexing.
+              Deployed a 3-stage <strong>Hierarchical Multi-Agent Swarm</strong> (Commander, Coder, Critic) powered by Qwen-2.5-Coder to autonomously deduce unseen "Alien" log topologies and generate deterministic Python extraction rules.
             </li>
             <li>
-              <strong>Lock Bug:</strong> Failed writes left transactions open; SQLite's file-level locking then blocked every subsequent write. Fixed by adding <code className="text-yellow-300">db.rollback()</code> in every except block and wrapping multi-step ops in a single <code className="text-yellow-300">flush() → commit()</code> pattern.
+              Hardened the Control Plane with an <strong>SRE Hardware Guillotine</strong>—an isolated subprocess with a strict 2.0-second execution timeout that evaluates LLM-generated code, catching infinite loops and passing stderr traces back to the Coder for reflection.
             </li>
             <li>
-              <strong>ORM Warning:</strong> Two models pointing at the same junction table caused <code className="text-yellow-300">SAWarning</code> ambiguity — silent data overwrites in production. Fixed with explicit <code className="text-yellow-300">overlaps=</code> annotations.
-            </li>
-            <li>
-              <strong>Connection to FAISS:</strong> FAISS and SQLite run in parallel during indexing. Fixing the locks made the entire pipeline stable — both systems now write concurrently without one blocking the other.
-            </li>
-          </ul>
-        </section>
-
-        <section>
-          <h4 className="mb-2 text-lg font-semibold">CI/CD Build Pipeline — Single Signed Desktop Executable</h4>
-          <ul className="list-disc pl-5 space-y-1 text-white/90">
-            <li>
-              Engineered CI/CD shell scripts to bundle the decoupled Python backend and React/Rust (Tauri) frontend into a single, signed production desktop executable.
-            </li>
-            <li>
-              <strong>Pipeline:</strong> PyInstaller compiles the FastAPI + InsightFace + ONNX + FAISS stack into a binary; npm builds the React app into static files served by FastAPI; Tauri bundles the Python binary as a sidecar (auto-start/stop lifecycle); macOS/Windows code signing applied — one <code className="text-yellow-300">npm run build:prod</code> triggers everything.
-            </li>
-            <li>
-              <strong>Non-trivial bugs fixed:</strong> PyInstaller skipped InsightFace <code className="text-yellow-300">.pkl</code> model files (required a custom <code className="text-yellow-300">.spec</code>); stale <code className="text-yellow-300">.pyc</code> cache caused wrong binary to ship; <code className="text-yellow-300">main.rs</code> Tauri sidecar spawn logic had been accidentally stripped; fixed 15 pre-existing TypeScript errors blocking the Tauri compile.
+              Implemented an in-memory <strong>EWMA Latent State Tracker</strong> to maintain running session vectors for highly asynchronous state machines, successfully decoupling individual healthy micro-states from doomed macroscopic block failures without shattering the latent manifold.
             </li>
           </ul>
         </section>
